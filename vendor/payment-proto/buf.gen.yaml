@@ -1,0 +1,5 @@
+# Vendored generated types only. This file is not used in the demo.
+# Original input was packages/payment/proto in olares-payment.
+version: v2
+inputs: []
+plugins: []
