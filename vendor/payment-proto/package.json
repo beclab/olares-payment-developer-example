@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Olares Payment wire types (vendored generated *Json types)",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

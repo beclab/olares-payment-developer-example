@@ -16,15 +16,15 @@ import pg from 'pg';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const OLARES_ID = 'demo-shop.olares.com';
+const OLARES_ID = 'twlikesowl.olares.com';
 const ACCOUNT_ID = 'acct_demo_shop';
 const CFG_ID = 'cfg_demo_shop_merchant';
 const CLIENT_ID = 'client_merchant_demo_shop';
 const WEBHOOK_DESC = 'olares-payment-user-demo';
-const PLACEHOLDER_WALLET = '0x000000000000000000000000000000000000dEaD';
+const PLACEHOLDER_WALLET = '0x13b1fc12829cF3cb49Ba6747dEdC9dA12DBe07C9';
 const CHAIN_ID = '10'; // Optimism
 const DEFAULT_WEBHOOK_URL = 'http://127.0.0.1:32000/webhook';
-const DEFAULT_DB = 'postgres://postgres:postgres@127.0.0.1:15432/payment';
+const DEFAULT_DB = 'postgres://postgres:postgres@127.0.0.1:5432/payment';
 
 function parseEnvFile(file: string): Record<string, string> {
   const out: Record<string, string> = {};
