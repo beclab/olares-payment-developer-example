@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harbor Goods</title>
+    <style>
+      :root { color: #1c1917; background: #f5f0e8; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      .page { max-width: 920px; margin: 0 auto; padding: 48px 20px 80px; }
+      h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px; }
+      .kicker { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.75rem; color: #7c6f64; margin: 0 0 8px; }
+      .lede { color: #44403c; max-width: 40rem; }
+      .buyer { display: flex; flex-direction: column; gap: 6px; margin-top: 24px; font-size: 0.9rem; }
+      .buyer input { max-width: 320px; padding: 10px 12px; border: 1px solid #d6d3d1; border-radius: 8px; font: inherit; }
+      .err { color: #9f1239; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 40px; }
+      .card { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; }
+      .card h2 { margin: 0 0 8px; font-size: 1.25rem; }
+      .card p { margin: 0 0 20px; color: #57534e; }
+      .row { display: flex; justify-content: space-between; align-items: center; }
+      button { background: #1c1917; color: #fafaf9; border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer; }
+      button:disabled { opacity: 0.6; cursor: wait; }
+      button.ghost { background: transparent; color: #1c1917; border: 1px solid #d6d3d1; }
+      .overlay { position: fixed; inset: 0; background: rgba(28, 25, 23, 0.45); display: grid; place-items: center; padding: 20px; }
+      .dialog { background: #fffdf8; border-radius: 16px; padding: 24px; max-width: 420px; width: 100%; }
+      .dialog h3 { margin: 0 0 8px; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; word-break: break-all; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <p class="kicker">Harbor Goods</p>
+        <h1>A small shop that collects through Olares Payment</h1>
+        <p class="lede">
+          Mode A: this backend holds a merchant API key from the payment dashboard,
+          creates a payment, and ships when the gateway webhook arrives.
+        </p>
+        <label class="buyer">
+          Buyer olares id
+          <input id="buyer" type="text" value="alice.olares.com" autocomplete="off" />
+        </label>
+        <p id="err" class="err hidden"></p>
+      </header>
+      <section id="grid" class="grid"></section>
+    </main>
+    <div id="overlay" class="overlay hidden">
+      <aside class="dialog">
+        <p id="modal-kicker" class="kicker"></p>
+        <h3 id="modal-title"></h3>
+        <p id="modal-body"></p>
+        <p id="modal-extra" class="mono"></p>
+        <button id="modal-close" type="button" class="ghost hidden">Close</button>
+      </aside>
+    </div>
+    <script>
+      const usd = (cents) => `$${(cents / 100).toFixed(2)}`;
+      const $ = (id) => document.getElementById(id);
+      let pollTimer;
+      let currentOrder = null;
+
+      function showError(msg) {
+        $('err').textContent = msg;
+        $('err').classList.toggle('hidden', !msg);
+      }
+
+      function setModal(kind, title, body, extra, closable) {
+        $('overlay').classList.toggle('hidden', !kind);
+        if (!kind) return;
+        $('modal-kicker').textContent = kind;
+        $('modal-title').textContent = title;
+        $('modal-body').textContent = body || '';
+        $('modal-extra').textContent = extra || '';
+        $('modal-close').classList.toggle('hidden', !closable);
+      }
+
+      function stopPoll() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = null;
+      }
+
+      async function refreshOrder(id) {
+        const resp = await fetch('/api/orders/' + id);
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        currentOrder = data.order;
+        return data.order;
+      }
+
+      function startPoll(id) {
+        stopPoll();
+        pollTimer = setInterval(async () => {
+          const order = await refreshOrder(id);
+          if (order?.status === 'shipped') {
+            stopPoll();
+            setModal('shipped', 'Paid. Shipped.', order.shipNote || order.productTitle, order.txHash ? 'tx ' + order.txHash : '', true);
+          } else if (order?.status === 'failed') {
+            stopPoll();
+            setModal('failed', 'Could not complete', 'Payment or webhook failed.', '', true);
+          }
+        }, 1500);
+      }
+
+      async function buy(product) {
+        const buyer = $('buyer').value.trim();
+        showError('');
+        if (!buyer) {
+          showError('Enter a buyer olares id first.');
+          return;
+        }
+        setModal('checkout', 'Opening the payment checkout', 'You will leave this shop for the Olares Payment hosted page.', '', false);
+        try {
+          const resp = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: product.id, buyerOlaresId: buyer }),
+          });
+          const data = await resp.json();
+          if (!resp.ok || !data.checkoutUrl) throw new Error(data.error || 'checkout failed');
+          window.location.href = data.checkoutUrl;
+        } catch (e) {
+          setModal('failed', 'Could not complete', e.message || 'checkout failed', '', true);
+        }
+      }
+
+      $('modal-close').onclick = () => {
+        stopPoll();
+        setModal(null);
+        const url = new URL(location.href);
+        url.searchParams.delete('order');
+        history.replaceState({}, '', url.pathname);
+      };
+
+      (async () => {
+        const resp = await fetch('/api/products');
+        const { products } = await resp.json();
+        $('grid').innerHTML = products.map((p) => `
+          <article class="card">
+            <h2>${p.title}</h2>
+            <p>${p.blurb}</p>
+            <div class="row">
+              <strong>${usd(p.priceCents)}</strong>
+              <button type="button" data-id="${p.id}">Buy</button>
+            </div>
+          </article>
+        `).join('');
+        $('grid').onclick = (ev) => {
+          const id = ev.target.dataset?.id;
+          const product = products.find((p) => p.id === id);
+          if (product) buy(product);
+        };
+
+        const orderId = new URLSearchParams(location.search).get('order');
+        if (!orderId) return;
+        setModal('waiting', 'Waiting for the webhook', 'The gateway will notify this shop when the payment succeeds, then we ship.', '', true);
+        const order = await refreshOrder(orderId);
+        if (order?.status === 'shipped') {
+          setModal('shipped', 'Paid. Shipped.', order.shipNote || order.productTitle, order.txHash ? 'tx ' + order.txHash : '', true);
+        } else if (order?.status === 'failed') {
+          setModal('failed', 'Could not complete', 'Payment or webhook failed.', '', true);
+        } else {
+          startPoll(orderId);
+        }
+      })();
+    </script>
+  </body>
+</html>

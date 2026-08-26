@@ -1,50 +1,13 @@
 # olares-payment-user-demo
 
-A tiny shop that collects money with **Olares Payment mode A**: the merchant backend holds an API key, calls `MerchantClient.createPayment`, sends the buyer to the hosted checkout, then ships when the gateway webhook arrives.
+用 Olares Payment 收款的小店。下单 → 收银台付款 → webhook 到了就发货。
 
-This repo vendors `@olares/payment-sdk` (plus its proto wire types) so it can run without being inside the `olares-payment` monorepo.
+## 怎么跑
 
-## What you need first
+1. 打开 https://dashboard-front-test.mdogs.me ，建商户、填收款钱包、拿 API key，再登记 webhook：`http://你的机器:32000/webhook`（`whsec_` 只显示一次）
+2. 把 key / secret / webhook secret 填进 `server.js` 开头的 `CONFIG`
+3. `npm install && npm start`，打开 http://127.0.0.1:32000
 
-Local `olares-payment` already running:
+连线上网关时，payment 打不到你的 `127.0.0.1`，webhook 要填公网地址，或把 `paymentEndpoint` 改成本机 `http://127.0.0.1:31000`。
 
-- gateway API `:31000`
-- checkout front `:21000`
-- worker (so webhooks actually fire)
-- Postgres on `127.0.0.1:15432`
-
-## Setup
-
-```bash
-npm install
-npm run bootstrap   # writes .env (local Postgres only)
-npm run dev         # shop UI :32001  ·  API/webhook :32000
-```
-
-Open http://127.0.0.1:32001, pick a buyer olares id, click Buy. After checkout, the shop polls until `payment.succeeded` lands on `POST /webhook`.
-
-`scripts/bootstrap-merchant.ts` is temporary. It inserts identity / merchant account / placeholder receive wallet / API key / webhook URL directly into the payment database because dashboard self-serve is not ready. Throw the script away once payment has a registration UI.
-
-## Environment
-
-| Variable | Where it lives | Role |
-|---|---|---|
-| `PAYMENT_ENDPOINT` | shop `.env` | Gateway base URL |
-| `PAYMENT_API_KEY` / `PAYMENT_API_SECRET` | shop `.env` | HMAC merchant credentials |
-| `WEBHOOK_SECRET` | shop `.env` | Verify inbound webhook signatures (`whsec_...`) |
-| webhook **URL** | payment `notify_webhook_endpoints` | Gateway posts here. Default `http://127.0.0.1:32000/webhook` |
-| `SHOP_PUBLIC_URL` | shop `.env` | Checkout `return_url` (the Vite UI) |
-
-The shop does **not** send the webhook URL when creating a payment. After you put this demo on a public host, update the endpoint URL on the payment side (or re-run bootstrap with `WEBHOOK_URL=https://your.domain/webhook`).
-
-Placeholder receive wallet written by bootstrap: `0x000000000000000000000000000000000000dEaD` on Optimism (`chain_id=10`, USDC). Replace it before a real on-chain pay, or checkout will show a dead address.
-
-## Layout
-
-```
-vendor/payment-sdk     vendored SDK
-vendor/payment-proto   vendored *Json wire types the SDK imports
-scripts/               temporary merchant provisioner
-server/                Express: products, checkout, webhook
-web/                   Vite + Vue shop
-```
+`vendor/` 是还没上 npm 的 SDK，发布后可以删掉。
