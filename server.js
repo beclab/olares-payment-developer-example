@@ -150,7 +150,6 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 app.listen(CONFIG.port, '0.0.0.0', () => {
-  console.log(`shop  ${CONFIG.shopPublicUrl}`);
+  console.log(`shop  ${CONFIG.shopPublicUrl}  (checkout 付完后浏览器跳回这里)`);
   console.log(`pay   ${CONFIG.paymentEndpoint}`);
-  console.log(`hook  ${CONFIG.shopPublicUrl}/webhook   (register this URL on the payment dashboard)`);
 });
