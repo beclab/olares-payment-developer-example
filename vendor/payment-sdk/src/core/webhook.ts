@@ -7,6 +7,9 @@
  * SIGNATURE_MISMATCH / TIMESTAMP_EXPIRED / INVALID_ARGUMENT) instead of returning
  * a boolean, so callers cannot silently ignore forgeries.
  *
+ * First argument is the inbound HTTP message (Express `req`, or `{ body, headers }`).
+ * The SDK unpacks the raw body and signature headers internally.
+ *
  * Returns the public WebhookEvent (camelCase + paymentId); the wire intent_id in
  * the payload is mapped away here.
  */
@@ -14,25 +17,30 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { INVALID_ARGUMENT, PaymentError, SIGNATURE_MISMATCH, TIMESTAMP_EXPIRED } from './errors';
 import { wireToCredential } from './mapping';
-import type { WebhookEvent, WebhookHeaders } from '../types/base';
+import type { WebhookHeaderGetter, WebhookEvent, WebhookResponse } from '../types/base';
 import type { WireWebhookPayload } from './wire';
 
 const DEFAULT_MAX_SKEW_MS = 5 * 60 * 1000;
+const TS_HEADER = 'x-olares-payment-webhook-timestamp';
+const SIG_HEADER = 'x-olares-payment-webhook-signature';
 
 export function constructEvent(
-  rawBody: string,
-  headers: WebhookHeaders,
+  response: WebhookResponse,
   webhookSecret: string,
   opts?: { maxSkewMs?: number },
 ): WebhookEvent {
-  const tsHeader = headers['x-olares-webhook-timestamp'];
+  const rawBody = readRawBody(response.body);
+  const header = headerReader(response.headers);
+  const tsHeader = header(TS_HEADER);
+  const signature = header(SIG_HEADER);
+
   const ts = Number(tsHeader);
   if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > (opts?.maxSkewMs ?? DEFAULT_MAX_SKEW_MS)) {
     throw new PaymentError(TIMESTAMP_EXPIRED, 0, 'webhook timestamp out of allowed window');
   }
 
   const expected = createHmac('sha256', webhookSecret).update(`${tsHeader}\n${rawBody}`).digest('hex');
-  const a = Buffer.from(headers['x-olares-webhook-signature'] ?? '');
+  const a = Buffer.from(signature);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     throw new PaymentError(SIGNATURE_MISMATCH, 0, 'webhook signature verification failed');
@@ -68,4 +76,26 @@ export function constructEvent(
     default:
       return { type: 'endpoint.test', ...(p as Record<string, unknown>) };
   }
+}
+
+/** Buffer is a Uint8Array; anything else means the body was parsed (express.json) and the bytes are gone. */
+function readRawBody(body: WebhookResponse['body']): string {
+  if (typeof body === 'string') return body;
+  if (body instanceof Uint8Array) return Buffer.from(body).toString('utf8');
+  throw new PaymentError(INVALID_ARGUMENT, 0, 'webhook body must be the raw string or Buffer (use express.raw)');
+}
+
+/** Reads header names case-insensitively from either a plain object or fetch-style Headers. */
+function headerReader(headers: WebhookResponse['headers']): (name: string) => string {
+  if (headers && typeof (headers as WebhookHeaderGetter).get === 'function') {
+    const fetchHeaders = headers as WebhookHeaderGetter;
+    return (name) => fetchHeaders.get(name) ?? '';
+  }
+
+  const byLowerName = new Map<string, string>();
+  for (const [name, value] of Object.entries(headers ?? {})) {
+    const first = Array.isArray(value) ? value[0] : value;
+    if (first != null) byLowerName.set(name.toLowerCase(), String(first));
+  }
+  return (name) => byLowerName.get(name.toLowerCase()) ?? '';
 }

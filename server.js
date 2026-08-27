@@ -1,13 +1,3 @@
-/**
- * Harbor Goods — Mode A shop.
- *
- * Fill the CONFIG block from the payment dashboard
- * (dashboard-front-test.mdogs.me): merchant API key / secret, and the
- * webhook signing secret shown once when you register this shop's
- * /webhook URL. The webhook URL itself is stored on payment, not here.
- *
- * vendor/payment-sdk is a snapshot. Drop it once @olares/payment-sdk is published.
- */
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -18,7 +8,6 @@ import { MerchantClient, PaymentError, webhooks } from '@olares/payment-sdk';
 const CONFIG = {
   port: 32000,
   shopPublicUrl: 'http://127.0.0.1:32000',
-  // Deployed HMAC API. Local stack: http://127.0.0.1:31000
   paymentEndpoint: 'https://api-svc-test.mdogs.me',
   apiKey: 'pk_live_REPLACE_ME',
   apiSecret: 'sk_live_REPLACE_ME',
@@ -38,114 +27,73 @@ const merchant = new MerchantClient({
   apiSecret: CONFIG.apiSecret,
   baseUrl: CONFIG.paymentEndpoint,
 });
-
 const app = express();
 
+const reason = (err) => (err instanceof PaymentError ? `${err.code} ${err.message}` : String(err));
+
+function ship(event) {
+  const order =
+    orders.get(event.metadata.order_id) ??
+    [...orders.values()].find((o) => o.paymentId === event.paymentId);
+  if (!order) return console.warn(`webhook paid unknown payment=${event.paymentId}`);
+  Object.assign(order, {
+    status: 'shipped',
+    txHash: event.credential.txHash || null,
+    shipNote: `Packed ${order.productTitle}`,
+  });
+  console.log(`shipped order=${order.id} payment=${event.paymentId}`);
+}
+
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  let event;
   try {
-    const event = webhooks.constructEvent(
-      req.body.toString('utf8'),
-      {
-        'x-olares-webhook-timestamp': String(req.header('x-olares-webhook-timestamp') ?? ''),
-        'x-olares-webhook-signature': String(req.header('x-olares-webhook-signature') ?? ''),
-      },
-      CONFIG.webhookSecret,
-    );
-    if (event.type === 'payment.succeeded') {
-      const metaId = typeof event.metadata.order_id === 'string' ? event.metadata.order_id : '';
-      const order =
-        (metaId && orders.get(metaId)) ||
-        [...orders.values()].find((o) => o.paymentId === event.paymentId);
-      if (order) {
-        order.status = 'shipped';
-        order.txHash = event.credential.txHash || null;
-        order.shipNote = `Packed ${order.productTitle} for ${order.buyerOlaresId}`;
-        order.updatedAt = Date.now();
-        console.log(`shipped order=${order.id} payment=${event.paymentId}`);
-      } else {
-        console.warn(`webhook paid unknown payment=${event.paymentId}`);
-      }
-    }
-    res.status(200).send('ok');
+    event = webhooks.constructEvent(req, CONFIG.webhookSecret);
   } catch (err) {
-    console.warn(`webhook rejected: ${err instanceof PaymentError ? err.message : err}`);
-    res.status(400).send('bad signature');
+    console.warn(`webhook rejected: ${reason(err)}`);
+    return res.status(400).send('bad signature');
   }
+  if (event.type === 'payment.succeeded') ship(event);
+  res.send('ok');
 });
 
 app.use(express.json());
-
-app.get('/', (_req, res) => {
-  res.type('html').send(html);
-});
-
-app.get('/api/products', (_req, res) => {
-  res.json({ products: PRODUCTS });
-});
-
+app.get('/', (_req, res) => res.type('html').send(html));
+app.get('/api/products', (_req, res) => res.json({ products: PRODUCTS }));
 app.get('/api/orders/:id', (req, res) => {
   const order = orders.get(req.params.id);
-  if (!order) {
-    res.status(404).json({ error: 'order not found' });
-    return;
-  }
-  res.json({ order });
+  return order ? res.json({ order }) : res.status(404).json({ error: 'order not found' });
 });
 
 app.post('/api/checkout', async (req, res) => {
-  const product = PRODUCTS.find((p) => p.id === String(req.body?.productId ?? ''));
-  const buyerOlaresId = String(req.body?.buyerOlaresId ?? '').trim();
-  if (!product) {
-    res.status(400).json({ error: 'unknown product' });
-    return;
-  }
-  if (!buyerOlaresId) {
-    res.status(400).json({ error: 'buyerOlaresId is required' });
-    return;
-  }
+  const product = PRODUCTS.find((p) => p.id === req.body?.productId);
+  if (!product) return res.status(400).json({ error: 'unknown product' });
 
   const order = {
     id: `ord_${randomUUID().slice(0, 8)}`,
-    productId: product.id,
     productTitle: product.title,
     amountCents: product.priceCents,
-    buyerOlaresId,
     paymentId: null,
-    checkoutUrl: null,
     status: 'pending',
     txHash: null,
     shipNote: null,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
   };
   orders.set(order.id, order);
 
   try {
     const created = await merchant.createPayment(
       {
-        buyerOlaresId,
         amountCents: product.priceCents,
-        currency: 'usd',
         returnUrl: `${CONFIG.shopPublicUrl}/?order=${encodeURIComponent(order.id)}`,
-        metadata: {
-          order_id: order.id,
-          product_id: product.id,
-          product_title: product.title,
-        },
+        metadata: { order_id: order.id },
       },
       { idempotencyKey: `shop:${order.id}` },
     );
     order.paymentId = created.paymentId;
-    order.checkoutUrl = created.checkoutUrl;
-    order.updatedAt = Date.now();
     res.json({ order, checkoutUrl: created.checkoutUrl });
   } catch (err) {
     order.status = 'failed';
-    order.updatedAt = Date.now();
-    const message = err instanceof PaymentError ? err.message : 'createPayment failed';
-    const code = err instanceof PaymentError ? err.code : 1000;
-    console.error(`createPayment failed order=${order.id} code=${code} ${message}`);
-    res.status(502).json({ error: message, code });
+    console.error(`createPayment failed order=${order.id} ${reason(err)}`);
+    res.status(502).json({ error: err instanceof PaymentError ? err.message : 'createPayment failed' });
   }
 });
 

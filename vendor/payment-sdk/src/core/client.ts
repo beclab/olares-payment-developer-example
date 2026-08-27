@@ -64,10 +64,10 @@ export class PaymentSDK {
     const nonce = randomUUID().slice(0, 16);
     const signature = await PaymentSDK.signAsync(this.apiSecret, method, body, timestamp, nonce);
     return this.post<T>(method, body, {
-      'x-olares-key': this.apiKey,
-      'x-olares-timestamp': timestamp,
-      'x-olares-nonce': nonce,
-      'x-olares-signature': signature,
+      'x-olares-payment-key': this.apiKey,
+      'x-olares-payment-timestamp': timestamp,
+      'x-olares-payment-nonce': nonce,
+      'x-olares-payment-signature': signature,
     }, opts);
   }
 

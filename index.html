@@ -12,9 +12,6 @@
       h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px; }
       .kicker { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.75rem; color: #7c6f64; margin: 0 0 8px; }
       .lede { color: #44403c; max-width: 40rem; }
-      .buyer { display: flex; flex-direction: column; gap: 6px; margin-top: 24px; font-size: 0.9rem; }
-      .buyer input { max-width: 320px; padding: 10px 12px; border: 1px solid #d6d3d1; border-radius: 8px; font: inherit; }
-      .err { color: #9f1239; }
       .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 40px; }
       .card { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; }
       .card h2 { margin: 0 0 8px; font-size: 1.25rem; }
@@ -39,11 +36,6 @@
           Mode A: this backend holds a merchant API key from the payment dashboard,
           creates a payment, and ships when the gateway webhook arrives.
         </p>
-        <label class="buyer">
-          Buyer olares id
-          <input id="buyer" type="text" value="alice.olares.com" autocomplete="off" />
-        </label>
-        <p id="err" class="err hidden"></p>
       </header>
       <section id="grid" class="grid"></section>
     </main>
@@ -61,11 +53,6 @@
       const $ = (id) => document.getElementById(id);
       let pollTimer;
       let currentOrder = null;
-
-      function showError(msg) {
-        $('err').textContent = msg;
-        $('err').classList.toggle('hidden', !msg);
-      }
 
       function setModal(kind, title, body, extra, closable) {
         $('overlay').classList.toggle('hidden', !kind);
@@ -105,18 +92,12 @@
       }
 
       async function buy(product) {
-        const buyer = $('buyer').value.trim();
-        showError('');
-        if (!buyer) {
-          showError('Enter a buyer olares id first.');
-          return;
-        }
         setModal('checkout', 'Opening the payment checkout', 'You will leave this shop for the Olares Payment hosted page.', '', false);
         try {
           const resp = await fetch('/api/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId: product.id, buyerOlaresId: buyer }),
+            body: JSON.stringify({ productId: product.id }),
           });
           const data = await resp.json();
           if (!resp.ok || !data.checkoutUrl) throw new Error(data.error || 'checkout failed');

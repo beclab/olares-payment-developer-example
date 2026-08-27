@@ -217,8 +217,9 @@ export interface ClientInfoResult {
 /** createPayment request. merchantAccountId: required for platform; omitted for merchant (inferred from key). */
 export interface CreatePaymentRequest {
   merchantAccountId?: string;
-  buyerOlaresId: string;
-  /** Trusted DID from the platform's scan-login session; back-fills identities.did. */
+  /** Omit for an anonymous order: the gateway then skips the DID gate and the customer closure. */
+  buyerOlaresId?: string;
+  /** Trusted DID from the platform's scan-login session; back-fills identities.did. Requires buyerOlaresId. */
   buyerDid?: string;
   amountCents: number;
   currency?: Currency;
@@ -262,10 +263,26 @@ export interface ListPaymentsResponse {
 
 // ---------- Webhook ----------
 
-/** The two signature headers constructEvent needs (protocol-level, kept as-is). */
+/** The two signature headers constructEvent reads from `response.headers`. */
 export interface WebhookHeaders {
-  'x-olares-webhook-timestamp': string;
-  'x-olares-webhook-signature': string;
+  'x-olares-payment-webhook-timestamp': string;
+  'x-olares-payment-webhook-signature': string;
+}
+
+/** Fetch-style headers (`Request.headers`), the other shape constructEvent accepts. */
+export interface WebhookHeaderGetter {
+  get(name: string): string | null | undefined;
+}
+
+/**
+ * Inbound HTTP message for `webhooks.constructEvent`.
+ * Express `req` (after `express.raw`) is structurally compatible; otherwise pass
+ * `{ body, headers }` and the SDK unpacks timestamp / signature / raw body.
+ */
+export interface WebhookResponse {
+  /** Raw body — string or Buffer; must not have been JSON.parsed. */
+  body: string | Buffer | Uint8Array;
+  headers: WebhookHeaders | WebhookHeaderGetter | Record<string, string | string[] | undefined>;
 }
 
 /** Typed webhook event (discriminated by type). */

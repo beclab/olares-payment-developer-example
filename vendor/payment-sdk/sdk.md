@@ -27,7 +27,7 @@ const market = new PlatformClient({
 // 替买家下单 → 一步拿到收银台 URL
 const { paymentId, checkoutUrl } = await market.createPayment({
   merchantAccountId: 'acct_xxx',       // 收款方（已挂接的商户）
-  buyerOlaresId: 'alice.olares.com',
+  buyerOlaresId: 'alice.olares.com',   // 可选，省略 = 匿名单
   amountCents: 1999,                   // $19.99
   currency: 'usd',                     // 计价币种（目前只支持 usd）
   returnUrl: 'https://your-app.com/done',
@@ -55,7 +55,7 @@ if (result.paid) {
 
 // 收到 payment 回调时验签（Express 示例）
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const event = webhooks.constructEvent(req.body.toString(), req.headers, WEBHOOK_SECRET);
+  const event = webhooks.constructEvent(req, WEBHOOK_SECRET);
   if (event.type === 'payment.succeeded') {
     // event.paymentId + event.credential.txHash
   }
@@ -109,8 +109,8 @@ SDK 提供两个 Client，**按你的角色选一个**：
 ```ts
 const { paymentId, checkoutUrl } = await market.createPayment({
   merchantAccountId: 'acct_xxx',       // 必填：指定代哪个商户收款（须已挂接）
-  buyerOlaresId: 'alice.olares.com',
-  buyerDid: 'did:olares:xxx',          // 可选（扫码登录带入）
+  buyerOlaresId: 'alice.olares.com',   // 可选，省略 = 匿名单
+  buyerDid: 'did:olares:xxx',          // 可选（扫码登录带入，需配对 buyerOlaresId）
   amountCents: 1999,
   currency: 'usd',                     // 可选，默认 usd
   metadata: { productId: 'app-123' },  // 可选业务字段
@@ -162,10 +162,11 @@ if (v.confirmed) { /* 链上确认了 */ }
 
 ```ts
 const { paymentId, checkoutUrl } = await merchant.createPayment({
-  buyerOlaresId: 'buyer.olares.com',
   amountCents: 1999,
   currency: 'usd',
   returnUrl: 'https://your-app.com/done',
+  metadata: { order_id: 'ord_123' },   // 回调时凭它找回自己的单
+  // buyerOlaresId 省略——匿名单，买家身份不进网关
   // merchantAccountId 省略——网关从 key 自动推断为"自己"
 });
 ```
@@ -239,8 +240,7 @@ import { webhooks } from '@olares/payment-sdk';
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   try {
     const event = webhooks.constructEvent(
-      req.body.toString(),          // raw body（不能 JSON.parse 过）
-      req.headers,                   // HTTP 头
+      req,                           // Express req（body + headers，SDK 自己拆）
       process.env.WEBHOOK_SECRET!,   // whsec_...（dashboard 登记时拿到）
     );
 
@@ -264,7 +264,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
 ```
 
 > **webhook endpoint 在 dashboard 登记**，登记时拿到 `whsec_`（只此一次，存好）。
-> **body 必须是原始字符串**（用 `express.raw`，不是 `express.json`）。
+> **body 必须是原始字节**（用 `express.raw`，不是 `express.json`）；SDK 从 `response.body` / `response.headers` 自己拆签名头。
 
 ---
 
