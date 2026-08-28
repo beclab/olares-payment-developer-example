@@ -1,6 +1,6 @@
 # olares-payment-user-demo
 
-用 Olares Payment 收款的小店。买家用昵称进入、填收货并确认订单，再到收银台付款；webhook 把 `order_id` 和支付凭证粘回商店后自动发货。卖家看 `/admin`。
+用 Olares Payment 收款的小店。买家用昵称进入、填收货并确认订单，再到收银台付款。下单时会把昵称作为可选的 `buyerOlaresId` 传给网关，payment dashboard 的 Transactions 就能标出 Buyer；商家不想把客户资料放到 payment 侧的话可以不传，dashboard 会显示 Anonymous buyer。webhook 把 `order_id` 和支付凭证粘回商店后自动发货。卖家看 `/admin`。
 
 ## 怎么跑
 

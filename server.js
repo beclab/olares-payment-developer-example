@@ -1,8 +1,10 @@
 /**
  * Harbor Goods — buyer shop + seller admin, collecting through Olares Payment.
  *
- * The shop owns buyers, addresses, and orders. Payment only sees amountCents
- * and metadata.order_id; the webhook glues the two back together.
+ * The shop owns addresses and orders. Payment sees amountCents, an optional
+ * buyerOlaresId (this demo sends the nickname so the payment dashboard can
+ * label Transactions → Buyer), and metadata.order_id. Omit buyerOlaresId if
+ * the merchant does not want customer identity on the payment side.
  */
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -266,6 +268,7 @@ app.post('/api/checkout', requireBuyer, async (req, res) => {
     const created = await merchant.createPayment(
       {
         amountCents: product.priceCents,
+        buyerOlaresId: req.buyer.nickname,
         returnUrl: `${CONFIG.shopPublicUrl}/?order=${encodeURIComponent(order.id)}`,
         metadata: { order_id: order.id },
       },
