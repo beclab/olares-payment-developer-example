@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harbor Goods · Seller</title>
+    <style>
+      :root { color: #1c1917; background: #f5f0e8; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      .page { max-width: 1080px; margin: 0 auto; padding: 48px 20px 80px; }
+      nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 28px; font-size: 0.9rem; }
+      nav a { color: inherit; }
+      h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px; }
+      h2 { font-size: 1.2rem; margin: 36px 0 12px; }
+      .kicker { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.75rem; color: #7c6f64; margin: 0 0 8px; }
+      .lede { color: #44403c; max-width: 46rem; }
+      .card { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; max-width: 420px; }
+      label { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-size: 0.9rem; }
+      input { padding: 10px 12px; border: 1px solid #d6d3d1; border-radius: 8px; font: inherit; background: #fff; }
+      button { background: #1c1917; color: #fafaf9; border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer; }
+      button.ghost { background: transparent; color: #1c1917; border: 1px solid #d6d3d1; }
+      .err { color: #9f1239; }
+      .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0; }
+      .kpi { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 16px; }
+      .kpi strong { display: block; font-size: 1.6rem; }
+      .muted { color: #7c6f64; font-size: 0.85rem; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e7e5e4; vertical-align: top; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; word-break: break-all; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav>
+        <span class="muted">Seller admin</span>
+        <span>
+          <a href="/">← Buyer shop</a>
+          <button type="button" class="ghost hidden" id="signout">Sign out</button>
+        </span>
+      </nav>
+
+      <section id="gate" class="card">
+        <p class="kicker">Seller</p>
+        <h1>Sign in</h1>
+        <p class="lede">Hard-coded demo desk: username <span class="mono">admin</span>, password <span class="mono">admin</span>.</p>
+        <form id="signin">
+          <label>Username <input name="username" autocomplete="username" required /></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password" required /></label>
+          <p id="gate-err" class="err hidden"></p>
+          <button type="submit">Continue</button>
+        </form>
+      </section>
+
+      <section id="desk" class="hidden">
+        <p class="kicker">Harbor Goods</p>
+        <h1>Orders bound by payment webhooks</h1>
+        <p class="lede">
+          Each shop order keeps the buyer and ship-to. Olares Payment only sees
+          <span class="mono">metadata.order_id</span>. When
+          <span class="mono">payment.succeeded</span> arrives, this table gains
+          payment id, chain, and tx hash — then the shop ships.
+        </p>
+        <div id="kpis" class="kpis"></div>
+        <h2>Orders</h2>
+        <div id="orders"></div>
+        <h2>Goods</h2>
+        <div id="goods"></div>
+        <h2>Settlement rails</h2>
+        <div id="rails"></div>
+        <h2>Buyers</h2>
+        <div id="buyers"></div>
+      </section>
+    </main>
+    <script>
+      const usd = (cents) => `$${(cents / 100).toFixed(2)}`;
+      const $ = (id) => document.getElementById(id);
+      const show = (el, on) => el.classList.toggle('hidden', !on);
+      const table = (headers, rows) => {
+        if (!rows.length) return '<p class="muted">Nothing yet. Place a buyer order first.</p>';
+        return `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      };
+
+      function paint(ok) {
+        show($('gate'), !ok);
+        show($('desk'), ok);
+        show($('signout'), ok);
+      }
+
+      async function loadDesk() {
+        const [statsResp, ordersResp] = await Promise.all([
+          fetch('/api/admin/stats'),
+          fetch('/api/admin/orders'),
+        ]);
+        if (statsResp.status === 401 || ordersResp.status === 401) {
+          paint(false);
+          return;
+        }
+        const stats = await statsResp.json();
+        const { orders } = await ordersResp.json();
+        const t = stats.totals;
+        $('kpis').innerHTML = [
+          ['Orders', t.orders],
+          ['Waiting for pay', t.pending],
+          ['Shipped', t.shipped],
+          ['Revenue', usd(t.revenueCents)],
+          ['Buyers', t.buyers],
+        ].map(([k, v]) => `<div class="kpi"><span class="muted">${k}</span><strong>${v}</strong></div>`).join('');
+        $('orders').innerHTML = table(
+          ['Order', 'Buyer', 'Item', 'Ship to', 'Shop status', 'Payment'],
+          orders.map((o) => [
+            `<span class="mono">${o.id}</span>`,
+            `${o.buyerNickname}<br><span class="muted mono">${o.buyerId}</span>`,
+            `${o.productTitle}<br><span class="muted">${usd(o.amountCents)}</span>`,
+            `${o.recipient} · ${o.phone}<br><span class="muted">${o.address}</span>`,
+            o.status,
+            `<span class="mono">${o.paymentId || '—'}</span><br><span class="muted">${o.chain || ''} ${o.txHash || ''}</span>`,
+          ]),
+        );
+        $('goods').innerHTML = table(
+          ['Item', 'Orders', 'Shipped', 'Revenue'],
+          stats.byProduct.map((p) => [p.title, p.orders, p.shipped, usd(p.revenueCents)]),
+        );
+        $('rails').innerHTML = table(
+          ['Chain', 'Currency', 'Paid orders', 'Revenue'],
+          stats.byChain.map((c) => [c.chain, c.payCurrency || '—', c.orders, usd(c.revenueCents)]),
+        );
+        $('buyers').innerHTML = table(
+          ['Buyer', 'Orders', 'Shipped', 'Spent', 'Last address'],
+          stats.byBuyer.map((b) => [
+            `${b.nickname}<br><span class="muted mono">${b.buyerId}</span>`,
+            b.orders, b.shipped, usd(b.revenueCents), b.lastAddress,
+          ]),
+        );
+        paint(true);
+      }
+
+      $('signin').onsubmit = async (ev) => {
+        ev.preventDefault();
+        show($('gate-err'), false);
+        const fd = new FormData(ev.target);
+        const resp = await fetch('/api/admin/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: fd.get('username'), password: fd.get('password') }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          $('gate-err').textContent = data.error || 'could not sign in';
+          show($('gate-err'), true);
+          return;
+        }
+        loadDesk();
+      };
+
+      $('signout').onclick = async () => {
+        await fetch('/api/admin/session/logout', { method: 'POST' });
+        paint(false);
+      };
+
+      (async () => {
+        const me = await (await fetch('/api/admin/me')).json();
+        if (me.ok) loadDesk();
+        else paint(false);
+      })();
+    </script>
+  </body>
+</html>
