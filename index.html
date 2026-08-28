@@ -24,8 +24,11 @@
       button { background: #1c1917; color: #fafaf9; border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer; }
       button:disabled { opacity: 0.6; cursor: wait; }
       button.ghost { background: transparent; color: #1c1917; border: 1px solid #d6d3d1; }
+      button.pay { margin-top: 8px; padding: 6px 12px; font-size: 0.85rem; }
+      .dialog .row { margin-top: 16px; justify-content: flex-end; }
       .err { color: #9f1239; }
       .muted { color: #7c6f64; }
+      #order-list { overflow-x: auto; }
       table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
       th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #e7e5e4; vertical-align: top; }
       .overlay { position: fixed; inset: 0; background: rgba(28, 25, 23, 0.45); display: grid; place-items: center; padding: 20px; }
@@ -94,7 +97,10 @@
         <h3 id="modal-title"></h3>
         <p id="modal-body"></p>
         <p id="modal-extra" class="mono"></p>
-        <button id="modal-close" type="button" class="ghost hidden">Close</button>
+        <div class="row">
+          <button id="modal-pay" type="button" class="hidden">Continue paying</button>
+          <button id="modal-close" type="button" class="ghost hidden">Close</button>
+        </div>
       </aside>
     </div>
 
@@ -107,7 +113,7 @@
       let pendingProduct = null;
       let pollTimer = null;
 
-      function setModal(kind, title, body, extra, closable) {
+      function setModal(kind, title, body, extra, closable, payableId) {
         show($('overlay'), !!kind);
         if (!kind) return;
         $('modal-kicker').textContent = kind;
@@ -115,6 +121,8 @@
         $('modal-body').textContent = body || '';
         $('modal-extra').textContent = extra || '';
         show($('modal-close'), closable);
+        show($('modal-pay'), !!payableId);
+        $('modal-pay').dataset.pay = payableId || '';
       }
 
       function paintShell() {
@@ -148,10 +156,17 @@
             <td class="mono">${o.id}</td>
             <td>${o.productTitle}<br><span class="muted">${usd(o.amountCents)}</span></td>
             <td>${o.recipient}<br><span class="muted">${o.address}</span></td>
-            <td>${o.status}</td>
+            <td>${o.status}${o.status === 'pending_payment' ? '<br><button type="button" class="pay" data-pay="' + o.id + '">Continue paying</button>' : ''}</td>
             <td class="mono">${o.txHash || o.paymentId || '—'}</td>
           </tr>`).join('')}</tbody>
         </table>`;
+      }
+
+      async function continuePay(id) {
+        const resp = await fetch('/api/orders/' + encodeURIComponent(id) + '/pay', { method: 'POST' });
+        const data = await resp.json();
+        if (!resp.ok || !data.checkoutUrl) throw new Error(data.error || 'could not resume payment');
+        window.location.href = data.checkoutUrl;
       }
 
       function openConfirm(product, last) {
@@ -251,6 +266,30 @@
         }, 1500);
       }
 
+      $('order-list').onclick = async (ev) => {
+        const id = ev.target.dataset?.pay;
+        if (!id) return;
+        ev.target.disabled = true;
+        try {
+          await continuePay(id);
+        } catch (e) {
+          ev.target.disabled = false;
+          setModal('failed', 'Could not resume payment', e.message || 'try again', '', true);
+        }
+      };
+
+      $('modal-pay').onclick = async (ev) => {
+        const id = ev.target.dataset?.pay;
+        if (!id) return;
+        ev.target.disabled = true;
+        try {
+          await continuePay(id);
+        } catch (e) {
+          ev.target.disabled = false;
+          setModal('failed', 'Could not resume payment', e.message || 'try again', '', true);
+        }
+      };
+
       $('modal-close').onclick = () => {
         stopPoll();
         setModal(null);
@@ -283,7 +322,7 @@
 
         const orderId = new URLSearchParams(location.search).get('order');
         if (!orderId) return;
-        setModal('waiting', 'Waiting for the webhook', 'The gateway will notify this shop when the payment succeeds, then we ship.', '', true);
+        setModal('waiting', 'Waiting for the webhook', 'The gateway will notify this shop when the payment succeeds, then we ship.', '', true, orderId);
         const order = await refreshOrder(orderId);
         if (order?.status === 'shipped') {
           setModal('shipped', 'Paid. Shipped.', order.shipNote || order.productTitle, order.txHash ? 'tx ' + order.txHash : '', true);

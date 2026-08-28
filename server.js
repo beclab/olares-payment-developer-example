@@ -228,6 +228,16 @@ app.get('/api/orders/:id', (req, res) => {
   res.json({ order: publicOrder(order) });
 });
 
+app.post('/api/orders/:id/pay', requireBuyer, (req, res) => {
+  const order = orders.get(req.params.id);
+  if (!order || order.buyerId !== req.buyer.id) return res.status(404).json({ error: 'order not found' });
+  if (order.status !== 'pending_payment') {
+    return res.status(409).json({ error: 'order is not waiting for payment' });
+  }
+  if (!order.checkoutUrl) return res.status(409).json({ error: 'checkout url is gone' });
+  res.json({ checkoutUrl: order.checkoutUrl, order: publicOrder(order) });
+});
+
 app.post('/api/checkout', requireBuyer, async (req, res) => {
   const product = PRODUCTS.find((p) => p.id === req.body?.productId);
   const recipient = String(req.body?.recipient ?? '').trim();
