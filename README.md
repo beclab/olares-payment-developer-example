@@ -1,23 +1,52 @@
-# olares-payment-user-demo
+# olares-payment-developer-example
 
-用 Olares Payment 收款的小店。买家用昵称进入、填收货并确认订单，再到托管收银台付款。店自己管商品和订单；网关只看见金额、可选的外部买家标签，以及 `metadata.order_id`。
+A small shop that collects through Olares Payment. The shop owns the catalog, ship-to addresses, and order state. The gateway sees only the amount, an optional buyer label, and `metadata.order_id`.
 
-店内状态是 `pending → paid → shipped`。收款完成（webhook 或回跳时 `getPayment`）只把订单标成 **Paid**；卖家在 `/admin` 点发货后才是 **Shipped**。
+Shop orders move **pending → paid → shipped**. A successful checkout marks the order **Paid**. Shipping is a seller action, not a payment callback.
 
-## 怎么跑
+## What this example shows
 
-1. 打开 https://dashboard-front-test.mdogs.me ，建商户、填收款钱包、拿 API key，再登记 webhook：`http://你的机器:32000/webhook`（`whsec_` 只显示一次）
-2. 把 key / secret / webhook secret 填进 `server.js` 开头的 `CONFIG`
-3. `npm install && npm start`，买家打开 http://127.0.0.1:32000 ，卖家打开 http://127.0.0.1:32000/admin （用户名 `admin`，密码 `admin`）
+### Buyer
 
-连线上网关时，payment 打不到你的 `127.0.0.1`，webhook 要填公网地址。回跳页会用 `getPayment` 兜底，所以本机也能看到已付。
+Open http://127.0.0.1:32000.
 
-`vendor/` 是还没上 npm 的 SDK，发布后可以删掉。订单存在内存里，重启进程会丢。
+- Sign in with a nickname (no password). The same nickname is the same buyer.
+- Browse three sample goods, confirm a ship-to, and pay on the hosted Olares Payment checkout.
+- After checkout, return to an order page (`/?order=`). The page shows item, amount, ship-to, and payment status.
+- If checkout is still open, continue paying from that order page. If it expired or failed, start a new payment on the same shop order.
 
-## 接入要点
+### Seller
 
-- `createPayment`：`amountCents`、`returnUrl`、`metadata.order_id`、`buyer: { kind: 'external', ref, display }`、幂等键 `shop:{orderId}:{seq}`
-- 收银台回跳 `/?order=`：先 `getPayment`。`paid: true` 才履约为 Paid
-- webhook：`payment.succeeded` → Paid；`failed` / `canceled` 回写店内状态
-- 继续支付：未过期复用原 `checkoutUrl`；已取消或过期则同订单再开一单
-- 发货是卖家动作，不是支付回调
+Open http://127.0.0.1:32000/admin.
+
+- Sign in with username `admin` and password `admin`.
+- Review shop orders, revenue, and buyers.
+- When an order is **Paid**, use **Mark shipped** on the right of the row. Only paid orders can be shipped.
+- Compare shop orders with the gateway ledger (`listPayments`) for the same merchant key.
+
+## How to run
+
+1. Open the Payment Dashboard, create a merchant, configure receive wallets, and copy the API key and secret.
+2. Register a webhook endpoint: `http://<your-host>:32000/webhook`. The `whsec_` secret is shown only once.
+3. Put the key, secret, webhook secret, and gateway `baseUrl` in `CONFIG` at the top of `server.js`.
+4. Install and start:
+
+```bash
+npm install
+npm start
+```
+
+Buyer shop: http://127.0.0.1:32000  
+Seller admin: http://127.0.0.1:32000/admin (username `admin`, password `admin`)
+
+A hosted gateway cannot reach `127.0.0.1`. Use a public webhook URL in that case. The return page also calls `getPayment`, so a local shop can still mark an order paid if the webhook never arrives.
+
+`vendor/` is a snapshot of `@olares/payment-sdk` before it is published to npm. Orders live in memory and are lost when the process exits.
+
+## Integration notes
+
+- **Create a payment** with `MerchantClient.createPayment`: `amountCents`, `returnUrl`, `metadata.order_id`, and optional `buyer: { kind: 'external', ref, display }`. Use a stable idempotency key (`shop:{orderId}:{seq}`). Omit `buyer` if the merchant does not want customer labels on the payment side.
+- **Fulfill from `getPayment` on return.** The checkout redirects to `/?order=`. Call `getPayment` and treat `paid: true` as the only safe signal to mark the shop order Paid.
+- **Webhooks are the live path.** Verify with `webhooks.constructEvent` on the raw body. `payment.succeeded` → Paid; `payment.failed` and `payment.canceled` update the shop order. Do not ship from the webhook.
+- **Resume or replace checkout.** If the intent is still open, reuse `checkoutUrl`. If it is canceled or expired, create a new payment for the same shop order (increment the idempotency sequence).
+- **Paid is not shipped.** The seller marks shipment after collection. Payment success only means the gateway has the funds.

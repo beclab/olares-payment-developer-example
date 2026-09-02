@@ -1,9 +1,9 @@
 {
-  "name": "olares-payment-user-demo",
+  "name": "olares-payment-developer-example",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Mode A shop demo: MerchantClient createPayment + webhook fulfillment",
+  "description": "Developer example: MerchantClient createPayment, hosted checkout, and shop fulfillment",
   "scripts": {
     "start": "tsx server.js",
     "dev": "tsx watch server.js"

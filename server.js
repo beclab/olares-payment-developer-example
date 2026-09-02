@@ -1,5 +1,5 @@
 /**
- * Harbor Goods — buyer shop + seller admin, collecting through Olares Payment.
+ * olares-payment-developer-example — Harbor Goods shop + seller admin.
  *
  * The shop owns catalog, ship-to, and order state (pending → paid → shipped).
  * Payment sees amountCents, an optional external buyer, and metadata.order_id.
