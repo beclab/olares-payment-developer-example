@@ -57,10 +57,10 @@
         <p class="kicker">Harbor Goods</p>
         <h1>Orders bound by payment webhooks</h1>
         <p class="lede">
-          Each shop order keeps the ship-to. This demo also sends the nickname as
-          <span class="mono">buyerOlaresId</span> so the payment dashboard can
-          label the buyer — omit that field if a merchant does not want customer
-          names on the payment side. <span class="mono">metadata.order_id</span>
+          Each shop order keeps the ship-to. This demo also sends the shop user as
+          an <span class="mono">external</span> buyer so the payment dashboard can
+          label the buyer — omit <span class="mono">buyer</span> if a merchant does
+          not want customer names on the payment side. <span class="mono">metadata.order_id</span>
           still binds the webhook. When <span class="mono">payment.succeeded</span>
           arrives, this table gains payment id, chain, and tx hash — then the shop ships.
         </p>
