@@ -6,13 +6,13 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { CheckoutIntentSchema, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
+import type { BuyerExternal, BuyerExternalJson, CheckoutIntentSchema, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
 import { file_v1_domain_payment } from "../domain/payment_pb";
 import type { AccountInfoSchema, ApiClientType, ApiClientTypeJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
 import { file_v1_domain_account } from "../domain/account_pb";
 import type { ChannelInfo, ChannelInfoJson, ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson } from "../domain/receive-wallet_pb";
 import { file_v1_domain_receive_wallet } from "../domain/receive-wallet_pb";
-import type { VcApplicationSchemaReqSchema, VcApplicationSchemaRespSchema, VcRequestReqSchema, VcRequestRespSchema } from "../domain/vc_pb";
+import type { IssuedCredentialViewSchema, VcApplicationSchemaReqSchema, VcApplicationSchemaRespSchema, VcRequestReqSchema, VcRequestRespSchema } from "../domain/vc_pb";
 import { file_v1_domain_vc } from "../domain/vc_pb";
 import type { DeveloperStatusSchema } from "../domain/developer-key_pb";
 import { file_v1_domain_developer_key } from "../domain/developer-key_pb";
@@ -22,7 +22,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/service/gateway.proto.
  */
 export const file_v1_service_gateway: GenFile = /*@__PURE__*/
-  fileDesc("Chh2MS9zZXJ2aWNlL2dhdGV3YXkucHJvdG8SCnBheW1lbnQudjEiyQEKGUNyZWF0ZU9yZGVyRnJvbUNhdGFsb2dSZXESHQoJcHJvZHVjdElkGAEgASgJUgpwcm9kdWN0X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIgCghidXllckRpZBgEIAEoCUgAUglidXllcl9kaWSIAQESIgoJcmV0dXJuVXJsGAUgASgJSAFSCnJldHVybl91cmyIAQFCCwoJX2J1eWVyRGlkQgwKCl9yZXR1cm5VcmxKBAgCEAMi2AIKEENyZWF0ZVBheW1lbnRSZXESMwoRbWVyY2hhbnRBY2NvdW50SWQYASABKAlIAFITbWVyY2hhbnRfYWNjb3VudF9pZIgBARImCg1idXllck9sYXJlc0lkGAIgASgJUg9idXllcl9vbGFyZXNfaWQSIAoIYnV5ZXJEaWQYAyABKAlIAVIJYnV5ZXJfZGlkiAEBEiEKC2Ftb3VudENlbnRzGAQgASgFUgxhbW91bnRfY2VudHMSFQoIY3VycmVuY3kYBSABKAlIAogBARIpCghtZXRhZGF0YRgGIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSIgoJcmV0dXJuVXJsGAcgASgJSANSCnJldHVybl91cmyIAQFCFAoSX21lcmNoYW50QWNjb3VudElkQgsKCV9idXllckRpZEILCglfY3VycmVuY3lCDAoKX3JldHVyblVybCJXChVDcmVhdGVQYXltZW50UmVzcG9uc2USGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIhCgtjaGVja291dFVybBgCIAEoCVIMY2hlY2tvdXRfdXJsImcKDUdldFBheW1lbnRSZXESGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIoCgxjbGllbnRTZWNyZXQYAiABKAlIAFINY2xpZW50X3NlY3JldIgBAUIPCg1fY2xpZW50U2VjcmV0IpoBCg9MaXN0UGF5bWVudHNSZXESEwoGc3RhdHVzGAEgASgJSACIAQESKQoIbWV0YWRhdGEYAiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EhMKBmN1cnNvchgDIAEoCUgBiAEBEhIKBWxpbWl0GAQgASgFSAKIAQFCCQoHX3N0YXR1c0IJCgdfY3Vyc29yQggKBl9saW1pdCKQAQoUTGlzdFBheW1lbnRzUmVzcG9uc2USKAoFaXRlbXMYASADKAsyGS5wYXltZW50LnYxLlBheW1lbnRJbnRlbnQSGQoHaGFzTW9yZRgCIAEoCFIIaGFzX21vcmUSJAoKbmV4dEN1cnNvchgDIAEoCUgAUgtuZXh0X2N1cnNvcogBAUINCgtfbmV4dEN1cnNvciIRCg9MaXN0Q2hhbm5lbHNSZXEiQQoUTGlzdENoYW5uZWxzUmVzcG9uc2USKQoIY2hhbm5lbHMYASADKAsyFy5wYXltZW50LnYxLkNoYW5uZWxJbmZvIoIBCiBMaXN0UmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uc1JlcRIUCgdhZGRyZXNzGAEgASgJSACIAQESEgoFbGltaXQYAiABKAVIAYgBARITCgZjdXJzb3IYAyABKAlIAogBAUIKCghfYWRkcmVzc0IICgZfbGltaXRCCQoHX2N1cnNvciKwAQolTGlzdFJlY2VpdmVXYWxsZXRUcmFuc2FjdGlvbnNSZXNwb25zZRI3CgVpdGVtcxgBIAMoCzIoLnBheW1lbnQudjEuUmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uSXRlbRIZCgdoYXNNb3JlGAIgASgIUghoYXNfbW9yZRIkCgpuZXh0Q3Vyc29yGAMgASgJSABSC25leHRfY3Vyc29yiAEBQg0KC19uZXh0Q3Vyc29yIjMKFEdldENoZWNrb3V0SW50ZW50UmVxEhsKCGludGVudElkGAEgASgJUglpbnRlbnRfaWQiDwoNR2V0QWNjb3VudFJlcSIJCgdQaW5nUmVxIksKDFBpbmdSZXNwb25zZRI7CgpzZXJ2ZXJUaW1lGAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFILc2VydmVyX3RpbWUiDwoNQ2xpZW50SW5mb1JlcSLFAQoSQ2xpZW50SW5mb1Jlc3BvbnNlEjQKB2tleVR5cGUYASABKA4yGS5wYXltZW50LnYxLkFwaUNsaWVudFR5cGVSCGtleV90eXBlEiIKCWFjY291bnRJZBgCIAEoCUgAUgphY2NvdW50X2lkiAEBEhAKA2RpZBgDIAEoCUgBiAEBEiAKCG9sYXJlc0lkGAQgASgJSAJSCW9sYXJlc19pZIgBAUIMCgpfYWNjb3VudElkQgYKBF9kaWRCCwoJX29sYXJlc0lkIhMKEUdhdGV3YXlMaXN0UG1jUmVxIkkKGkdhdGV3YXlVcHNlcnRPbmNoYWluUG1jUmVxEisKBmNoYWlucxgBIAMoCzIbLnBheW1lbnQudjEuT25jaGFpbkNoYWluQ2ZnImMKD09uY2hhaW5DaGFpbkNmZxIZCgdjaGFpbklkGAEgASgJUghjaGFpbl9pZBIlCg1yZWNlaXZlV2FsbGV0GAIgASgJUg5yZWNlaXZlX3dhbGxldBIOCgZ0b2tlbnMYAyADKAkiHwodR2F0ZXdheUxpc3RTdXBwb3J0ZWRDaGFpbnNSZXEiWwonR2F0ZXdheUxpc3RQYXltZW50TWV0aG9kQ29uZmlnc1Jlc3BvbnNlEjAKB2NvbmZpZ3MYASADKAsyHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWciUAoiR2F0ZXdheUxpc3RTdXBwb3J0ZWRDaGFpbnNSZXNwb25zZRIqCgZjaGFpbnMYASADKAsyGi5wYXltZW50LnYxLlN1cHBvcnRlZENoYWluIkYKC1ZlcmlmeVR4UmVxEhcKBnR4SGFzaBgBIAEoCVIHdHhfaGFzaBINCgVjaGFpbhgCIAEoCRIPCgduZXR3b3JrGAMgASgJIk0KEFZlcmlmeVR4UmVzcG9uc2USLQoHcmVjZWlwdBgBIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RIAIgBAUIKCghfcmVjZWlwdCIqChVHZXREZXZlbG9wZXJTdGF0dXNSZXESEQoJZGV2ZWxvcGVyGAEgASgJIl8KFkdldElzc3VlZENyZWRlbnRpYWxSZXESJgoNYnV5ZXJPbGFyZXNJZBgBIAEoCVIPYnV5ZXJfb2xhcmVzX2lkEh0KCXByb2R1Y3RJZBgCIAEoCVIKcHJvZHVjdF9pZDK9CwoOR2F0ZXdheVNlcnZpY2USUAoNQ3JlYXRlUGF5bWVudBIcLnBheW1lbnQudjEuQ3JlYXRlUGF5bWVudFJlcRohLnBheW1lbnQudjEuQ3JlYXRlUGF5bWVudFJlc3BvbnNlEkIKCkdldFBheW1lbnQSGS5wYXltZW50LnYxLkdldFBheW1lbnRSZXEaGS5wYXltZW50LnYxLlBheW1lbnRJbnRlbnQSTQoMTGlzdFBheW1lbnRzEhsucGF5bWVudC52MS5MaXN0UGF5bWVudHNSZXEaIC5wYXltZW50LnYxLkxpc3RQYXltZW50c1Jlc3BvbnNlEk0KDExpc3RDaGFubmVscxIbLnBheW1lbnQudjEuTGlzdENoYW5uZWxzUmVxGiAucGF5bWVudC52MS5MaXN0Q2hhbm5lbHNSZXNwb25zZRKAAQodTGlzdFJlY2VpdmVXYWxsZXRUcmFuc2FjdGlvbnMSLC5wYXltZW50LnYxLkxpc3RSZWNlaXZlV2FsbGV0VHJhbnNhY3Rpb25zUmVxGjEucGF5bWVudC52MS5MaXN0UmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uc1Jlc3BvbnNlElEKEUdldENoZWNrb3V0SW50ZW50EiAucGF5bWVudC52MS5HZXRDaGVja291dEludGVudFJlcRoaLnBheW1lbnQudjEuQ2hlY2tvdXRJbnRlbnQSQAoKR2V0QWNjb3VudBIZLnBheW1lbnQudjEuR2V0QWNjb3VudFJlcRoXLnBheW1lbnQudjEuQWNjb3VudEluZm8SNQoEUGluZxITLnBheW1lbnQudjEuUGluZ1JlcRoYLnBheW1lbnQudjEuUGluZ1Jlc3BvbnNlEkcKCkNsaWVudEluZm8SGS5wYXltZW50LnYxLkNsaWVudEluZm9SZXEaHi5wYXltZW50LnYxLkNsaWVudEluZm9SZXNwb25zZRJuChhMaXN0UGF5bWVudE1ldGhvZENvbmZpZ3MSHS5wYXltZW50LnYxLkdhdGV3YXlMaXN0UG1jUmVxGjMucGF5bWVudC52MS5HYXRld2F5TGlzdFBheW1lbnRNZXRob2RDb25maWdzUmVzcG9uc2USWwoQVXBzZXJ0T25jaGFpblBtYxImLnBheW1lbnQudjEuR2F0ZXdheVVwc2VydE9uY2hhaW5QbWNSZXEaHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWcScAoTTGlzdFN1cHBvcnRlZENoYWlucxIpLnBheW1lbnQudjEuR2F0ZXdheUxpc3RTdXBwb3J0ZWRDaGFpbnNSZXEaLi5wYXltZW50LnYxLkdhdGV3YXlMaXN0U3VwcG9ydGVkQ2hhaW5zUmVzcG9uc2USQQoIVmVyaWZ5VHgSFy5wYXltZW50LnYxLlZlcmlmeVR4UmVxGhwucGF5bWVudC52MS5WZXJpZnlUeFJlc3BvbnNlEmIKFkNyZWF0ZU9yZGVyRnJvbUNhdGFsb2cSJS5wYXltZW50LnYxLkNyZWF0ZU9yZGVyRnJvbUNhdGFsb2dSZXEaIS5wYXltZW50LnYxLkNyZWF0ZVBheW1lbnRSZXNwb25zZRJhChZHZXRWY0FwcGxpY2F0aW9uU2NoZW1hEiIucGF5bWVudC52MS5WY0FwcGxpY2F0aW9uU2NoZW1hUmVxGiMucGF5bWVudC52MS5WY0FwcGxpY2F0aW9uU2NoZW1hUmVzcBJACglSZXF1ZXN0VmMSGC5wYXltZW50LnYxLlZjUmVxdWVzdFJlcRoZLnBheW1lbnQudjEuVmNSZXF1ZXN0UmVzcBJUChJHZXREZXZlbG9wZXJTdGF0dXMSIS5wYXltZW50LnYxLkdldERldmVsb3BlclN0YXR1c1JlcRobLnBheW1lbnQudjEuRGV2ZWxvcGVyU3RhdHVzYgZwcm90bzM", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment, file_v1_domain_account, file_v1_domain_receive_wallet, file_v1_domain_vc, file_v1_domain_developer_key]);
+  fileDesc("Chh2MS9zZXJ2aWNlL2dhdGV3YXkucHJvdG8SCnBheW1lbnQudjEiyQEKGUNyZWF0ZU9yZGVyRnJvbUNhdGFsb2dSZXESHQoJcHJvZHVjdElkGAEgASgJUgpwcm9kdWN0X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIgCghidXllckRpZBgEIAEoCUgAUglidXllcl9kaWSIAQESIgoJcmV0dXJuVXJsGAUgASgJSAFSCnJldHVybl91cmyIAQFCCwoJX2J1eWVyRGlkQgwKCl9yZXR1cm5VcmxKBAgCEAMiyAMKEENyZWF0ZVBheW1lbnRSZXESMwoRbWVyY2hhbnRBY2NvdW50SWQYASABKAlIAFITbWVyY2hhbnRfYWNjb3VudF9pZIgBARIrCg1idXllck9sYXJlc0lkGAIgASgJSAFSD2J1eWVyX29sYXJlc19pZIgBARIgCghidXllckRpZBgDIAEoCUgCUglidXllcl9kaWSIAQESIQoLYW1vdW50Q2VudHMYBCABKAVSDGFtb3VudF9jZW50cxIVCghjdXJyZW5jeRgFIAEoCUgDiAEBEikKCG1ldGFkYXRhGAYgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIiCglyZXR1cm5VcmwYByABKAlIBFIKcmV0dXJuX3VybIgBARJFCg1idXllckV4dGVybmFsGAggASgLMhkucGF5bWVudC52MS5CdXllckV4dGVybmFsSAVSDmJ1eWVyX2V4dGVybmFsiAEBQhQKEl9tZXJjaGFudEFjY291bnRJZEIQCg5fYnV5ZXJPbGFyZXNJZEILCglfYnV5ZXJEaWRCCwoJX2N1cnJlbmN5QgwKCl9yZXR1cm5VcmxCEAoOX2J1eWVyRXh0ZXJuYWwiVwoVQ3JlYXRlUGF5bWVudFJlc3BvbnNlEhsKCGludGVudElkGAEgASgJUglpbnRlbnRfaWQSIQoLY2hlY2tvdXRVcmwYAiABKAlSDGNoZWNrb3V0X3VybCJnCg1HZXRQYXltZW50UmVxEhsKCGludGVudElkGAEgASgJUglpbnRlbnRfaWQSKAoMY2xpZW50U2VjcmV0GAIgASgJSABSDWNsaWVudF9zZWNyZXSIAQFCDwoNX2NsaWVudFNlY3JldCKaAQoPTGlzdFBheW1lbnRzUmVxEhMKBnN0YXR1cxgBIAEoCUgAiAEBEikKCG1ldGFkYXRhGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBITCgZjdXJzb3IYAyABKAlIAYgBARISCgVsaW1pdBgEIAEoBUgCiAEBQgkKB19zdGF0dXNCCQoHX2N1cnNvckIICgZfbGltaXQikAEKFExpc3RQYXltZW50c1Jlc3BvbnNlEigKBWl0ZW1zGAEgAygLMhkucGF5bWVudC52MS5QYXltZW50SW50ZW50EhkKB2hhc01vcmUYAiABKAhSCGhhc19tb3JlEiQKCm5leHRDdXJzb3IYAyABKAlIAFILbmV4dF9jdXJzb3KIAQFCDQoLX25leHRDdXJzb3IiEQoPTGlzdENoYW5uZWxzUmVxIkEKFExpc3RDaGFubmVsc1Jlc3BvbnNlEikKCGNoYW5uZWxzGAEgAygLMhcucGF5bWVudC52MS5DaGFubmVsSW5mbyKCAQogTGlzdFJlY2VpdmVXYWxsZXRUcmFuc2FjdGlvbnNSZXESFAoHYWRkcmVzcxgBIAEoCUgAiAEBEhIKBWxpbWl0GAIgASgFSAGIAQESEwoGY3Vyc29yGAMgASgJSAKIAQFCCgoIX2FkZHJlc3NCCAoGX2xpbWl0QgkKB19jdXJzb3IisAEKJUxpc3RSZWNlaXZlV2FsbGV0VHJhbnNhY3Rpb25zUmVzcG9uc2USNwoFaXRlbXMYASADKAsyKC5wYXltZW50LnYxLlJlY2VpdmVXYWxsZXRUcmFuc2FjdGlvbkl0ZW0SGQoHaGFzTW9yZRgCIAEoCFIIaGFzX21vcmUSJAoKbmV4dEN1cnNvchgDIAEoCUgAUgtuZXh0X2N1cnNvcogBAUINCgtfbmV4dEN1cnNvciIzChRHZXRDaGVja291dEludGVudFJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkIg8KDUdldEFjY291bnRSZXEiCQoHUGluZ1JlcSJLCgxQaW5nUmVzcG9uc2USOwoKc2VydmVyVGltZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSC3NlcnZlcl90aW1lIg8KDUNsaWVudEluZm9SZXEixQEKEkNsaWVudEluZm9SZXNwb25zZRI0CgdrZXlUeXBlGAEgASgOMhkucGF5bWVudC52MS5BcGlDbGllbnRUeXBlUghrZXlfdHlwZRIiCglhY2NvdW50SWQYAiABKAlIAFIKYWNjb3VudF9pZIgBARIQCgNkaWQYAyABKAlIAYgBARIgCghvbGFyZXNJZBgEIAEoCUgCUglvbGFyZXNfaWSIAQFCDAoKX2FjY291bnRJZEIGCgRfZGlkQgsKCV9vbGFyZXNJZCITChFHYXRld2F5TGlzdFBtY1JlcSJJChpHYXRld2F5VXBzZXJ0T25jaGFpblBtY1JlcRIrCgZjaGFpbnMYASADKAsyGy5wYXltZW50LnYxLk9uY2hhaW5DaGFpbkNmZyJjCg9PbmNoYWluQ2hhaW5DZmcSGQoHY2hhaW5JZBgBIAEoCVIIY2hhaW5faWQSJQoNcmVjZWl2ZVdhbGxldBgCIAEoCVIOcmVjZWl2ZV93YWxsZXQSDgoGdG9rZW5zGAMgAygJIh8KHUdhdGV3YXlMaXN0U3VwcG9ydGVkQ2hhaW5zUmVxIlsKJ0dhdGV3YXlMaXN0UGF5bWVudE1ldGhvZENvbmZpZ3NSZXNwb25zZRIwCgdjb25maWdzGAEgAygLMh8ucGF5bWVudC52MS5QYXltZW50TWV0aG9kQ29uZmlnIlAKIkdhdGV3YXlMaXN0U3VwcG9ydGVkQ2hhaW5zUmVzcG9uc2USKgoGY2hhaW5zGAEgAygLMhoucGF5bWVudC52MS5TdXBwb3J0ZWRDaGFpbiJGCgtWZXJpZnlUeFJlcRIXCgZ0eEhhc2gYASABKAlSB3R4X2hhc2gSDQoFY2hhaW4YAiABKAkSDwoHbmV0d29yaxgDIAEoCSJNChBWZXJpZnlUeFJlc3BvbnNlEi0KB3JlY2VpcHQYASABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0SACIAQFCCgoIX3JlY2VpcHQiKgoVR2V0RGV2ZWxvcGVyU3RhdHVzUmVxEhEKCWRldmVsb3BlchgBIAEoCSIxChZHZXRJc3N1ZWRDcmVkZW50aWFsUmVxEgsKA2p3cxgDIAEoCUoECAEQAkoECAIQAzKaDAoOR2F0ZXdheVNlcnZpY2USUAoNQ3JlYXRlUGF5bWVudBIcLnBheW1lbnQudjEuQ3JlYXRlUGF5bWVudFJlcRohLnBheW1lbnQudjEuQ3JlYXRlUGF5bWVudFJlc3BvbnNlEkIKCkdldFBheW1lbnQSGS5wYXltZW50LnYxLkdldFBheW1lbnRSZXEaGS5wYXltZW50LnYxLlBheW1lbnRJbnRlbnQSTQoMTGlzdFBheW1lbnRzEhsucGF5bWVudC52MS5MaXN0UGF5bWVudHNSZXEaIC5wYXltZW50LnYxLkxpc3RQYXltZW50c1Jlc3BvbnNlEk0KDExpc3RDaGFubmVscxIbLnBheW1lbnQudjEuTGlzdENoYW5uZWxzUmVxGiAucGF5bWVudC52MS5MaXN0Q2hhbm5lbHNSZXNwb25zZRKAAQodTGlzdFJlY2VpdmVXYWxsZXRUcmFuc2FjdGlvbnMSLC5wYXltZW50LnYxLkxpc3RSZWNlaXZlV2FsbGV0VHJhbnNhY3Rpb25zUmVxGjEucGF5bWVudC52MS5MaXN0UmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uc1Jlc3BvbnNlElEKEUdldENoZWNrb3V0SW50ZW50EiAucGF5bWVudC52MS5HZXRDaGVja291dEludGVudFJlcRoaLnBheW1lbnQudjEuQ2hlY2tvdXRJbnRlbnQSQAoKR2V0QWNjb3VudBIZLnBheW1lbnQudjEuR2V0QWNjb3VudFJlcRoXLnBheW1lbnQudjEuQWNjb3VudEluZm8SNQoEUGluZxITLnBheW1lbnQudjEuUGluZ1JlcRoYLnBheW1lbnQudjEuUGluZ1Jlc3BvbnNlEkcKCkNsaWVudEluZm8SGS5wYXltZW50LnYxLkNsaWVudEluZm9SZXEaHi5wYXltZW50LnYxLkNsaWVudEluZm9SZXNwb25zZRJuChhMaXN0UGF5bWVudE1ldGhvZENvbmZpZ3MSHS5wYXltZW50LnYxLkdhdGV3YXlMaXN0UG1jUmVxGjMucGF5bWVudC52MS5HYXRld2F5TGlzdFBheW1lbnRNZXRob2RDb25maWdzUmVzcG9uc2USWwoQVXBzZXJ0T25jaGFpblBtYxImLnBheW1lbnQudjEuR2F0ZXdheVVwc2VydE9uY2hhaW5QbWNSZXEaHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWcScAoTTGlzdFN1cHBvcnRlZENoYWlucxIpLnBheW1lbnQudjEuR2F0ZXdheUxpc3RTdXBwb3J0ZWRDaGFpbnNSZXEaLi5wYXltZW50LnYxLkdhdGV3YXlMaXN0U3VwcG9ydGVkQ2hhaW5zUmVzcG9uc2USQQoIVmVyaWZ5VHgSFy5wYXltZW50LnYxLlZlcmlmeVR4UmVxGhwucGF5bWVudC52MS5WZXJpZnlUeFJlc3BvbnNlEmIKFkNyZWF0ZU9yZGVyRnJvbUNhdGFsb2cSJS5wYXltZW50LnYxLkNyZWF0ZU9yZGVyRnJvbUNhdGFsb2dSZXEaIS5wYXltZW50LnYxLkNyZWF0ZVBheW1lbnRSZXNwb25zZRJhChZHZXRWY0FwcGxpY2F0aW9uU2NoZW1hEiIucGF5bWVudC52MS5WY0FwcGxpY2F0aW9uU2NoZW1hUmVxGiMucGF5bWVudC52MS5WY0FwcGxpY2F0aW9uU2NoZW1hUmVzcBJACglSZXF1ZXN0VmMSGC5wYXltZW50LnYxLlZjUmVxdWVzdFJlcRoZLnBheW1lbnQudjEuVmNSZXF1ZXN0UmVzcBJUChJHZXREZXZlbG9wZXJTdGF0dXMSIS5wYXltZW50LnYxLkdldERldmVsb3BlclN0YXR1c1JlcRobLnBheW1lbnQudjEuRGV2ZWxvcGVyU3RhdHVzElsKE0dldElzc3VlZENyZWRlbnRpYWwSIi5wYXltZW50LnYxLkdldElzc3VlZENyZWRlbnRpYWxSZXEaIC5wYXltZW50LnYxLklzc3VlZENyZWRlbnRpYWxWaWV3YgZwcm90bzM", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment, file_v1_domain_account, file_v1_domain_receive_wallet, file_v1_domain_vc, file_v1_domain_developer_key]);
 
 /**
  * Public catalog-order create (no HMAC): price, currency and the seller account
@@ -48,7 +48,7 @@ export type CreateOrderFromCatalogReq = Message<"payment.v1.CreateOrderFromCatal
   buyerOlaresId: string;
 
   /**
-   * buyer DID (optional)
+   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
    *
    * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
    */
@@ -86,7 +86,7 @@ export type CreateOrderFromCatalogReqJson = {
   buyer_olares_id?: string;
 
   /**
-   * buyer DID (optional)
+   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
    *
    * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
    */
@@ -110,6 +110,8 @@ export const CreateOrderFromCatalogReqSchema: GenMessage<CreateOrderFromCatalogR
 /**
  * 创建支付单请求
  * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
+ * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -124,14 +126,14 @@ export type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & {
   merchantAccountId?: string | undefined;
 
   /**
-   * 买家 Olares 用户名,如 "bob.olares.com"
+   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
    *
-   * @generated from field: string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
-   * 买家 DID(扫码登录会话回填 identities.did)
+   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
    *
    * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
    */
@@ -166,11 +168,20 @@ export type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & {
    * @generated from field: optional string returnUrl = 7 [json_name = "return_url"];
    */
   returnUrl?: string | undefined;
+
+  /**
+   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
 };
 
 /**
  * 创建支付单请求
  * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
+ * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -185,14 +196,14 @@ export type CreatePaymentReqJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家 Olares 用户名,如 "bob.olares.com"
+   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
    *
-   * @generated from field: string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
   /**
-   * 买家 DID(扫码登录会话回填 identities.did)
+   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
    *
    * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
    */
@@ -227,6 +238,13 @@ export type CreatePaymentReqJson = {
    * @generated from field: optional string returnUrl = 7 [json_name = "return_url"];
    */
   return_url?: string;
+
+  /**
+   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
 };
 
 /**
@@ -1274,47 +1292,39 @@ export const GetDeveloperStatusReqSchema: GenMessage<GetDeveloperStatusReq, {jso
   messageDesc(file_v1_service_gateway, 24);
 
 /**
- * 已签发凭证查询(x-internal-token 鉴权 = INTERNAL_API_TOKEN;市场本地账本丢失后按买家+商品找回)
- * 示例(JSON): {"buyer_olares_id":"bob.olares.com","product_id":"olares-apps-demoapp-pro"}
+ * 已签发凭证查询(市场本地账本丢失后按买家+商品找回)。
+ * 示例(JSON): {"jws":"eyJhbGciOiJFZERTQSIs..."}
+ * 入参只有一个签好的凭证申请 JWS:买家身份和商品都从 JWS 里读,不接受调用方
+ * 另行声明(否则任何人都能拿别人的 olares_id 来查)。签名内容与后续 requestVc 用的完全一样,
+ * 所以买家只需在钱包里签一次。
  *
  * @generated from message payment.v1.GetIssuedCredentialReq
  */
 export type GetIssuedCredentialReq = Message<"payment.v1.GetIssuedCredentialReq"> & {
   /**
-   * 买家 Olares ID(@/. 两种拼写服务端归一)
+   * 钱包签的凭证申请(EdDSA did:key),既是鉴权也是查询条件
    *
-   * @generated from field: string buyerOlaresId = 1 [json_name = "buyer_olares_id"];
+   * @generated from field: string jws = 3;
    */
-  buyerOlaresId: string;
-
-  /**
-   * 商品 ID(catalog product_id)
-   *
-   * @generated from field: string productId = 2 [json_name = "product_id"];
-   */
-  productId: string;
+  jws: string;
 };
 
 /**
- * 已签发凭证查询(x-internal-token 鉴权 = INTERNAL_API_TOKEN;市场本地账本丢失后按买家+商品找回)
- * 示例(JSON): {"buyer_olares_id":"bob.olares.com","product_id":"olares-apps-demoapp-pro"}
+ * 已签发凭证查询(市场本地账本丢失后按买家+商品找回)。
+ * 示例(JSON): {"jws":"eyJhbGciOiJFZERTQSIs..."}
+ * 入参只有一个签好的凭证申请 JWS:买家身份和商品都从 JWS 里读,不接受调用方
+ * 另行声明(否则任何人都能拿别人的 olares_id 来查)。签名内容与后续 requestVc 用的完全一样,
+ * 所以买家只需在钱包里签一次。
  *
  * @generated from message payment.v1.GetIssuedCredentialReq
  */
 export type GetIssuedCredentialReqJson = {
   /**
-   * 买家 Olares ID(@/. 两种拼写服务端归一)
+   * 钱包签的凭证申请(EdDSA did:key),既是鉴权也是查询条件
    *
-   * @generated from field: string buyerOlaresId = 1 [json_name = "buyer_olares_id"];
+   * @generated from field: string jws = 3;
    */
-  buyer_olares_id?: string;
-
-  /**
-   * 商品 ID(catalog product_id)
-   *
-   * @generated from field: string productId = 2 [json_name = "product_id"];
-   */
-  product_id?: string;
+  jws?: string;
 };
 
 /**
@@ -1472,7 +1482,7 @@ export const GatewayService: GenService<{
     output: typeof CreatePaymentResponseSchema;
   },
   /**
-   * public paid-app VC manifest (no HMAC; issuer resolved from intent)
+   * public paid-app VC manifest (no HMAC; issuer resolved from the product's developer)
    *
    * @generated from rpc payment.v1.GatewayService.GetVcApplicationSchema
    */
@@ -1500,6 +1510,16 @@ export const GatewayService: GenService<{
     methodKind: "unary";
     input: typeof GetDeveloperStatusReqSchema;
     output: typeof DeveloperStatusSchema;
+  },
+  /**
+   * public credential recovery (no HMAC; the buyer's application JWS is the auth)
+   *
+   * @generated from rpc payment.v1.GatewayService.GetIssuedCredential
+   */
+  getIssuedCredential: {
+    methodKind: "unary";
+    input: typeof GetIssuedCredentialReqSchema;
+    output: typeof IssuedCredentialViewSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_v1_service_gateway, 0);

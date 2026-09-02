@@ -12,35 +12,47 @@ import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wk
 export declare const file_v1_domain_vc: GenFile;
 
 /**
- * Fetch the credential manifest + application schema for the issuer that owns
- * the given intent (used by market before asking the wallet to sign).
- * Example (JSON): {"intent_id":"pi_xxx"}
+ * Fetch the credential manifest + application schema of a paid app's issuer
+ * (used by market before asking the wallet to sign).
+ *
+ * Keyed by PRODUCT, not by order: the buyer has to be able to sign before any
+ * order exists, because the signed application is what authenticates the
+ * "have I already bought this?" query (GetIssuedCredential). Product is also
+ * where the manifest naturally lives — the issuer is a property of the app's
+ * developer, not of one purchase — and matches how market has always fetched
+ * it from the developer's own server (postDeveloperJSON {productId}).
  *
  * @generated from message payment.v1.VcApplicationSchemaReq
  */
 export declare type VcApplicationSchemaReq = Message<"payment.v1.VcApplicationSchemaReq"> & {
   /**
-   * paid-order intent; resolves seller → hosted issuer
+   * catalog product; resolves developer → hosted issuer
    *
-   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   * @generated from field: string productId = 1 [json_name = "product_id"];
    */
-  intentId: string;
+  productId: string;
 };
 
 /**
- * Fetch the credential manifest + application schema for the issuer that owns
- * the given intent (used by market before asking the wallet to sign).
- * Example (JSON): {"intent_id":"pi_xxx"}
+ * Fetch the credential manifest + application schema of a paid app's issuer
+ * (used by market before asking the wallet to sign).
+ *
+ * Keyed by PRODUCT, not by order: the buyer has to be able to sign before any
+ * order exists, because the signed application is what authenticates the
+ * "have I already bought this?" query (GetIssuedCredential). Product is also
+ * where the manifest naturally lives — the issuer is a property of the app's
+ * developer, not of one purchase — and matches how market has always fetched
+ * it from the developer's own server (postDeveloperJSON {productId}).
  *
  * @generated from message payment.v1.VcApplicationSchemaReq
  */
 export declare type VcApplicationSchemaReqJson = {
   /**
-   * paid-order intent; resolves seller → hosted issuer
+   * catalog product; resolves developer → hosted issuer
    *
-   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   * @generated from field: string productId = 1 [json_name = "product_id"];
    */
-  intent_id?: string;
+  product_id?: string;
 };
 
 /**

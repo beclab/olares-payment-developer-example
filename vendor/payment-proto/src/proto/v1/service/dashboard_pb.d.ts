@@ -2,13 +2,14 @@
 // @generated from file v1/service/dashboard.proto (package payment.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import type { Message } from "@bufbuild/protobuf";
-import type { Account, AccountJson, AccountSchema, AccountSummary, AccountSummaryJson, ApiKey, ApiKeyJson, ApiKeySchema, Identity, IdentityJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
+import type { Account, AccountJson, AccountSchema, AccountSummary, AccountSummaryJson, ApiKey, ApiKeyJson, ApiKeySchema, CheckoutSummary, CheckoutSummaryJson, CheckoutSummarySchema, Identity, IdentityJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
 import type { AppProductRow, AppProductRowJson, GithubBindingRow, GithubBindingRowJson, RsaEligibility, RsaEligibilityJson, RsaKeyRow, RsaKeyRowJson, RsaKeyRowSchema } from "../domain/developer-key_pb";
-import type { PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
+import type { BuyerExternal, BuyerExternalJson, PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, PaymentStatus, PaymentStatusJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
 import type { AuthCallbackResponseSchema, AuthPollResponseSchema, AuthRefreshResponseSchema, CreateSessionReqSchema, DeleteResponseSchema, SessionRespSchema, Token, TokenJson } from "../domain/common_pb";
 import type { ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson, WalletAssetRow, WalletAssetRowJson } from "../domain/receive-wallet_pb";
+import type { Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
 import type { CallbackEventSummary, CallbackEventSummaryJson, CallbackEventSummarySchema, WebhookEndpoint, WebhookEndpointJson, WebhookEndpointSchema } from "../domain/webhook_pb";
 
 /**
@@ -188,7 +189,7 @@ export declare const ListApiKeysReqSchema: GenMessage<ListApiKeysReq, {jsonType:
  */
 export declare type ListApiKeysResponse = Message<"payment.v1.ListApiKeysResponse"> & {
   /**
-   * key 列表(secret 恒不含)
+   * key 列表(含 api_secret,session 门后)
    *
    * @generated from field: repeated payment.v1.ApiKey keys = 1;
    */
@@ -203,7 +204,7 @@ export declare type ListApiKeysResponse = Message<"payment.v1.ListApiKeysRespons
  */
 export declare type ListApiKeysResponseJson = {
   /**
-   * key 列表(secret 恒不含)
+   * key 列表(含 api_secret,session 门后)
    *
    * @generated from field: repeated payment.v1.ApiKey keys = 1;
    */
@@ -296,7 +297,7 @@ export declare const RotateApiKeyReqSchema: GenMessage<RotateApiKeyReq, {jsonTyp
 
 /**
  * RotateApiKeyResponse mirrors contract/account.go.
- * 轮换结果(新 secret 只在此时返回一次)
+ * 轮换结果(返回新 secret;list 亦可见)
  * 示例(JSON): {"id":1,"api_secret":"sk_live_ab12cd34ef..."}
  *
  * @generated from message payment.v1.RotateApiKeyResponse
@@ -319,7 +320,7 @@ export declare type RotateApiKeyResponse = Message<"payment.v1.RotateApiKeyRespo
 
 /**
  * RotateApiKeyResponse mirrors contract/account.go.
- * 轮换结果(新 secret 只在此时返回一次)
+ * 轮换结果(返回新 secret;list 亦可见)
  * 示例(JSON): {"id":1,"api_secret":"sk_live_ab12cd34ef..."}
  *
  * @generated from message payment.v1.RotateApiKeyResponse
@@ -408,7 +409,7 @@ export declare const GetMyAccountOverviewReqSchema: GenMessage<GetMyAccountOverv
 
 /**
  * 我的账户概览响应:身份 + 名下账户列表
- * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...}}
+ * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...},"did_owner_address":"0xAbCd..."}
  *
  * @generated from message payment.v1.GetMyAccountOverviewResponse
  */
@@ -435,7 +436,7 @@ export declare type GetMyAccountOverviewResponse = Message<"payment.v1.GetMyAcco
   currentAccountId?: string | undefined;
 
   /**
-   * 当前账户是否已有启用的链上收款钱包
+   * DEPRECATED(B2 裁决 2026-08-27):判定移消费方——前端按 ListCheckouts 事实自算「默认店 active 且有地址」(无默认 active 严格 false);行为冻结(仍按当前账户计),F8 随旧面板删除
    *
    * @generated from field: optional bool hasOnchainPmc = 4 [json_name = "has_onchain_pmc"];
    */
@@ -447,11 +448,18 @@ export declare type GetMyAccountOverviewResponse = Message<"payment.v1.GetMyAcco
    * @generated from field: payment.v1.RsaEligibility paidApps = 5 [json_name = "paid_apps"];
    */
   paidApps?: RsaEligibility | undefined;
+
+  /**
+   * DID gate 解析的 owner 地址(LarePass 钱包注册的 Eth 地址);解析失败/无 did 缺省
+   *
+   * @generated from field: optional string didOwnerAddress = 6 [json_name = "did_owner_address"];
+   */
+  didOwnerAddress?: string | undefined;
 };
 
 /**
  * 我的账户概览响应:身份 + 名下账户列表
- * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...}}
+ * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...},"did_owner_address":"0xAbCd..."}
  *
  * @generated from message payment.v1.GetMyAccountOverviewResponse
  */
@@ -478,7 +486,7 @@ export declare type GetMyAccountOverviewResponseJson = {
   current_account_id?: string;
 
   /**
-   * 当前账户是否已有启用的链上收款钱包
+   * DEPRECATED(B2 裁决 2026-08-27):判定移消费方——前端按 ListCheckouts 事实自算「默认店 active 且有地址」(无默认 active 严格 false);行为冻结(仍按当前账户计),F8 随旧面板删除
    *
    * @generated from field: optional bool hasOnchainPmc = 4 [json_name = "has_onchain_pmc"];
    */
@@ -490,6 +498,13 @@ export declare type GetMyAccountOverviewResponseJson = {
    * @generated from field: payment.v1.RsaEligibility paidApps = 5 [json_name = "paid_apps"];
    */
   paid_apps?: RsaEligibilityJson;
+
+  /**
+   * DID gate 解析的 owner 地址(LarePass 钱包注册的 Eth 地址);解析失败/无 did 缺省
+   *
+   * @generated from field: optional string didOwnerAddress = 6 [json_name = "did_owner_address"];
+   */
+  did_owner_address?: string;
 };
 
 /**
@@ -839,110 +854,424 @@ export declare type ListSupportedChainsResponseJson = {
 export declare const ListSupportedChainsResponseSchema: GenMessage<ListSupportedChainsResponse, {jsonType: ListSupportedChainsResponseJson}>;
 
 /**
- * Query params of GET /dashboard/payment-intents (contract/dashboard.go ListParams).
- * 支付单列表查询(offset 分页)
- * 示例(JSON): {"limit":20,"offset":0}
+ * 收银台列表请求(空;身份级,返回名下全部 checkout)
  *
- * @generated from message payment.v1.ListPaymentIntentsReq
+ * @generated from message payment.v1.ListCheckoutsReq
  */
-export declare type ListPaymentIntentsReq = Message<"payment.v1.ListPaymentIntentsReq"> & {
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
-   * 每页条数
-   *
-   * @generated from field: optional int32 limit = 1;
-   */
-  limit?: number | undefined;
-
-  /**
-   * 偏移
-   *
-   * @generated from field: optional int32 offset = 2;
-   */
-  offset?: number | undefined;
+export declare type ListCheckoutsReq = Message<"payment.v1.ListCheckoutsReq"> & {
 };
 
 /**
- * Query params of GET /dashboard/payment-intents (contract/dashboard.go ListParams).
- * 支付单列表查询(offset 分页)
- * 示例(JSON): {"limit":20,"offset":0}
+ * 收银台列表请求(空;身份级,返回名下全部 checkout)
  *
- * @generated from message payment.v1.ListPaymentIntentsReq
+ * @generated from message payment.v1.ListCheckoutsReq
  */
-export declare type ListPaymentIntentsReqJson = {
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
-   * 每页条数
-   *
-   * @generated from field: optional int32 limit = 1;
-   */
-  limit?: number;
-
-  /**
-   * 偏移
-   *
-   * @generated from field: optional int32 offset = 2;
-   */
-  offset?: number;
+export declare type ListCheckoutsReqJson = {
 };
 
 /**
- * Describes the message payment.v1.ListPaymentIntentsReq.
- * Use `create(ListPaymentIntentsReqSchema)` to create a new message.
+ * Describes the message payment.v1.ListCheckoutsReq.
+ * Use `create(ListCheckoutsReqSchema)` to create a new message.
  */
-export declare const ListPaymentIntentsReqSchema: GenMessage<ListPaymentIntentsReq, {jsonType: ListPaymentIntentsReqJson}>;
+export declare const ListCheckoutsReqSchema: GenMessage<ListCheckoutsReq, {jsonType: ListCheckoutsReqJson}>;
 
 /**
- * 支付单列表响应
- * 示例(JSON): {"intents":[{...PaymentIntentSummary...}],"total":42}
+ * 收银台列表响应
+ * 示例(JSON): {"checkouts":[{...CheckoutSummary...}]}
  *
- * @generated from message payment.v1.ListPaymentIntentsResponse
+ * @generated from message payment.v1.ListCheckoutsResponse
  */
-export declare type ListPaymentIntentsResponse = Message<"payment.v1.ListPaymentIntentsResponse"> & {
+export declare type ListCheckoutsResponse = Message<"payment.v1.ListCheckoutsResponse"> & {
   /**
-   * 摘要列表
+   * 收银台卡片列表(创建时间升序)
    *
-   * @generated from field: repeated payment.v1.PaymentIntentSummary intents = 1;
+   * @generated from field: repeated payment.v1.CheckoutSummary checkouts = 1;
    */
-  intents: PaymentIntentSummary[];
-
-  /**
-   * 总条数
-   *
-   * @generated from field: uint32 total = 2;
-   */
-  total: number;
+  checkouts: CheckoutSummary[];
 };
 
 /**
- * 支付单列表响应
- * 示例(JSON): {"intents":[{...PaymentIntentSummary...}],"total":42}
+ * 收银台列表响应
+ * 示例(JSON): {"checkouts":[{...CheckoutSummary...}]}
  *
- * @generated from message payment.v1.ListPaymentIntentsResponse
+ * @generated from message payment.v1.ListCheckoutsResponse
  */
-export declare type ListPaymentIntentsResponseJson = {
+export declare type ListCheckoutsResponseJson = {
   /**
-   * 摘要列表
+   * 收银台卡片列表(创建时间升序)
    *
-   * @generated from field: repeated payment.v1.PaymentIntentSummary intents = 1;
+   * @generated from field: repeated payment.v1.CheckoutSummary checkouts = 1;
    */
-  intents?: PaymentIntentSummaryJson[];
-
-  /**
-   * 总条数
-   *
-   * @generated from field: uint32 total = 2;
-   */
-  total?: number;
+  checkouts?: CheckoutSummaryJson[];
 };
 
 /**
- * Describes the message payment.v1.ListPaymentIntentsResponse.
- * Use `create(ListPaymentIntentsResponseSchema)` to create a new message.
+ * Describes the message payment.v1.ListCheckoutsResponse.
+ * Use `create(ListCheckoutsResponseSchema)` to create a new message.
  */
-export declare const ListPaymentIntentsResponseSchema: GenMessage<ListPaymentIntentsResponse, {jsonType: ListPaymentIntentsResponseJson}>;
+export declare const ListCheckoutsResponseSchema: GenMessage<ListCheckoutsResponse, {jsonType: ListCheckoutsResponseJson}>;
+
+/**
+ * 新建收银台请求(只要名字;store_slug 由 name slug 化派生,冲突/非法 1100;
+ * 新店一律 is_default=false 不抢默认——除非是身份名下首个账户,13.7 裁决)
+ * 示例(JSON): {"name":"副业小店"}
+ *
+ * @generated from message payment.v1.CreateCheckoutReq
+ */
+export declare type CreateCheckoutReq = Message<"payment.v1.CreateCheckoutReq"> & {
+  /**
+   * checkout 名(显示名)
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * 新建收银台请求(只要名字;store_slug 由 name slug 化派生,冲突/非法 1100;
+ * 新店一律 is_default=false 不抢默认——除非是身份名下首个账户,13.7 裁决)
+ * 示例(JSON): {"name":"副业小店"}
+ *
+ * @generated from message payment.v1.CreateCheckoutReq
+ */
+export declare type CreateCheckoutReqJson = {
+  /**
+   * checkout 名(显示名)
+   *
+   * @generated from field: string name = 1;
+   */
+  name?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateCheckoutReq.
+ * Use `create(CreateCheckoutReqSchema)` to create a new message.
+ */
+export declare const CreateCheckoutReqSchema: GenMessage<CreateCheckoutReq, {jsonType: CreateCheckoutReqJson}>;
+
+/**
+ * 收银台详情请求(path account_id;dashboard 内部门说内部 id,store_slug 只进公开门)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailReq
+ */
+export declare type GetCheckoutDetailReq = Message<"payment.v1.GetCheckoutDetailReq"> & {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * 收银台详情请求(path account_id;dashboard 内部门说内部 id,store_slug 只进公开门)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailReq
+ */
+export declare type GetCheckoutDetailReqJson = {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+};
+
+/**
+ * Describes the message payment.v1.GetCheckoutDetailReq.
+ * Use `create(GetCheckoutDetailReqSchema)` to create a new message.
+ */
+export declare const GetCheckoutDetailReqSchema: GenMessage<GetCheckoutDetailReq, {jsonType: GetCheckoutDetailReqJson}>;
+
+/**
+ * 收银台详情响应:卡片 + 近 30 天收款统计 + 钱包资产合计
+ * 示例(JSON): {"checkout":{...CheckoutSummary...},"received_count_30d":12,"received_usd_30d":1284.06,"total_assets_usd":42.5}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailResponse
+ */
+export declare type GetCheckoutDetailResponse = Message<"payment.v1.GetCheckoutDetailResponse"> & {
+  /**
+   * 收银台卡片
+   *
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummary | undefined;
+
+  /**
+   * 近 30 天收款笔数
+   *
+   * @generated from field: int32 receivedCount30d = 2 [json_name = "received_count_30d"];
+   */
+  receivedCount30d: number;
+
+  /**
+   * 近 30 天收款合计(USD)
+   *
+   * @generated from field: double receivedUsd30d = 3 [json_name = "received_usd_30d"];
+   */
+  receivedUsd30d: number;
+
+  /**
+   * 钱包资产合计(对齐 ListWalletAssetsResponse 的 double)
+   *
+   * @generated from field: double totalAssetsUsd = 4 [json_name = "total_assets_usd"];
+   */
+  totalAssetsUsd: number;
+};
+
+/**
+ * 收银台详情响应:卡片 + 近 30 天收款统计 + 钱包资产合计
+ * 示例(JSON): {"checkout":{...CheckoutSummary...},"received_count_30d":12,"received_usd_30d":1284.06,"total_assets_usd":42.5}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailResponse
+ */
+export declare type GetCheckoutDetailResponseJson = {
+  /**
+   * 收银台卡片
+   *
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummaryJson;
+
+  /**
+   * 近 30 天收款笔数
+   *
+   * @generated from field: int32 receivedCount30d = 2 [json_name = "received_count_30d"];
+   */
+  received_count_30d?: number;
+
+  /**
+   * 近 30 天收款合计(USD)
+   *
+   * @generated from field: double receivedUsd30d = 3 [json_name = "received_usd_30d"];
+   */
+  received_usd_30d?: number | "NaN" | "Infinity" | "-Infinity";
+
+  /**
+   * 钱包资产合计(对齐 ListWalletAssetsResponse 的 double)
+   *
+   * @generated from field: double totalAssetsUsd = 4 [json_name = "total_assets_usd"];
+   */
+  total_assets_usd?: number | "NaN" | "Infinity" | "-Infinity";
+};
+
+/**
+ * Describes the message payment.v1.GetCheckoutDetailResponse.
+ * Use `create(GetCheckoutDetailResponseSchema)` to create a new message.
+ */
+export declare const GetCheckoutDetailResponseSchema: GenMessage<GetCheckoutDetailResponse, {jsonType: GetCheckoutDetailResponseJson}>;
+
+/**
+ * 设为默认收银台请求(path account_id;事务内互斥切换,只影响新 market 订单的钱进向)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutReq
+ */
+export declare type SetDefaultCheckoutReq = Message<"payment.v1.SetDefaultCheckoutReq"> & {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * 设为默认收银台请求(path account_id;事务内互斥切换,只影响新 market 订单的钱进向)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutReq
+ */
+export declare type SetDefaultCheckoutReqJson = {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+};
+
+/**
+ * Describes the message payment.v1.SetDefaultCheckoutReq.
+ * Use `create(SetDefaultCheckoutReqSchema)` to create a new message.
+ */
+export declare const SetDefaultCheckoutReqSchema: GenMessage<SetDefaultCheckoutReq, {jsonType: SetDefaultCheckoutReqJson}>;
+
+/**
+ * 设为默认收银台响应(切换后的卡片)
+ * 示例(JSON): {"checkout":{...CheckoutSummary...,"is_default":true}}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutResponse
+ */
+export declare type SetDefaultCheckoutResponse = Message<"payment.v1.SetDefaultCheckoutResponse"> & {
+  /**
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummary | undefined;
+};
+
+/**
+ * 设为默认收银台响应(切换后的卡片)
+ * 示例(JSON): {"checkout":{...CheckoutSummary...,"is_default":true}}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutResponse
+ */
+export declare type SetDefaultCheckoutResponseJson = {
+  /**
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummaryJson;
+};
+
+/**
+ * Describes the message payment.v1.SetDefaultCheckoutResponse.
+ * Use `create(SetDefaultCheckoutResponseSchema)` to create a new message.
+ */
+export declare const SetDefaultCheckoutResponseSchema: GenMessage<SetDefaultCheckoutResponse, {jsonType: SetDefaultCheckoutResponseJson}>;
+
+/**
+ * 开收款单请求(金额锁死在 intent 上;买家永久匿名、无 buyer 字段,13.7 裁决)
+ * 示例(JSON): {"id":"acct_x8y9...","amount_cents":1000,"ref":"咨询费","return_url":"https://shop.example.com/done"}
+ *
+ * @generated from message payment.v1.CreateInvoiceReq
+ */
+export declare type CreateInvoiceReq = Message<"payment.v1.CreateInvoiceReq"> & {
+  /**
+   * path account_id(落在本店账户)
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * 金额(美分)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amountCents: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string | undefined;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  returnUrl?: string | undefined;
+
+  /**
+   * 付款人标注(任意字符串,商户自用归类) → intent metadata.payer
+   *
+   * @generated from field: optional string payer = 5;
+   */
+  payer?: string | undefined;
+};
+
+/**
+ * 开收款单请求(金额锁死在 intent 上;买家永久匿名、无 buyer 字段,13.7 裁决)
+ * 示例(JSON): {"id":"acct_x8y9...","amount_cents":1000,"ref":"咨询费","return_url":"https://shop.example.com/done"}
+ *
+ * @generated from message payment.v1.CreateInvoiceReq
+ */
+export declare type CreateInvoiceReqJson = {
+  /**
+   * path account_id(落在本店账户)
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+
+  /**
+   * 金额(美分)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amount_cents?: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  return_url?: string;
+
+  /**
+   * 付款人标注(任意字符串,商户自用归类) → intent metadata.payer
+   *
+   * @generated from field: optional string payer = 5;
+   */
+  payer?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateInvoiceReq.
+ * Use `create(CreateInvoiceReqSchema)` to create a new message.
+ */
+export declare const CreateInvoiceReqSchema: GenMessage<CreateInvoiceReq, {jsonType: CreateInvoiceReqJson}>;
+
+/**
+ * 开收款单响应(一步返回可分享付款链接)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.CreateInvoiceResponse
+ */
+export declare type CreateInvoiceResponse = Message<"payment.v1.CreateInvoiceResponse"> & {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intentId: string;
+
+  /**
+   * 收银台 URL(可分享)
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkoutUrl: string;
+};
+
+/**
+ * 开收款单响应(一步返回可分享付款链接)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.CreateInvoiceResponse
+ */
+export declare type CreateInvoiceResponseJson = {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intent_id?: string;
+
+  /**
+   * 收银台 URL(可分享)
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkout_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateInvoiceResponse.
+ * Use `create(CreateInvoiceResponseSchema)` to create a new message.
+ */
+export declare const CreateInvoiceResponseSchema: GenMessage<CreateInvoiceResponse, {jsonType: CreateInvoiceResponseJson}>;
 
 /**
  * Path id of GET /dashboard/payment-intents/:id.
@@ -1079,90 +1408,448 @@ export declare type PaymentIntentDetailResponseJson = {
 export declare const PaymentIntentDetailResponseSchema: GenMessage<PaymentIntentDetailResponse, {jsonType: PaymentIntentDetailResponseJson}>;
 
 /**
- * Query params of GET /dashboard/wallet-transactions (session-gate mirror of the
- * gateway's listReceiveWalletTransactions; keyset pagination, fixed block_number DESC).
- * 收款钱包流水查询(全部可选,keyset 分页)
- * 示例(JSON): {"limit":20,"address":"0xAbCd...","cursor":"..."}
+ * 交易聚合查询(keyset 分页;全部可选,缺省 = 全部来源/状态/方向)
+ * 示例(JSON): {"limit":20,"cursor":"...","source":"TRANSACTION_SOURCE_DIRECT","account_id":"acct_x8y9..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsReq
+ * @generated from message payment.v1.ListTransactionsReq
  */
-export declare type ListWalletTransactionsReq = Message<"payment.v1.ListWalletTransactionsReq"> & {
+export declare type ListTransactionsReq = Message<"payment.v1.ListTransactionsReq"> & {
   /**
-   * 按收款钱包地址过滤(须属于当前账户)
-   *
-   * @generated from field: optional string address = 1;
-   */
-  address?: string | undefined;
-
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
    * 每页条数,默认 20,上限 200
    *
-   * @generated from field: optional int32 limit = 2;
+   * @generated from field: optional int32 limit = 1;
    */
   limit?: number | undefined;
 
   /**
-   * 上一页 next_cursor
+   * 上一页 next_cursor(opaque keyset)
    *
-   * @generated from field: optional string cursor = 3;
+   * @generated from field: optional string cursor = 2;
    */
   cursor?: string | undefined;
+
+  /**
+   * 来源过滤(来源 chips)
+   *
+   * @generated from field: optional payment.v1.TransactionSource source = 3;
+   */
+  source?: TransactionSource | undefined;
+
+  /**
+   * 状态过滤;直转行无状态概念,恒映射 SUCCEEDED 桶(13.7)
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 4;
+   */
+  status?: PaymentStatus | undefined;
+
+  /**
+   * 方向过滤;OUT 只命中直转腿
+   *
+   * @generated from field: optional payment.v1.TransactionDirection direction = 5;
+   */
+  direction?: TransactionDirection | undefined;
+
+  /**
+   * 按单 checkout 过滤(须本身份名下)
+   *
+   * @generated from field: optional string accountId = 6 [json_name = "account_id"];
+   */
+  accountId?: string | undefined;
+
+  /**
+   * 按订单渠道过滤(Invoice/Store/API/Market chips)
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 7;
+   */
+  origin?: TransactionOrigin | undefined;
 };
 
 /**
- * Query params of GET /dashboard/wallet-transactions (session-gate mirror of the
- * gateway's listReceiveWalletTransactions; keyset pagination, fixed block_number DESC).
- * 收款钱包流水查询(全部可选,keyset 分页)
- * 示例(JSON): {"limit":20,"address":"0xAbCd...","cursor":"..."}
+ * 交易聚合查询(keyset 分页;全部可选,缺省 = 全部来源/状态/方向)
+ * 示例(JSON): {"limit":20,"cursor":"...","source":"TRANSACTION_SOURCE_DIRECT","account_id":"acct_x8y9..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsReq
+ * @generated from message payment.v1.ListTransactionsReq
  */
-export declare type ListWalletTransactionsReqJson = {
+export declare type ListTransactionsReqJson = {
   /**
-   * 按收款钱包地址过滤(须属于当前账户)
-   *
-   * @generated from field: optional string address = 1;
-   */
-  address?: string;
-
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
    * 每页条数,默认 20,上限 200
    *
-   * @generated from field: optional int32 limit = 2;
+   * @generated from field: optional int32 limit = 1;
    */
   limit?: number;
 
   /**
-   * 上一页 next_cursor
+   * 上一页 next_cursor(opaque keyset)
    *
-   * @generated from field: optional string cursor = 3;
+   * @generated from field: optional string cursor = 2;
    */
   cursor?: string;
+
+  /**
+   * 来源过滤(来源 chips)
+   *
+   * @generated from field: optional payment.v1.TransactionSource source = 3;
+   */
+  source?: TransactionSourceJson;
+
+  /**
+   * 状态过滤;直转行无状态概念,恒映射 SUCCEEDED 桶(13.7)
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 4;
+   */
+  status?: PaymentStatusJson;
+
+  /**
+   * 方向过滤;OUT 只命中直转腿
+   *
+   * @generated from field: optional payment.v1.TransactionDirection direction = 5;
+   */
+  direction?: TransactionDirectionJson;
+
+  /**
+   * 按单 checkout 过滤(须本身份名下)
+   *
+   * @generated from field: optional string accountId = 6 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * 按订单渠道过滤(Invoice/Store/API/Market chips)
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 7;
+   */
+  origin?: TransactionOriginJson;
 };
 
 /**
- * Describes the message payment.v1.ListWalletTransactionsReq.
- * Use `create(ListWalletTransactionsReqSchema)` to create a new message.
+ * Describes the message payment.v1.ListTransactionsReq.
+ * Use `create(ListTransactionsReqSchema)` to create a new message.
  */
-export declare const ListWalletTransactionsReqSchema: GenMessage<ListWalletTransactionsReq, {jsonType: ListWalletTransactionsReqJson}>;
+export declare const ListTransactionsReqSchema: GenMessage<ListTransactionsReq, {jsonType: ListTransactionsReqJson}>;
 
 /**
- * 收款钱包流水响应
- * 示例(JSON): {"items":[{...ReceiveWalletTransactionItem...}],"has_more":true,"next_cursor":"..."}
+ * 聚合行:订单腿(payment_intents)∪ 直转腿(receive_wallet_transactions,intent_id IS NULL)
+ * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
+ * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
+ * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsResponse
+ * @generated from message payment.v1.TransactionItem
  */
-export declare type ListWalletTransactionsResponse = Message<"payment.v1.ListWalletTransactionsResponse"> & {
+export declare type TransactionItem = Message<"payment.v1.TransactionItem"> & {
   /**
-   * 流水列表
+   * 支付单 ID(pi_xxx)或流水行 ID
    *
-   * @generated from field: repeated payment.v1.ReceiveWalletTransactionItem items = 1;
+   * @generated from field: string id = 1;
    */
-  items: ReceiveWalletTransactionItem[];
+  id: string;
+
+  /**
+   * ORDER 或 DIRECT
+   *
+   * @generated from field: payment.v1.TransactionSource source = 2;
+   */
+  source: TransactionSource;
+
+  /**
+   * 订单恒 IN;直转按链上方向
+   *
+   * @generated from field: payment.v1.TransactionDirection direction = 3;
+   */
+  direction: TransactionDirection;
+
+  /**
+   * 排序键:订单=created_at,直转=block_time
+   *
+   * @generated from field: google.protobuf.Timestamp occurredAt = 4 [json_name = "occurred_at"];
+   */
+  occurredAt?: Timestamp | undefined;
+
+  /**
+   * 归属 checkout(订单=merchant_account_id;直转=钱包所属账户)
+   *
+   * @generated from field: optional string accountId = 5 [json_name = "account_id"];
+   */
+  accountId?: string | undefined;
+
+  /**
+   * 仅订单行
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 6;
+   */
+  status?: PaymentStatus | undefined;
+
+  /**
+   * 仅订单行(计价币种美分)
+   *
+   * @generated from field: optional int32 amountCents = 7 [json_name = "amount_cents"];
+   */
+  amountCents?: number | undefined;
+
+  /**
+   * 仅订单行,如 "usd"
+   *
+   * @generated from field: optional string currency = 8;
+   */
+  currency?: string | undefined;
+
+  /**
+   * 买家用户名(缺省 = 匿名买家,13.7)
+   *
+   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
+   */
+  buyerOlaresId?: string | undefined;
+
+  /**
+   * 有值 = 市场徽章
+   *
+   * @generated from field: optional payment.v1.ProductSnapshot product = 10;
+   */
+  product?: ProductSnapshot | undefined;
+
+  /**
+   * 直转行哈希;订单行 = 已关联结算流水哈希(未支付缺省)
+   *
+   * @generated from field: optional string txHash = 11 [json_name = "tx_hash"];
+   */
+  txHash?: string | undefined;
+
+  /**
+   * 直转行链 slug;订单行 = 结算链 slug(未支付缺省)
+   *
+   * @generated from field: optional string chain = 12;
+   */
+  chain?: string | undefined;
+
+  /**
+   * 直转行链上金额(human units);订单行 = 结算金额(未支付缺省)
+   *
+   * @generated from field: optional string amount = 13;
+   */
+  amount?: string | undefined;
+
+  /**
+   * 直转行代币符号;订单行 = 结算代币符号(未支付缺省)
+   *
+   * @generated from field: optional string symbol = 14;
+   */
+  symbol?: string | undefined;
+
+  /**
+   * 直转行对方地址(in=from/out=to)
+   *
+   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
+   */
+  counterpartyAddress?: string | undefined;
+
+  /**
+   * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
+   *
+   * @generated from field: optional string payer = 16;
+   */
+  payer?: string | undefined;
+
+  /**
+   * 订单行创建渠道(类型 SSOT);直转行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 17;
+   */
+  origin?: TransactionOrigin | undefined;
+
+  /**
+   * 直转行资产类型(派生);订单行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionAssetKind assetKind = 18 [json_name = "asset_kind"];
+   */
+  assetKind?: TransactionAssetKind | undefined;
+
+  /**
+   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   *
+   * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
+   */
+  isOlaresPay?: boolean | undefined;
+
+  /**
+   * 外部买家快照(external 档订单;直转行缺省)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
+};
+
+/**
+ * 聚合行:订单腿(payment_intents)∪ 直转腿(receive_wallet_transactions,intent_id IS NULL)
+ * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
+ * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
+ * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
+ *
+ * @generated from message payment.v1.TransactionItem
+ */
+export declare type TransactionItemJson = {
+  /**
+   * 支付单 ID(pi_xxx)或流水行 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+
+  /**
+   * ORDER 或 DIRECT
+   *
+   * @generated from field: payment.v1.TransactionSource source = 2;
+   */
+  source?: TransactionSourceJson;
+
+  /**
+   * 订单恒 IN;直转按链上方向
+   *
+   * @generated from field: payment.v1.TransactionDirection direction = 3;
+   */
+  direction?: TransactionDirectionJson;
+
+  /**
+   * 排序键:订单=created_at,直转=block_time
+   *
+   * @generated from field: google.protobuf.Timestamp occurredAt = 4 [json_name = "occurred_at"];
+   */
+  occurred_at?: TimestampJson;
+
+  /**
+   * 归属 checkout(订单=merchant_account_id;直转=钱包所属账户)
+   *
+   * @generated from field: optional string accountId = 5 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * 仅订单行
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 6;
+   */
+  status?: PaymentStatusJson;
+
+  /**
+   * 仅订单行(计价币种美分)
+   *
+   * @generated from field: optional int32 amountCents = 7 [json_name = "amount_cents"];
+   */
+  amount_cents?: number;
+
+  /**
+   * 仅订单行,如 "usd"
+   *
+   * @generated from field: optional string currency = 8;
+   */
+  currency?: string;
+
+  /**
+   * 买家用户名(缺省 = 匿名买家,13.7)
+   *
+   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
+   */
+  buyer_olares_id?: string;
+
+  /**
+   * 有值 = 市场徽章
+   *
+   * @generated from field: optional payment.v1.ProductSnapshot product = 10;
+   */
+  product?: ProductSnapshotJson;
+
+  /**
+   * 直转行哈希;订单行 = 已关联结算流水哈希(未支付缺省)
+   *
+   * @generated from field: optional string txHash = 11 [json_name = "tx_hash"];
+   */
+  tx_hash?: string;
+
+  /**
+   * 直转行链 slug;订单行 = 结算链 slug(未支付缺省)
+   *
+   * @generated from field: optional string chain = 12;
+   */
+  chain?: string;
+
+  /**
+   * 直转行链上金额(human units);订单行 = 结算金额(未支付缺省)
+   *
+   * @generated from field: optional string amount = 13;
+   */
+  amount?: string;
+
+  /**
+   * 直转行代币符号;订单行 = 结算代币符号(未支付缺省)
+   *
+   * @generated from field: optional string symbol = 14;
+   */
+  symbol?: string;
+
+  /**
+   * 直转行对方地址(in=from/out=to)
+   *
+   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
+   */
+  counterparty_address?: string;
+
+  /**
+   * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
+   *
+   * @generated from field: optional string payer = 16;
+   */
+  payer?: string;
+
+  /**
+   * 订单行创建渠道(类型 SSOT);直转行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 17;
+   */
+  origin?: TransactionOriginJson;
+
+  /**
+   * 直转行资产类型(派生);订单行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionAssetKind assetKind = 18 [json_name = "asset_kind"];
+   */
+  asset_kind?: TransactionAssetKindJson;
+
+  /**
+   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   *
+   * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
+   */
+  is_olares_pay?: boolean;
+
+  /**
+   * 外部买家快照(external 档订单;直转行缺省)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
+};
+
+/**
+ * Describes the message payment.v1.TransactionItem.
+ * Use `create(TransactionItemSchema)` to create a new message.
+ */
+export declare const TransactionItemSchema: GenMessage<TransactionItem, {jsonType: TransactionItemJson}>;
+
+/**
+ * 交易聚合响应
+ * 示例(JSON): {"items":[{...TransactionItem...}],"has_more":true,"next_cursor":"..."}
+ *
+ * @generated from message payment.v1.ListTransactionsResponse
+ */
+export declare type ListTransactionsResponse = Message<"payment.v1.ListTransactionsResponse"> & {
+  /**
+   * 聚合行(已按 occurred_at DESC 排好)
+   *
+   * @generated from field: repeated payment.v1.TransactionItem items = 1;
+   */
+  items: TransactionItem[];
 
   /**
    * 是否还有下一页
@@ -1180,18 +1867,18 @@ export declare type ListWalletTransactionsResponse = Message<"payment.v1.ListWal
 };
 
 /**
- * 收款钱包流水响应
- * 示例(JSON): {"items":[{...ReceiveWalletTransactionItem...}],"has_more":true,"next_cursor":"..."}
+ * 交易聚合响应
+ * 示例(JSON): {"items":[{...TransactionItem...}],"has_more":true,"next_cursor":"..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsResponse
+ * @generated from message payment.v1.ListTransactionsResponse
  */
-export declare type ListWalletTransactionsResponseJson = {
+export declare type ListTransactionsResponseJson = {
   /**
-   * 流水列表
+   * 聚合行(已按 occurred_at DESC 排好)
    *
-   * @generated from field: repeated payment.v1.ReceiveWalletTransactionItem items = 1;
+   * @generated from field: repeated payment.v1.TransactionItem items = 1;
    */
-  items?: ReceiveWalletTransactionItemJson[];
+  items?: TransactionItemJson[];
 
   /**
    * 是否还有下一页
@@ -1209,10 +1896,10 @@ export declare type ListWalletTransactionsResponseJson = {
 };
 
 /**
- * Describes the message payment.v1.ListWalletTransactionsResponse.
- * Use `create(ListWalletTransactionsResponseSchema)` to create a new message.
+ * Describes the message payment.v1.ListTransactionsResponse.
+ * Use `create(ListTransactionsResponseSchema)` to create a new message.
  */
-export declare const ListWalletTransactionsResponseSchema: GenMessage<ListWalletTransactionsResponse, {jsonType: ListWalletTransactionsResponseJson}>;
+export declare const ListTransactionsResponseSchema: GenMessage<ListTransactionsResponse, {jsonType: ListTransactionsResponseJson}>;
 
 /**
  * Query params of GET /dashboard/assets: live ankr_getAccountBalance fan-out over the
@@ -1362,7 +2049,7 @@ export declare const ListWebhookEndpointsReqSchema: GenMessage<ListWebhookEndpoi
  */
 export declare type ListWebhookEndpointsResponse = Message<"payment.v1.ListWebhookEndpointsResponse"> & {
   /**
-   * 端点列表(secret 恒不含)
+   * 端点列表(含 secret,session 门后)
    *
    * @generated from field: repeated payment.v1.WebhookEndpoint endpoints = 1;
    */
@@ -1377,7 +2064,7 @@ export declare type ListWebhookEndpointsResponse = Message<"payment.v1.ListWebho
  */
 export declare type ListWebhookEndpointsResponseJson = {
   /**
-   * 端点列表(secret 恒不含)
+   * 端点列表(含 secret,session 门后)
    *
    * @generated from field: repeated payment.v1.WebhookEndpoint endpoints = 1;
    */
@@ -2255,8 +2942,188 @@ export declare type DeleteGithubBindingReqJson = {
 export declare const DeleteGithubBindingReqSchema: GenMessage<DeleteGithubBindingReq, {jsonType: DeleteGithubBindingReqJson}>;
 
 /**
+ * 交易来源(来源 chips 过滤维度;MARKET 只是过滤值,不落行——订单行 origin=market 即市场)
+ *
+ * @generated from enum payment.v1.TransactionSource
+ */
+export enum TransactionSource {
+  /**
+   * 全部
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 订单行(payment_intents,任一 checkout)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_ORDER = 1;
+   */
+  ORDER = 1,
+
+  /**
+   * 订单行且 origin=market(市场;行上类型以 TransactionOrigin 为准)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_MARKET = 2;
+   */
+  MARKET = 2,
+
+  /**
+   * 未关联收款钱包流水(直接转账/转出)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_DIRECT = 3;
+   */
+  DIRECT = 3,
+}
+
+/**
+ * 交易来源(来源 chips 过滤维度;MARKET 只是过滤值,不落行——订单行 origin=market 即市场)
+ *
+ * @generated from enum payment.v1.TransactionSource
+ */
+export declare type TransactionSourceJson = "TRANSACTION_SOURCE_UNSPECIFIED" | "TRANSACTION_SOURCE_ORDER" | "TRANSACTION_SOURCE_MARKET" | "TRANSACTION_SOURCE_DIRECT";
+
+/**
+ * Describes the enum payment.v1.TransactionSource.
+ */
+export declare const TransactionSourceSchema: GenEnum<TransactionSource, TransactionSourceJson>;
+
+/**
+ * 订单创建渠道(订单行类型 SSOT;创建时由入口打标,落库后不变;直转行不设)。
+ * 值与 payment_intents.origin 列一致(migration 017)。
+ *
+ * @generated from enum payment.v1.TransactionOrigin
+ */
+export enum TransactionOrigin {
+  /**
+   * @generated from enum value: TRANSACTION_ORIGIN_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 商户 dashboard 开票(固定金额,可带 payer 标注)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_INVOICE = 1;
+   */
+  INVOICE = 1,
+
+  /**
+   * 公开店铺页买家自填金额(store slug 页)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_STORE_PAGE = 2;
+   */
+  STORE_PAGE = 2,
+
+  /**
+   * SDK/HMAC key 程序化建单
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_API = 3;
+   */
+  API = 3,
+
+  /**
+   * catalog 建单(product_snapshot 冻结)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_MARKET = 4;
+   */
+  MARKET = 4,
+}
+
+/**
+ * 订单创建渠道(订单行类型 SSOT;创建时由入口打标,落库后不变;直转行不设)。
+ * 值与 payment_intents.origin 列一致(migration 017)。
+ *
+ * @generated from enum payment.v1.TransactionOrigin
+ */
+export declare type TransactionOriginJson = "TRANSACTION_ORIGIN_UNSPECIFIED" | "TRANSACTION_ORIGIN_INVOICE" | "TRANSACTION_ORIGIN_STORE_PAGE" | "TRANSACTION_ORIGIN_API" | "TRANSACTION_ORIGIN_MARKET";
+
+/**
+ * Describes the enum payment.v1.TransactionOrigin.
+ */
+export declare const TransactionOriginSchema: GenEnum<TransactionOrigin, TransactionOriginJson>;
+
+/**
+ * 链上资产类型(直转行派生维度:contract_address IS NULL → NATIVE;无 NFT 数据源,不预留)
+ *
+ * @generated from enum payment.v1.TransactionAssetKind
+ */
+export enum TransactionAssetKind {
+  /**
+   * @generated from enum value: TRANSACTION_ASSET_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 原生币(ETH/BNB,随链)
+   *
+   * @generated from enum value: TRANSACTION_ASSET_KIND_NATIVE = 1;
+   */
+  NATIVE = 1,
+
+  /**
+   * 同质化代币(USDC 等)
+   *
+   * @generated from enum value: TRANSACTION_ASSET_KIND_ERC20 = 2;
+   */
+  ERC20 = 2,
+}
+
+/**
+ * 链上资产类型(直转行派生维度:contract_address IS NULL → NATIVE;无 NFT 数据源,不预留)
+ *
+ * @generated from enum payment.v1.TransactionAssetKind
+ */
+export declare type TransactionAssetKindJson = "TRANSACTION_ASSET_KIND_UNSPECIFIED" | "TRANSACTION_ASSET_KIND_NATIVE" | "TRANSACTION_ASSET_KIND_ERC20";
+
+/**
+ * Describes the enum payment.v1.TransactionAssetKind.
+ */
+export declare const TransactionAssetKindSchema: GenEnum<TransactionAssetKind, TransactionAssetKindJson>;
+
+/**
+ * 交易方向(订单行恒 IN;OUT 只命中直转腿)
+ *
+ * @generated from enum payment.v1.TransactionDirection
+ */
+export enum TransactionDirection {
+  /**
+   * 全部
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 进账
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_IN = 1;
+   */
+  IN = 1,
+
+  /**
+   * 出账(转出)
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_OUT = 2;
+   */
+  OUT = 2,
+}
+
+/**
+ * 交易方向(订单行恒 IN;OUT 只命中直转腿)
+ *
+ * @generated from enum payment.v1.TransactionDirection
+ */
+export declare type TransactionDirectionJson = "TRANSACTION_DIRECTION_UNSPECIFIED" | "TRANSACTION_DIRECTION_IN" | "TRANSACTION_DIRECTION_OUT";
+
+/**
+ * Describes the enum payment.v1.TransactionDirection.
+ */
+export declare const TransactionDirectionSchema: GenEnum<TransactionDirection, TransactionDirectionJson>;
+
+/**
  * DashboardService is the dashboard process (/dashboard/* merchant self-service),
- * 36 rpc matching the actual routes in src/dashboard/*.controller.ts.
+ * 37 rpc(2026-09 读路径收敛:ListPaymentIntents 列表与 ListWalletTransactions 镜像移除,
+ * 交易列表唯一入口 = ListTransactions union feed;详情/对账专用视图保留)。
  *
  * @generated from service payment.v1.DashboardService
  */
@@ -2382,16 +3249,60 @@ export declare const DashboardService: GenService<{
     output: typeof ListSupportedChainsResponseSchema;
   },
   /**
-   * Transactions(交易查询)
+   * Checkout store(开发者中心:一收银台 = 一账户;@LoginSession,身份级)
    *
-   * @generated from rpc payment.v1.DashboardService.ListPaymentIntents
+   * GET  /dashboard/checkouts
+   *
+   * @generated from rpc payment.v1.DashboardService.ListCheckouts
    */
-  listPaymentIntents: {
+  listCheckouts: {
     methodKind: "unary";
-    input: typeof ListPaymentIntentsReqSchema;
-    output: typeof ListPaymentIntentsResponseSchema;
+    input: typeof ListCheckoutsReqSchema;
+    output: typeof ListCheckoutsResponseSchema;
   },
   /**
+   * POST /dashboard/checkouts
+   *
+   * @generated from rpc payment.v1.DashboardService.CreateCheckout
+   */
+  createCheckout: {
+    methodKind: "unary";
+    input: typeof CreateCheckoutReqSchema;
+    output: typeof CheckoutSummarySchema;
+  },
+  /**
+   * GET  /dashboard/checkouts/:id
+   *
+   * @generated from rpc payment.v1.DashboardService.GetCheckoutDetail
+   */
+  getCheckoutDetail: {
+    methodKind: "unary";
+    input: typeof GetCheckoutDetailReqSchema;
+    output: typeof GetCheckoutDetailResponseSchema;
+  },
+  /**
+   * POST /dashboard/checkouts/:id/set-default
+   *
+   * @generated from rpc payment.v1.DashboardService.SetDefaultCheckout
+   */
+  setDefaultCheckout: {
+    methodKind: "unary";
+    input: typeof SetDefaultCheckoutReqSchema;
+    output: typeof SetDefaultCheckoutResponseSchema;
+  },
+  /**
+   * POST /dashboard/checkouts/:id/invoices
+   *
+   * @generated from rpc payment.v1.DashboardService.CreateInvoice
+   */
+  createInvoice: {
+    methodKind: "unary";
+    input: typeof CreateInvoiceReqSchema;
+    output: typeof CreateInvoiceResponseSchema;
+  },
+  /**
+   * Transactions(交易查询;列表唯一入口 = union feed,详情供 drawer)
+   *
    * @generated from rpc payment.v1.DashboardService.GetPaymentIntentDetail
    */
   getPaymentIntentDetail: {
@@ -2400,12 +3311,14 @@ export declare const DashboardService: GenService<{
     output: typeof PaymentIntentDetailResponseSchema;
   },
   /**
-   * @generated from rpc payment.v1.DashboardService.ListWalletTransactions
+   * GET /dashboard/transactions(交易聚合 union 端点,禁止前端归并)
+   *
+   * @generated from rpc payment.v1.DashboardService.ListTransactions
    */
-  listWalletTransactions: {
+  listTransactions: {
     methodKind: "unary";
-    input: typeof ListWalletTransactionsReqSchema;
-    output: typeof ListWalletTransactionsResponseSchema;
+    input: typeof ListTransactionsReqSchema;
+    output: typeof ListTransactionsResponseSchema;
   },
   /**
    * Assets(收款钱包实时资产)

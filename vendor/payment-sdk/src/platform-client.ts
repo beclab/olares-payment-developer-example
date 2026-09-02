@@ -38,11 +38,11 @@ import type {
   ClientInfoResult,
   ClientOptions,
   CreateOrderFromCatalogRequest,
-  CreatePaymentRequest,
   CreatePaymentResult,
   Network,
   PaymentResult,
   PingResult,
+  PlatformCreatePaymentRequest,
   TxVerification,
 } from './types/base';
 import { DEFAULT_TIMEOUT_MS } from './types/base';
@@ -58,12 +58,13 @@ export class PlatformClient {
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
-  /** Collect on behalf of a connected sub-account (merchantAccountId = the sub-account).
+  /** Collect on behalf of a connected sub-account (merchantAccountId = the sub-account,
+   *  required for platform keys). Buyer is a BuyerRef tier — omitted = anonymous order.
    *  opts.idempotencyKey: derive from your business identity (e.g. `purchase:{purchaseId}`)
    *  and reuse on retries — a hit returns the first result; same key with a different
    *  body is rejected with 400. The SDK never generates a key. */
   async createPayment(
-    p: CreatePaymentRequest,
+    p: PlatformCreatePaymentRequest,
     opts?: { idempotencyKey?: string },
   ): Promise<CreatePaymentResult> {
     const w = await this.sdk.call<WireCreateResponse>('createPayment', createPaymentRequestToWire(p), opts);

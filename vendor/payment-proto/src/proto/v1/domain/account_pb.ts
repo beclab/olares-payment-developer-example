@@ -14,7 +14,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/domain/account.proto.
  */
 export const file_v1_domain_account: GenFile = /*@__PURE__*/
-  fileDesc("Chd2MS9kb21haW4vYWNjb3VudC5wcm90bxIKcGF5bWVudC52MSKAAgoISWRlbnRpdHkSCgoCaWQYASABKAkSEAoDZGlkGAIgASgJSACIAQESIAoIb2xhcmVzSWQYAyABKAlIAVIJb2xhcmVzX2lkiAEBEikKBnN0YXR1cxgEIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI5CgljcmVhdGVkQXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EjkKCXVwZGF0ZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCnVwZGF0ZWRfYXRCBgoEX2RpZEILCglfb2xhcmVzSWQiuQEKFEFjY291bnRDb25maWd1cmF0aW9uEgoKAmlkGAEgASgJEh0KCWFjY291bnRJZBgCIAEoCVIKYWNjb3VudF9pZBI7Cg1jb25maWd1cmF0aW9uGAMgASgOMiQucGF5bWVudC52MS5BY2NvdW50Q29uZmlndXJhdGlvblJvbGUSOQoJY3JlYXRlZEF0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdCKlAgoHQWNjb3VudBIKCgJpZBgBIAEoCRIkCgppZGVudGl0eUlkGAIgASgJSABSC2lkZW50aXR5X2lkiAEBEikKBnN0YXR1cxgDIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI4Cg5jb25maWd1cmF0aW9ucxgEIAMoCzIgLnBheW1lbnQudjEuQWNjb3VudENvbmZpZ3VyYXRpb24SOQoJY3JlYXRlZEF0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI5Cgl1cGRhdGVkQXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgp1cGRhdGVkX2F0Qg0KC19pZGVudGl0eUlkIqABCgtBY2NvdW50SW5mbxIdCglhY2NvdW50SWQYASABKAlSCmFjY291bnRfaWQSEAoDZGlkGAIgASgJSACIAQESIAoIb2xhcmVzSWQYAyABKAlIAVIJb2xhcmVzX2lkiAEBEikKBnN0YXR1cxgEIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1c0IGCgRfZGlkQgsKCV9vbGFyZXNJZCKjAgoTUGF5bWVudE1ldGhvZENvbmZpZxIKCgJpZBgBIAEoCRIqCg9hY2NvdW50Q29uZmlnSWQYAiABKAlSEWFjY291bnRfY29uZmlnX2lkEiQKB2NoYW5uZWwYAyABKA4yEy5wYXltZW50LnYxLkNoYW5uZWwSDwoHZW5hYmxlZBgEIAEoCBInCgZjb25maWcYBSABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EjkKCWNyZWF0ZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSOQoJdXBkYXRlZEF0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdCKkAgoGQXBpS2V5EgoKAmlkGAEgASgNEhsKCGNsaWVudElkGAIgASgJUgljbGllbnRfaWQSHwoKY2xpZW50TmFtZRgDIAEoCVILY2xpZW50X25hbWUSOgoKY2xpZW50VHlwZRgEIAEoDjIZLnBheW1lbnQudjEuQXBpQ2xpZW50VHlwZVILY2xpZW50X3R5cGUSFwoGYXBpS2V5GAUgASgJUgdhcGlfa2V5EiIKCWFwaVNlY3JldBgGIAEoCUgAUgphcGlfc2VjcmV0iAEBEg4KBmFjdGl2ZRgHIAEoCBI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0QgwKCl9hcGlTZWNyZXQiggEKDkFjY291bnRTdW1tYXJ5EgoKAmlkGAEgASgJEikKBnN0YXR1cxgCIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI5CgljcmVhdGVkQXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0ItQBCg5TdXBwb3J0ZWRDaGFpbhINCgVjaGFpbhgBIAEoCRI0CgljaGFpblR5cGUYAiABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZVIKY2hhaW5fdHlwZRItCg5jaGFpbk5ldHdvcmtJZBgDIAEoCUgAUhBjaGFpbl9uZXR3b3JrX2lkiAEBEg8KB25ldHdvcmsYBCABKAkSKgoGdG9rZW5zGAUgAygLMhoucGF5bWVudC52MS5TdXBwb3J0ZWRUb2tlbkIRCg9fY2hhaW5OZXR3b3JrSWQiiAEKDlN1cHBvcnRlZFRva2VuEg4KBnN5bWJvbBgBIAEoCRIuCg9jb250cmFjdEFkZHJlc3MYAiABKAlIAFIQY29udHJhY3RfYWRkcmVzc4gBARIVCghkZWNpbWFscxgDIAEoBUgBiAEBQhIKEF9jb250cmFjdEFkZHJlc3NCCwoJX2RlY2ltYWxzKkoKDUFjY291bnRTdGF0dXMSHgoaQUNDT1VOVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIZChVBQ0NPVU5UX1NUQVRVU19BQ1RJVkUQASrrAQoYQWNjb3VudENvbmZpZ3VyYXRpb25Sb2xlEioKJkFDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1VOU1BFQ0lGSUVEEAASJwojQUNDT1VOVF9DT05GSUdVUkFUSU9OX1JPTEVfTUVSQ0hBTlQQARInCiNBQ0NPVU5UX0NPTkZJR1VSQVRJT05fUk9MRV9DVVNUT01FUhACEigKJEFDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1JFQ0lQSUVOVBADEicKI0FDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1BMQVRGT1JNEAQqbAoNQXBpQ2xpZW50VHlwZRIfChtBUElfQ0xJRU5UX1RZUEVfVU5TUEVDSUZJRUQQABIcChhBUElfQ0xJRU5UX1RZUEVfUExBVEZPUk0QARIcChhBUElfQ0xJRU5UX1RZUEVfTUVSQ0hBTlQQAmIGcHJvdG8z", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment]);
+  fileDesc("Chd2MS9kb21haW4vYWNjb3VudC5wcm90bxIKcGF5bWVudC52MSKAAgoISWRlbnRpdHkSCgoCaWQYASABKAkSEAoDZGlkGAIgASgJSACIAQESIAoIb2xhcmVzSWQYAyABKAlIAVIJb2xhcmVzX2lkiAEBEikKBnN0YXR1cxgEIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI5CgljcmVhdGVkQXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EjkKCXVwZGF0ZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCnVwZGF0ZWRfYXRCBgoEX2RpZEILCglfb2xhcmVzSWQiuQEKFEFjY291bnRDb25maWd1cmF0aW9uEgoKAmlkGAEgASgJEh0KCWFjY291bnRJZBgCIAEoCVIKYWNjb3VudF9pZBI7Cg1jb25maWd1cmF0aW9uGAMgASgOMiQucGF5bWVudC52MS5BY2NvdW50Q29uZmlndXJhdGlvblJvbGUSOQoJY3JlYXRlZEF0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdCKlAgoHQWNjb3VudBIKCgJpZBgBIAEoCRIkCgppZGVudGl0eUlkGAIgASgJSABSC2lkZW50aXR5X2lkiAEBEikKBnN0YXR1cxgDIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI4Cg5jb25maWd1cmF0aW9ucxgEIAMoCzIgLnBheW1lbnQudjEuQWNjb3VudENvbmZpZ3VyYXRpb24SOQoJY3JlYXRlZEF0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI5Cgl1cGRhdGVkQXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgp1cGRhdGVkX2F0Qg0KC19pZGVudGl0eUlkIqABCgtBY2NvdW50SW5mbxIdCglhY2NvdW50SWQYASABKAlSCmFjY291bnRfaWQSEAoDZGlkGAIgASgJSACIAQESIAoIb2xhcmVzSWQYAyABKAlIAVIJb2xhcmVzX2lkiAEBEikKBnN0YXR1cxgEIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1c0IGCgRfZGlkQgsKCV9vbGFyZXNJZCKjAgoTUGF5bWVudE1ldGhvZENvbmZpZxIKCgJpZBgBIAEoCRIqCg9hY2NvdW50Q29uZmlnSWQYAiABKAlSEWFjY291bnRfY29uZmlnX2lkEiQKB2NoYW5uZWwYAyABKA4yEy5wYXltZW50LnYxLkNoYW5uZWwSDwoHZW5hYmxlZBgEIAEoCBInCgZjb25maWcYBSABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EjkKCWNyZWF0ZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSOQoJdXBkYXRlZEF0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdCKkAgoGQXBpS2V5EgoKAmlkGAEgASgNEhsKCGNsaWVudElkGAIgASgJUgljbGllbnRfaWQSHwoKY2xpZW50TmFtZRgDIAEoCVILY2xpZW50X25hbWUSOgoKY2xpZW50VHlwZRgEIAEoDjIZLnBheW1lbnQudjEuQXBpQ2xpZW50VHlwZVILY2xpZW50X3R5cGUSFwoGYXBpS2V5GAUgASgJUgdhcGlfa2V5EiIKCWFwaVNlY3JldBgGIAEoCUgAUgphcGlfc2VjcmV0iAEBEg4KBmFjdGl2ZRgHIAEoCBI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0QgwKCl9hcGlTZWNyZXQingIKDkFjY291bnRTdW1tYXJ5EgoKAmlkGAEgASgJEikKBnN0YXR1cxgCIAEoDjIZLnBheW1lbnQudjEuQWNjb3VudFN0YXR1cxI5CgljcmVhdGVkQXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EiYKC2Rpc3BsYXlOYW1lGAQgASgJSABSDGRpc3BsYXlfbmFtZYgBARIiCglzdG9yZVNsdWcYBSABKAlIAVIKc3RvcmVfc2x1Z4gBARIiCglpc0RlZmF1bHQYBiABKAhIAlIKaXNfZGVmYXVsdIgBAUIOCgxfZGlzcGxheU5hbWVCDAoKX3N0b3JlU2x1Z0IMCgpfaXNEZWZhdWx0ImEKDUNoZWNrb3V0Q2hhaW4SGQoHY2hhaW5JZBgBIAEoCVIIY2hhaW5faWQSJQoNcmVjZWl2ZVdhbGxldBgCIAEoCVIOcmVjZWl2ZV93YWxsZXQSDgoGdG9rZW5zGAMgAygJIusCCg9DaGVja291dFN1bW1hcnkSHQoJYWNjb3VudElkGAEgASgJUgphY2NvdW50X2lkEiYKC2Rpc3BsYXlOYW1lGAIgASgJSABSDGRpc3BsYXlfbmFtZYgBARIiCglzdG9yZVNsdWcYAyABKAlIAVIKc3RvcmVfc2x1Z4gBARIdCglpc0RlZmF1bHQYBCABKAhSCmlzX2RlZmF1bHQSKQoGc3RhdHVzGAUgASgOMhkucGF5bWVudC52MS5BY2NvdW50U3RhdHVzEh8KCmhhc0FkZHJlc3MYBiABKAhSC2hhc19hZGRyZXNzEikKBmNoYWlucxgHIAMoCzIZLnBheW1lbnQudjEuQ2hlY2tvdXRDaGFpbhI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0Qg4KDF9kaXNwbGF5TmFtZUIMCgpfc3RvcmVTbHVnItQBCg5TdXBwb3J0ZWRDaGFpbhINCgVjaGFpbhgBIAEoCRI0CgljaGFpblR5cGUYAiABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZVIKY2hhaW5fdHlwZRItCg5jaGFpbk5ldHdvcmtJZBgDIAEoCUgAUhBjaGFpbl9uZXR3b3JrX2lkiAEBEg8KB25ldHdvcmsYBCABKAkSKgoGdG9rZW5zGAUgAygLMhoucGF5bWVudC52MS5TdXBwb3J0ZWRUb2tlbkIRCg9fY2hhaW5OZXR3b3JrSWQiiAEKDlN1cHBvcnRlZFRva2VuEg4KBnN5bWJvbBgBIAEoCRIuCg9jb250cmFjdEFkZHJlc3MYAiABKAlIAFIQY29udHJhY3RfYWRkcmVzc4gBARIVCghkZWNpbWFscxgDIAEoBUgBiAEBQhIKEF9jb250cmFjdEFkZHJlc3NCCwoJX2RlY2ltYWxzKkoKDUFjY291bnRTdGF0dXMSHgoaQUNDT1VOVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIZChVBQ0NPVU5UX1NUQVRVU19BQ1RJVkUQASrrAQoYQWNjb3VudENvbmZpZ3VyYXRpb25Sb2xlEioKJkFDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1VOU1BFQ0lGSUVEEAASJwojQUNDT1VOVF9DT05GSUdVUkFUSU9OX1JPTEVfTUVSQ0hBTlQQARInCiNBQ0NPVU5UX0NPTkZJR1VSQVRJT05fUk9MRV9DVVNUT01FUhACEigKJEFDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1JFQ0lQSUVOVBADEicKI0FDQ09VTlRfQ09ORklHVVJBVElPTl9ST0xFX1BMQVRGT1JNEAQqbAoNQXBpQ2xpZW50VHlwZRIfChtBUElfQ0xJRU5UX1RZUEVfVU5TUEVDSUZJRUQQABIcChhBUElfQ0xJRU5UX1RZUEVfUExBVEZPUk0QARIcChhBUElfQ0xJRU5UX1RZUEVfTUVSQ0hBTlQQAmIGcHJvdG8z", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment]);
 
 /**
  * 身份(identities 表):DID 与 Olares 用户名的唯一映射
@@ -516,7 +516,7 @@ export const PaymentMethodConfigSchema: GenMessage<PaymentMethodConfig, {jsonTyp
 /**
  * API 密钥(api_clients 表):HMAC 调用网关的凭据
  * 示例(JSON): {"id":1,"client_id":"client_merchant_ab12cd34","client_name":"my app","client_type":"API_CLIENT_TYPE_MERCHANT","api_key":"pk_live_...","api_secret":"sk_live_...","active":true,"created_at":"2026-08-05T12:00:00Z"}
- * 注意:api_secret 只在创建/轮换时返回一次(完整凭据不重复下发)
+ * 注意:api_secret 在创建/轮换与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.ApiKey
  */
@@ -550,14 +550,14 @@ export type ApiKey = Message<"payment.v1.ApiKey"> & {
   clientType: ApiClientType;
 
   /**
-   * 公钥,如 "pk_live_..."(签名头 x-olares-key)
+   * 公钥,如 "pk_live_..."(签名头 x-olares-payment-key)
    *
    * @generated from field: string apiKey = 5 [json_name = "api_key"];
    */
   apiKey: string;
 
   /**
-   * 密钥,如 "sk_live_..."(仅创建/轮换时返回)
+   * 密钥,如 "sk_live_..."(创建/轮换/list 均返回)
    *
    * @generated from field: optional string apiSecret = 6 [json_name = "api_secret"];
    */
@@ -581,7 +581,7 @@ export type ApiKey = Message<"payment.v1.ApiKey"> & {
 /**
  * API 密钥(api_clients 表):HMAC 调用网关的凭据
  * 示例(JSON): {"id":1,"client_id":"client_merchant_ab12cd34","client_name":"my app","client_type":"API_CLIENT_TYPE_MERCHANT","api_key":"pk_live_...","api_secret":"sk_live_...","active":true,"created_at":"2026-08-05T12:00:00Z"}
- * 注意:api_secret 只在创建/轮换时返回一次(完整凭据不重复下发)
+ * 注意:api_secret 在创建/轮换与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.ApiKey
  */
@@ -615,14 +615,14 @@ export type ApiKeyJson = {
   client_type?: ApiClientTypeJson;
 
   /**
-   * 公钥,如 "pk_live_..."(签名头 x-olares-key)
+   * 公钥,如 "pk_live_..."(签名头 x-olares-payment-key)
    *
    * @generated from field: string apiKey = 5 [json_name = "api_key"];
    */
   api_key?: string;
 
   /**
-   * 密钥,如 "sk_live_..."(仅创建/轮换时返回)
+   * 密钥,如 "sk_live_..."(创建/轮换/list 均返回)
    *
    * @generated from field: optional string apiSecret = 6 [json_name = "api_secret"];
    */
@@ -652,7 +652,7 @@ export const ApiKeySchema: GenMessage<ApiKey, {jsonType: ApiKeyJson}> = /*@__PUR
 
 /**
  * 账户摘要(账户列表页条目)
- * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z"}
+ * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true}
  *
  * @generated from message payment.v1.AccountSummary
  */
@@ -677,11 +677,32 @@ export type AccountSummary = Message<"payment.v1.AccountSummary"> & {
    * @generated from field: google.protobuf.Timestamp createdAt = 3 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
+
+  /**
+   * checkout 名;缺省显示 Olares ID / 默认收银台
+   *
+   * @generated from field: optional string displayName = 4 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 公开店页 slug(归一化小写点形式,如 "bob.olares.com")
+   *
+   * @generated from field: optional string storeSlug = 5 [json_name = "store_slug"];
+   */
+  storeSlug?: string | undefined;
+
+  /**
+   * 默认收银台标记(016)
+   *
+   * @generated from field: optional bool isDefault = 6 [json_name = "is_default"];
+   */
+  isDefault?: boolean | undefined;
 };
 
 /**
  * 账户摘要(账户列表页条目)
- * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z"}
+ * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true}
  *
  * @generated from message payment.v1.AccountSummary
  */
@@ -706,6 +727,27 @@ export type AccountSummaryJson = {
    * @generated from field: google.protobuf.Timestamp createdAt = 3 [json_name = "created_at"];
    */
   created_at?: TimestampJson;
+
+  /**
+   * checkout 名;缺省显示 Olares ID / 默认收银台
+   *
+   * @generated from field: optional string displayName = 4 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 公开店页 slug(归一化小写点形式,如 "bob.olares.com")
+   *
+   * @generated from field: optional string storeSlug = 5 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+
+  /**
+   * 默认收银台标记(016)
+   *
+   * @generated from field: optional bool isDefault = 6 [json_name = "is_default"];
+   */
+  is_default?: boolean;
 };
 
 /**
@@ -714,6 +756,206 @@ export type AccountSummaryJson = {
  */
 export const AccountSummarySchema: GenMessage<AccountSummary, {jsonType: AccountSummaryJson}> = /*@__PURE__*/
   messageDesc(file_v1_domain_account, 6);
+
+/**
+ * 收银台单链收款地址(该账户 onchain pmc config.chains[] 的一行)
+ * 示例(JSON): {"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC","USDT"]}
+ *
+ * @generated from message payment.v1.CheckoutChain
+ */
+export type CheckoutChain = Message<"payment.v1.CheckoutChain"> & {
+  /**
+   * 链网络 ID,如 "10"(对齐 ChainCfgReq 的 string)
+   *
+   * @generated from field: string chainId = 1 [json_name = "chain_id"];
+   */
+  chainId: string;
+
+  /**
+   * 收款钱包地址
+   *
+   * @generated from field: string receiveWallet = 2 [json_name = "receive_wallet"];
+   */
+  receiveWallet: string;
+
+  /**
+   * 接受的代币符号白名单
+   *
+   * @generated from field: repeated string tokens = 3;
+   */
+  tokens: string[];
+};
+
+/**
+ * 收银台单链收款地址(该账户 onchain pmc config.chains[] 的一行)
+ * 示例(JSON): {"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC","USDT"]}
+ *
+ * @generated from message payment.v1.CheckoutChain
+ */
+export type CheckoutChainJson = {
+  /**
+   * 链网络 ID,如 "10"(对齐 ChainCfgReq 的 string)
+   *
+   * @generated from field: string chainId = 1 [json_name = "chain_id"];
+   */
+  chain_id?: string;
+
+  /**
+   * 收款钱包地址
+   *
+   * @generated from field: string receiveWallet = 2 [json_name = "receive_wallet"];
+   */
+  receive_wallet?: string;
+
+  /**
+   * 接受的代币符号白名单
+   *
+   * @generated from field: repeated string tokens = 3;
+   */
+  tokens?: string[];
+};
+
+/**
+ * Describes the message payment.v1.CheckoutChain.
+ * Use `create(CheckoutChainSchema)` to create a new message.
+ */
+export const CheckoutChainSchema: GenMessage<CheckoutChain, {jsonType: CheckoutChainJson}> = /*@__PURE__*/
+  messageDesc(file_v1_domain_account, 7);
+
+/**
+ * 收银台卡片(开发者中心一收银台 = 一账户;ListCheckouts 整页数据源)
+ * 示例(JSON): {"account_id":"acct_x8y9...","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true,"status":"ACCOUNT_STATUS_ACTIVE","has_address":true,"chains":[{"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC"]}],"created_at":"2026-08-05T12:00:00Z"}
+ *
+ * @generated from message payment.v1.CheckoutSummary
+ */
+export type CheckoutSummary = Message<"payment.v1.CheckoutSummary"> & {
+  /**
+   * 账户 ID(acct_ 前缀)
+   *
+   * @generated from field: string accountId = 1 [json_name = "account_id"];
+   */
+  accountId: string;
+
+  /**
+   * checkout 名
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 公开店页 slug
+   *
+   * @generated from field: optional string storeSlug = 3 [json_name = "store_slug"];
+   */
+  storeSlug?: string | undefined;
+
+  /**
+   * 默认收银台标记
+   *
+   * @generated from field: bool isDefault = 4 [json_name = "is_default"];
+   */
+  isDefault: boolean;
+
+  /**
+   * 状态
+   *
+   * @generated from field: payment.v1.AccountStatus status = 5;
+   */
+  status: AccountStatus;
+
+  /**
+   * 有任一 enabled onchain 收款地址
+   *
+   * @generated from field: bool hasAddress = 6 [json_name = "has_address"];
+   */
+  hasAddress: boolean;
+
+  /**
+   * 各链收款地址
+   *
+   * @generated from field: repeated payment.v1.CheckoutChain chains = 7;
+   */
+  chains: CheckoutChain[];
+
+  /**
+   * 创建时间
+   *
+   * @generated from field: google.protobuf.Timestamp createdAt = 8 [json_name = "created_at"];
+   */
+  createdAt?: Timestamp | undefined;
+};
+
+/**
+ * 收银台卡片(开发者中心一收银台 = 一账户;ListCheckouts 整页数据源)
+ * 示例(JSON): {"account_id":"acct_x8y9...","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true,"status":"ACCOUNT_STATUS_ACTIVE","has_address":true,"chains":[{"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC"]}],"created_at":"2026-08-05T12:00:00Z"}
+ *
+ * @generated from message payment.v1.CheckoutSummary
+ */
+export type CheckoutSummaryJson = {
+  /**
+   * 账户 ID(acct_ 前缀)
+   *
+   * @generated from field: string accountId = 1 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * checkout 名
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 公开店页 slug
+   *
+   * @generated from field: optional string storeSlug = 3 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+
+  /**
+   * 默认收银台标记
+   *
+   * @generated from field: bool isDefault = 4 [json_name = "is_default"];
+   */
+  is_default?: boolean;
+
+  /**
+   * 状态
+   *
+   * @generated from field: payment.v1.AccountStatus status = 5;
+   */
+  status?: AccountStatusJson;
+
+  /**
+   * 有任一 enabled onchain 收款地址
+   *
+   * @generated from field: bool hasAddress = 6 [json_name = "has_address"];
+   */
+  has_address?: boolean;
+
+  /**
+   * 各链收款地址
+   *
+   * @generated from field: repeated payment.v1.CheckoutChain chains = 7;
+   */
+  chains?: CheckoutChainJson[];
+
+  /**
+   * 创建时间
+   *
+   * @generated from field: google.protobuf.Timestamp createdAt = 8 [json_name = "created_at"];
+   */
+  created_at?: TimestampJson;
+};
+
+/**
+ * Describes the message payment.v1.CheckoutSummary.
+ * Use `create(CheckoutSummarySchema)` to create a new message.
+ */
+export const CheckoutSummarySchema: GenMessage<CheckoutSummary, {jsonType: CheckoutSummaryJson}> = /*@__PURE__*/
+  messageDesc(file_v1_domain_account, 8);
 
 /**
  * 支持的链(onchain_networks 链目录派生)
@@ -806,7 +1048,7 @@ export type SupportedChainJson = {
  * Use `create(SupportedChainSchema)` to create a new message.
  */
 export const SupportedChainSchema: GenMessage<SupportedChain, {jsonType: SupportedChainJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_account, 7);
+  messageDesc(file_v1_domain_account, 9);
 
 /**
  * 链支持的代币(onchain_tokens 表,每条链的已启用代币子集)
@@ -869,7 +1111,7 @@ export type SupportedTokenJson = {
  * Use `create(SupportedTokenSchema)` to create a new message.
  */
 export const SupportedTokenSchema: GenMessage<SupportedToken, {jsonType: SupportedTokenJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_account, 8);
+  messageDesc(file_v1_domain_account, 10);
 
 /**
  * 账户状态(identities 表 status 列;目前只有 active)

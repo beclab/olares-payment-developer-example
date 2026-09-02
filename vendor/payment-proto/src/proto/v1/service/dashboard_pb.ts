@@ -2,13 +2,15 @@
 // @generated from file v1/service/dashboard.proto (package payment.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { AuthCallbackResponseSchema, AuthPollResponseSchema, AuthRefreshResponseSchema, CreateSessionReqSchema, DeleteResponseSchema, SessionRespSchema, Token, TokenJson } from "../domain/common_pb";
 import { file_v1_domain_common } from "../domain/common_pb";
-import type { Account, AccountJson, AccountSchema, AccountSummary, AccountSummaryJson, ApiKey, ApiKeyJson, ApiKeySchema, Identity, IdentityJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
+import type { Account, AccountJson, AccountSchema, AccountSummary, AccountSummaryJson, ApiKey, ApiKeyJson, ApiKeySchema, CheckoutSummary, CheckoutSummaryJson, CheckoutSummarySchema, Identity, IdentityJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
 import { file_v1_domain_account } from "../domain/account_pb";
-import type { PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
+import type { BuyerExternal, BuyerExternalJson, PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, PaymentStatus, PaymentStatusJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
 import { file_v1_domain_payment } from "../domain/payment_pb";
 import type { ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson, WalletAssetRow, WalletAssetRowJson } from "../domain/receive-wallet_pb";
 import { file_v1_domain_receive_wallet } from "../domain/receive-wallet_pb";
@@ -22,7 +24,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file v1/service/dashboard.proto.
  */
 export const file_v1_service_dashboard: GenFile = /*@__PURE__*/
-  fileDesc("Chp2MS9zZXJ2aWNlL2Rhc2hib2FyZC5wcm90bxIKcGF5bWVudC52MSJRCgtDYWxsYmFja1JlcRIOCgZzZWNyZXQYASABKAkSEAoDZGlkGAIgASgJSACIAQESEAoDandzGAMgASgJSAGIAQFCBgoEX2RpZEIGCgRfandzIhkKB1BvbGxSZXESDgoGc2VjcmV0GAEgASgJIjEKClJlZnJlc2hSZXESIwoMcmVmcmVzaFRva2VuGAEgASgJUg1yZWZyZXNoX3Rva2VuIhAKDkxpc3RBcGlLZXlzUmVxIjcKE0xpc3RBcGlLZXlzUmVzcG9uc2USIAoEa2V5cxgBIAMoCzISLnBheW1lbnQudjEuQXBpS2V5Ii8KDENyZWF0ZUtleVJlcRIfCgpjbGllbnROYW1lGAEgASgJUgtjbGllbnRfbmFtZSIdCg9Sb3RhdGVBcGlLZXlSZXESCgoCaWQYASABKAkiQQoUUm90YXRlQXBpS2V5UmVzcG9uc2USCgoCaWQYASABKA0SHQoJYXBpU2VjcmV0GAIgASgJUgphcGlfc2VjcmV0Ih0KD0RlbGV0ZUFwaUtleVJlcRIKCgJpZBgBIAEoCSIZChdHZXRNeUFjY291bnRPdmVydmlld1JlcSK0AgocR2V0TXlBY2NvdW50T3ZlcnZpZXdSZXNwb25zZRImCghpZGVudGl0eRgBIAEoCzIULnBheW1lbnQudjEuSWRlbnRpdHkSLAoIYWNjb3VudHMYAiADKAsyGi5wYXltZW50LnYxLkFjY291bnRTdW1tYXJ5EjEKEGN1cnJlbnRBY2NvdW50SWQYAyABKAlIAFISY3VycmVudF9hY2NvdW50X2lkiAEBEisKDWhhc09uY2hhaW5QbWMYBCABKAhIAVIPaGFzX29uY2hhaW5fcG1jiAEBEjcKCHBhaWRBcHBzGAUgASgLMhoucGF5bWVudC52MS5Sc2FFbGlnaWJpbGl0eVIJcGFpZF9hcHBzQhMKEV9jdXJyZW50QWNjb3VudElkQhAKDl9oYXNPbmNoYWluUG1jIkcKF0NyZWF0ZUNvbm5lY3RBY2NvdW50UmVxEhoKDWNvbmZpZ3VyYXRpb24YASABKAlIAIgBAUIQCg5fY29uZmlndXJhdGlvbiIYChZMaXN0Q29ubmVjdEFjY291bnRzUmVxIkQKG0xpc3RDb25uZWN0QWNjb3VudHNSZXNwb25zZRIlCghhY2NvdW50cxgBIAMoCzITLnBheW1lbnQudjEuQWNjb3VudCIMCgpMaXN0UG1jUmVxIlQKIExpc3RQYXltZW50TWV0aG9kQ29uZmlnc1Jlc3BvbnNlEjAKB2NvbmZpZ3MYASADKAsyHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWciXwoLQ2hhaW5DZmdSZXESGQoHY2hhaW5JZBgBIAEoCVIIY2hhaW5faWQSJQoNcmVjZWl2ZVdhbGxldBgCIAEoCVIOcmVjZWl2ZV93YWxsZXQSDgoGdG9rZW5zGAMgAygJInAKE1Vwc2VydE9uY2hhaW5QbWNSZXESJwoGY2hhaW5zGAEgAygLMhcucGF5bWVudC52MS5DaGFpbkNmZ1JlcRIiCglhY2NvdW50SWQYAiABKAlIAFIKYWNjb3VudF9pZIgBAUIMCgpfYWNjb3VudElkIhgKFkxpc3RTdXBwb3J0ZWRDaGFpbnNSZXEiSQobTGlzdFN1cHBvcnRlZENoYWluc1Jlc3BvbnNlEioKBmNoYWlucxgBIAMoCzIaLnBheW1lbnQudjEuU3VwcG9ydGVkQ2hhaW4iVQoVTGlzdFBheW1lbnRJbnRlbnRzUmVxEhIKBWxpbWl0GAEgASgFSACIAQESEwoGb2Zmc2V0GAIgASgFSAGIAQFCCAoGX2xpbWl0QgkKB19vZmZzZXQiXgoaTGlzdFBheW1lbnRJbnRlbnRzUmVzcG9uc2USMQoHaW50ZW50cxgBIAMoCzIgLnBheW1lbnQudjEuUGF5bWVudEludGVudFN1bW1hcnkSDQoFdG90YWwYAiABKA0iJwoZR2V0UGF5bWVudEludGVudERldGFpbFJlcRIKCgJpZBgBIAEoCSKWAgobUGF5bWVudEludGVudERldGFpbFJlc3BvbnNlEjAKBmludGVudBgBIAEoCzIgLnBheW1lbnQudjEuUGF5bWVudEludGVudFN1bW1hcnkSIQoGdG9rZW5zGAIgAygLMhEucGF5bWVudC52MS5Ub2tlbhIxCgdwcm9kdWN0GAMgASgLMhsucGF5bWVudC52MS5Qcm9kdWN0U25hcHNob3RIAIgBARIsCghhdHRlbXB0cxgEIAMoCzIaLnBheW1lbnQudjEuUGF5bWVudEF0dGVtcHQSNQoDdHhzGAUgAygLMigucGF5bWVudC52MS5SZWNlaXZlV2FsbGV0VHJhbnNhY3Rpb25JdGVtQgoKCF9wcm9kdWN0InsKGUxpc3RXYWxsZXRUcmFuc2FjdGlvbnNSZXESFAoHYWRkcmVzcxgBIAEoCUgAiAEBEhIKBWxpbWl0GAIgASgFSAGIAQESEwoGY3Vyc29yGAMgASgJSAKIAQFCCgoIX2FkZHJlc3NCCAoGX2xpbWl0QgkKB19jdXJzb3IiqQEKHkxpc3RXYWxsZXRUcmFuc2FjdGlvbnNSZXNwb25zZRI3CgVpdGVtcxgBIAMoCzIoLnBheW1lbnQudjEuUmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uSXRlbRIZCgdoYXNNb3JlGAIgASgIUghoYXNfbW9yZRIkCgpuZXh0Q3Vyc29yGAMgASgJSABSC25leHRfY3Vyc29yiAEBQg0KC19uZXh0Q3Vyc29yImMKE0xpc3RXYWxsZXRBc3NldHNSZXESFAoHYWRkcmVzcxgBIAEoCUgAiAEBEh4KB2NoYWluSWQYAiABKAVIAVIIY2hhaW5faWSIAQFCCgoIX2FkZHJlc3NCCgoIX2NoYWluSWQigAEKGExpc3RXYWxsZXRBc3NldHNSZXNwb25zZRIbCgh0b3RhbFVzZBgBIAEoAVIJdG90YWxfdXNkEh0KCWZldGNoZWRBdBgCIAEoCVIKZmV0Y2hlZF9hdBIoCgRyb3dzGAMgAygLMhoucGF5bWVudC52MS5XYWxsZXRBc3NldFJvdyIZChdMaXN0V2ViaG9va0VuZHBvaW50c1JlcSJOChxMaXN0V2ViaG9va0VuZHBvaW50c1Jlc3BvbnNlEi4KCWVuZHBvaW50cxgBIAMoCzIbLnBheW1lbnQudjEuV2ViaG9va0VuZHBvaW50InAKEENyZWF0ZVdlYmhvb2tSZXESCwoDdXJsGAEgASgJEiUKDWVuYWJsZWRFdmVudHMYAiADKAlSDmVuYWJsZWRfZXZlbnRzEhgKC2Rlc2NyaXB0aW9uGAMgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIqkBChBVcGRhdGVXZWJob29rUmVxEgoKAmlkGAEgASgJEhAKA3VybBgCIAEoCUgAiAEBEiUKDWVuYWJsZWRFdmVudHMYAyADKAlSDmVuYWJsZWRfZXZlbnRzEhMKBnN0YXR1cxgEIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAUgASgJSAKIAQFCBgoEX3VybEIJCgdfc3RhdHVzQg4KDF9kZXNjcmlwdGlvbiImChhEZWxldGVXZWJob29rRW5kcG9pbnRSZXESCgoCaWQYASABKAkiJAoWVGVzdFdlYmhvb2tFbmRwb2ludFJlcRIKCgJpZBgBIAEoCSKBAQoTVGVzdFdlYmhvb2tSZXNwb25zZRIKCgJvaxgBIAEoCBIfCgpodHRwU3RhdHVzGAIgASgFUgtodHRwX3N0YXR1cxISCgVlcnJvchgDIAEoCUgAiAEBEh8KCmR1cmF0aW9uTXMYBCABKAVSC2R1cmF0aW9uX21zQggKBl9lcnJvciJAChFSZXBsYXlEZWxpdmVyeVJlcRIKCgJpZBgBIAEoCRIfCgpkZWxpdmVyeUlkGAIgASgJUgtkZWxpdmVyeV9pZCIXChVMaXN0Q2FsbGJhY2tFdmVudHNSZXEiTgoaTGlzdENhbGxiYWNrRXZlbnRzUmVzcG9uc2USMAoGZXZlbnRzGAEgAygLMiAucGF5bWVudC52MS5DYWxsYmFja0V2ZW50U3VtbWFyeSIZChdMaXN0RGV2ZWxvcGVyUnNhS2V5c1JlcSJ0ChxMaXN0RGV2ZWxvcGVyUnNhS2V5c1Jlc3BvbnNlEiMKBGtleXMYASADKAsyFS5wYXltZW50LnYxLlJzYUtleVJvdxIvCgtlbGlnaWJpbGl0eRgCIAEoCzIaLnBheW1lbnQudjEuUnNhRWxpZ2liaWxpdHkiYQoRR2VuZXJhdGVSc2FLZXlSZXESJAoMcHVibGljS2V5UGVtGAEgASgJUg5wdWJsaWNfa2V5X3BlbRImCg1wcml2YXRlS2V5UGVtGAIgASgJUg9wcml2YXRlX2tleV9wZW0iTAoWSW1wb3J0UnNhUHJpdmF0ZUtleVJlcRIKCgJpZBgBIAEoCRImCg1wcml2YXRlS2V5UGVtGAIgASgJUg9wcml2YXRlX2tleV9wZW0iJAoWUmVtb3ZlUnNhUHJpdmF0ZUtleVJlcRIKCgJpZBgBIAEoCSIPCg1MaXN0TXlBcHBzUmVxIj0KEkxpc3RNeUFwcHNSZXNwb25zZRInCgRhcHBzGAEgAygLMhkucGF5bWVudC52MS5BcHBQcm9kdWN0Um93IhcKFUxpc3RHaXRodWJCaW5kaW5nc1JlcSJMChpMaXN0R2l0aHViQmluZGluZ3NSZXNwb25zZRIuCghiaW5kaW5ncxgBIAMoCzIcLnBheW1lbnQudjEuR2l0aHViQmluZGluZ1JvdyI3ChJTdGFydEdpdGh1YkJpbmRSZXESIQoLZnJvbnRPcmlnaW4YASABKAlSDGZyb250X29yaWdpbiI+ChdTdGFydEdpdGh1YkJpbmRSZXNwb25zZRIjCgxhdXRob3JpemVVcmwYASABKAlSDWF1dGhvcml6ZV91cmwiJAoWRGVsZXRlR2l0aHViQmluZGluZ1JlcRIKCgJpZBgBIAEoCTLFFgoQRGFzaGJvYXJkU2VydmljZRJGCg1DcmVhdGVTZXNzaW9uEhwucGF5bWVudC52MS5DcmVhdGVTZXNzaW9uUmVxGhcucGF5bWVudC52MS5TZXNzaW9uUmVzcBJJCgxBdXRoQ2FsbGJhY2sSFy5wYXltZW50LnYxLkNhbGxiYWNrUmVxGiAucGF5bWVudC52MS5BdXRoQ2FsbGJhY2tSZXNwb25zZRI9CghBdXRoUG9sbBITLnBheW1lbnQudjEuUG9sbFJlcRocLnBheW1lbnQudjEuQXV0aFBvbGxSZXNwb25zZRJGCgtBdXRoUmVmcmVzaBIWLnBheW1lbnQudjEuUmVmcmVzaFJlcRofLnBheW1lbnQudjEuQXV0aFJlZnJlc2hSZXNwb25zZRJKCgtMaXN0QXBpS2V5cxIaLnBheW1lbnQudjEuTGlzdEFwaUtleXNSZXEaHy5wYXltZW50LnYxLkxpc3RBcGlLZXlzUmVzcG9uc2USPAoMQ3JlYXRlQXBpS2V5EhgucGF5bWVudC52MS5DcmVhdGVLZXlSZXEaEi5wYXltZW50LnYxLkFwaUtleRJNCgxSb3RhdGVBcGlLZXkSGy5wYXltZW50LnYxLlJvdGF0ZUFwaUtleVJlcRogLnBheW1lbnQudjEuUm90YXRlQXBpS2V5UmVzcG9uc2USRwoMRGVsZXRlQXBpS2V5EhsucGF5bWVudC52MS5EZWxldGVBcGlLZXlSZXEaGi5wYXltZW50LnYxLkRlbGV0ZVJlc3BvbnNlEmUKFEdldE15QWNjb3VudE92ZXJ2aWV3EiMucGF5bWVudC52MS5HZXRNeUFjY291bnRPdmVydmlld1JlcRooLnBheW1lbnQudjEuR2V0TXlBY2NvdW50T3ZlcnZpZXdSZXNwb25zZRJQChRDcmVhdGVDb25uZWN0QWNjb3VudBIjLnBheW1lbnQudjEuQ3JlYXRlQ29ubmVjdEFjY291bnRSZXEaEy5wYXltZW50LnYxLkFjY291bnQSYgoTTGlzdENvbm5lY3RBY2NvdW50cxIiLnBheW1lbnQudjEuTGlzdENvbm5lY3RBY2NvdW50c1JlcRonLnBheW1lbnQudjEuTGlzdENvbm5lY3RBY2NvdW50c1Jlc3BvbnNlEmAKGExpc3RQYXltZW50TWV0aG9kQ29uZmlncxIWLnBheW1lbnQudjEuTGlzdFBtY1JlcRosLnBheW1lbnQudjEuTGlzdFBheW1lbnRNZXRob2RDb25maWdzUmVzcG9uc2USVAoQVXBzZXJ0T25jaGFpblBtYxIfLnBheW1lbnQudjEuVXBzZXJ0T25jaGFpblBtY1JlcRofLnBheW1lbnQudjEuUGF5bWVudE1ldGhvZENvbmZpZxJiChNMaXN0U3VwcG9ydGVkQ2hhaW5zEiIucGF5bWVudC52MS5MaXN0U3VwcG9ydGVkQ2hhaW5zUmVxGicucGF5bWVudC52MS5MaXN0U3VwcG9ydGVkQ2hhaW5zUmVzcG9uc2USXwoSTGlzdFBheW1lbnRJbnRlbnRzEiEucGF5bWVudC52MS5MaXN0UGF5bWVudEludGVudHNSZXEaJi5wYXltZW50LnYxLkxpc3RQYXltZW50SW50ZW50c1Jlc3BvbnNlEmgKFkdldFBheW1lbnRJbnRlbnREZXRhaWwSJS5wYXltZW50LnYxLkdldFBheW1lbnRJbnRlbnREZXRhaWxSZXEaJy5wYXltZW50LnYxLlBheW1lbnRJbnRlbnREZXRhaWxSZXNwb25zZRJrChZMaXN0V2FsbGV0VHJhbnNhY3Rpb25zEiUucGF5bWVudC52MS5MaXN0V2FsbGV0VHJhbnNhY3Rpb25zUmVxGioucGF5bWVudC52MS5MaXN0V2FsbGV0VHJhbnNhY3Rpb25zUmVzcG9uc2USWQoQTGlzdFdhbGxldEFzc2V0cxIfLnBheW1lbnQudjEuTGlzdFdhbGxldEFzc2V0c1JlcRokLnBheW1lbnQudjEuTGlzdFdhbGxldEFzc2V0c1Jlc3BvbnNlEmUKFExpc3RXZWJob29rRW5kcG9pbnRzEiMucGF5bWVudC52MS5MaXN0V2ViaG9va0VuZHBvaW50c1JlcRooLnBheW1lbnQudjEuTGlzdFdlYmhvb2tFbmRwb2ludHNSZXNwb25zZRJSChVDcmVhdGVXZWJob29rRW5kcG9pbnQSHC5wYXltZW50LnYxLkNyZWF0ZVdlYmhvb2tSZXEaGy5wYXltZW50LnYxLldlYmhvb2tFbmRwb2ludBJSChVVcGRhdGVXZWJob29rRW5kcG9pbnQSHC5wYXltZW50LnYxLlVwZGF0ZVdlYmhvb2tSZXEaGy5wYXltZW50LnYxLldlYmhvb2tFbmRwb2ludBJZChVEZWxldGVXZWJob29rRW5kcG9pbnQSJC5wYXltZW50LnYxLkRlbGV0ZVdlYmhvb2tFbmRwb2ludFJlcRoaLnBheW1lbnQudjEuRGVsZXRlUmVzcG9uc2USWgoTVGVzdFdlYmhvb2tFbmRwb2ludBIiLnBheW1lbnQudjEuVGVzdFdlYmhvb2tFbmRwb2ludFJlcRofLnBheW1lbnQudjEuVGVzdFdlYmhvb2tSZXNwb25zZRJRCg5SZXBsYXlEZWxpdmVyeRIdLnBheW1lbnQudjEuUmVwbGF5RGVsaXZlcnlSZXEaIC5wYXltZW50LnYxLkNhbGxiYWNrRXZlbnRTdW1tYXJ5El8KEkxpc3RDYWxsYmFja0V2ZW50cxIhLnBheW1lbnQudjEuTGlzdENhbGxiYWNrRXZlbnRzUmVxGiYucGF5bWVudC52MS5MaXN0Q2FsbGJhY2tFdmVudHNSZXNwb25zZRJlChRMaXN0RGV2ZWxvcGVyUnNhS2V5cxIjLnBheW1lbnQudjEuTGlzdERldmVsb3BlclJzYUtleXNSZXEaKC5wYXltZW50LnYxLkxpc3REZXZlbG9wZXJSc2FLZXlzUmVzcG9uc2USRgoOR2VuZXJhdGVSc2FLZXkSHS5wYXltZW50LnYxLkdlbmVyYXRlUnNhS2V5UmVxGhUucGF5bWVudC52MS5Sc2FLZXlSb3cSUAoTSW1wb3J0UnNhUHJpdmF0ZUtleRIiLnBheW1lbnQudjEuSW1wb3J0UnNhUHJpdmF0ZUtleVJlcRoVLnBheW1lbnQudjEuUnNhS2V5Um93ElUKE1JlbW92ZVJzYVByaXZhdGVLZXkSIi5wYXltZW50LnYxLlJlbW92ZVJzYVByaXZhdGVLZXlSZXEaGi5wYXltZW50LnYxLkRlbGV0ZVJlc3BvbnNlEkcKCkxpc3RNeUFwcHMSGS5wYXltZW50LnYxLkxpc3RNeUFwcHNSZXEaHi5wYXltZW50LnYxLkxpc3RNeUFwcHNSZXNwb25zZRJfChJMaXN0R2l0aHViQmluZGluZ3MSIS5wYXltZW50LnYxLkxpc3RHaXRodWJCaW5kaW5nc1JlcRomLnBheW1lbnQudjEuTGlzdEdpdGh1YkJpbmRpbmdzUmVzcG9uc2USVgoPU3RhcnRHaXRodWJCaW5kEh4ucGF5bWVudC52MS5TdGFydEdpdGh1YkJpbmRSZXEaIy5wYXltZW50LnYxLlN0YXJ0R2l0aHViQmluZFJlc3BvbnNlElUKE0RlbGV0ZUdpdGh1YkJpbmRpbmcSIi5wYXltZW50LnYxLkRlbGV0ZUdpdGh1YkJpbmRpbmdSZXEaGi5wYXltZW50LnYxLkRlbGV0ZVJlc3BvbnNlYgZwcm90bzM", [file_v1_domain_common, file_v1_domain_account, file_v1_domain_payment, file_v1_domain_receive_wallet, file_v1_domain_webhook, file_v1_domain_developer_key]);
+  fileDesc("Chp2MS9zZXJ2aWNlL2Rhc2hib2FyZC5wcm90bxIKcGF5bWVudC52MSJRCgtDYWxsYmFja1JlcRIOCgZzZWNyZXQYASABKAkSEAoDZGlkGAIgASgJSACIAQESEAoDandzGAMgASgJSAGIAQFCBgoEX2RpZEIGCgRfandzIhkKB1BvbGxSZXESDgoGc2VjcmV0GAEgASgJIjEKClJlZnJlc2hSZXESIwoMcmVmcmVzaFRva2VuGAEgASgJUg1yZWZyZXNoX3Rva2VuIhAKDkxpc3RBcGlLZXlzUmVxIjcKE0xpc3RBcGlLZXlzUmVzcG9uc2USIAoEa2V5cxgBIAMoCzISLnBheW1lbnQudjEuQXBpS2V5Ii8KDENyZWF0ZUtleVJlcRIfCgpjbGllbnROYW1lGAEgASgJUgtjbGllbnRfbmFtZSIdCg9Sb3RhdGVBcGlLZXlSZXESCgoCaWQYASABKAkiQQoUUm90YXRlQXBpS2V5UmVzcG9uc2USCgoCaWQYASABKA0SHQoJYXBpU2VjcmV0GAIgASgJUgphcGlfc2VjcmV0Ih0KD0RlbGV0ZUFwaUtleVJlcRIKCgJpZBgBIAEoCSIZChdHZXRNeUFjY291bnRPdmVydmlld1JlcSL5AgocR2V0TXlBY2NvdW50T3ZlcnZpZXdSZXNwb25zZRImCghpZGVudGl0eRgBIAEoCzIULnBheW1lbnQudjEuSWRlbnRpdHkSLAoIYWNjb3VudHMYAiADKAsyGi5wYXltZW50LnYxLkFjY291bnRTdW1tYXJ5EjEKEGN1cnJlbnRBY2NvdW50SWQYAyABKAlIAFISY3VycmVudF9hY2NvdW50X2lkiAEBEisKDWhhc09uY2hhaW5QbWMYBCABKAhIAVIPaGFzX29uY2hhaW5fcG1jiAEBEjcKCHBhaWRBcHBzGAUgASgLMhoucGF5bWVudC52MS5Sc2FFbGlnaWJpbGl0eVIJcGFpZF9hcHBzEi8KD2RpZE93bmVyQWRkcmVzcxgGIAEoCUgCUhFkaWRfb3duZXJfYWRkcmVzc4gBAUITChFfY3VycmVudEFjY291bnRJZEIQCg5faGFzT25jaGFpblBtY0ISChBfZGlkT3duZXJBZGRyZXNzIkcKF0NyZWF0ZUNvbm5lY3RBY2NvdW50UmVxEhoKDWNvbmZpZ3VyYXRpb24YASABKAlIAIgBAUIQCg5fY29uZmlndXJhdGlvbiIYChZMaXN0Q29ubmVjdEFjY291bnRzUmVxIkQKG0xpc3RDb25uZWN0QWNjb3VudHNSZXNwb25zZRIlCghhY2NvdW50cxgBIAMoCzITLnBheW1lbnQudjEuQWNjb3VudCIMCgpMaXN0UG1jUmVxIlQKIExpc3RQYXltZW50TWV0aG9kQ29uZmlnc1Jlc3BvbnNlEjAKB2NvbmZpZ3MYASADKAsyHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWciXwoLQ2hhaW5DZmdSZXESGQoHY2hhaW5JZBgBIAEoCVIIY2hhaW5faWQSJQoNcmVjZWl2ZVdhbGxldBgCIAEoCVIOcmVjZWl2ZV93YWxsZXQSDgoGdG9rZW5zGAMgAygJInAKE1Vwc2VydE9uY2hhaW5QbWNSZXESJwoGY2hhaW5zGAEgAygLMhcucGF5bWVudC52MS5DaGFpbkNmZ1JlcRIiCglhY2NvdW50SWQYAiABKAlIAFIKYWNjb3VudF9pZIgBAUIMCgpfYWNjb3VudElkIhgKFkxpc3RTdXBwb3J0ZWRDaGFpbnNSZXEiSQobTGlzdFN1cHBvcnRlZENoYWluc1Jlc3BvbnNlEioKBmNoYWlucxgBIAMoCzIaLnBheW1lbnQudjEuU3VwcG9ydGVkQ2hhaW4iEgoQTGlzdENoZWNrb3V0c1JlcSJHChVMaXN0Q2hlY2tvdXRzUmVzcG9uc2USLgoJY2hlY2tvdXRzGAEgAygLMhsucGF5bWVudC52MS5DaGVja291dFN1bW1hcnkiIQoRQ3JlYXRlQ2hlY2tvdXRSZXESDAoEbmFtZRgBIAEoCSIiChRHZXRDaGVja291dERldGFpbFJlcRIKCgJpZBgBIAEoCSLMAQoZR2V0Q2hlY2tvdXREZXRhaWxSZXNwb25zZRItCghjaGVja291dBgBIAEoCzIbLnBheW1lbnQudjEuQ2hlY2tvdXRTdW1tYXJ5EiwKEHJlY2VpdmVkQ291bnQzMGQYAiABKAVSEnJlY2VpdmVkX2NvdW50XzMwZBIoCg5yZWNlaXZlZFVzZDMwZBgDIAEoAVIQcmVjZWl2ZWRfdXNkXzMwZBIoCg50b3RhbEFzc2V0c1VzZBgEIAEoAVIQdG90YWxfYXNzZXRzX3VzZCIjChVTZXREZWZhdWx0Q2hlY2tvdXRSZXESCgoCaWQYASABKAkiSwoaU2V0RGVmYXVsdENoZWNrb3V0UmVzcG9uc2USLQoIY2hlY2tvdXQYASABKAsyGy5wYXltZW50LnYxLkNoZWNrb3V0U3VtbWFyeSKrAQoQQ3JlYXRlSW52b2ljZVJlcRIKCgJpZBgBIAEoCRIhCgthbW91bnRDZW50cxgCIAEoBVIMYW1vdW50X2NlbnRzEhAKA3JlZhgDIAEoCUgAiAEBEiIKCXJldHVyblVybBgEIAEoCUgBUgpyZXR1cm5fdXJsiAEBEhIKBXBheWVyGAUgASgJSAKIAQFCBgoEX3JlZkIMCgpfcmV0dXJuVXJsQggKBl9wYXllciJXChVDcmVhdGVJbnZvaWNlUmVzcG9uc2USGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIhCgtjaGVja291dFVybBgCIAEoCVIMY2hlY2tvdXRfdXJsIicKGUdldFBheW1lbnRJbnRlbnREZXRhaWxSZXESCgoCaWQYASABKAkilgIKG1BheW1lbnRJbnRlbnREZXRhaWxSZXNwb25zZRIwCgZpbnRlbnQYASABKAsyIC5wYXltZW50LnYxLlBheW1lbnRJbnRlbnRTdW1tYXJ5EiEKBnRva2VucxgCIAMoCzIRLnBheW1lbnQudjEuVG9rZW4SMQoHcHJvZHVjdBgDIAEoCzIbLnBheW1lbnQudjEuUHJvZHVjdFNuYXBzaG90SACIAQESLAoIYXR0ZW1wdHMYBCADKAsyGi5wYXltZW50LnYxLlBheW1lbnRBdHRlbXB0EjUKA3R4cxgFIAMoCzIoLnBheW1lbnQudjEuUmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uSXRlbUIKCghfcHJvZHVjdCKGAwoTTGlzdFRyYW5zYWN0aW9uc1JlcRISCgVsaW1pdBgBIAEoBUgAiAEBEhMKBmN1cnNvchgCIAEoCUgBiAEBEjIKBnNvdXJjZRgDIAEoDjIdLnBheW1lbnQudjEuVHJhbnNhY3Rpb25Tb3VyY2VIAogBARIuCgZzdGF0dXMYBCABKA4yGS5wYXltZW50LnYxLlBheW1lbnRTdGF0dXNIA4gBARI4CglkaXJlY3Rpb24YBSABKA4yIC5wYXltZW50LnYxLlRyYW5zYWN0aW9uRGlyZWN0aW9uSASIAQESIgoJYWNjb3VudElkGAYgASgJSAVSCmFjY291bnRfaWSIAQESMgoGb3JpZ2luGAcgASgOMh0ucGF5bWVudC52MS5UcmFuc2FjdGlvbk9yaWdpbkgGiAEBQggKBl9saW1pdEIJCgdfY3Vyc29yQgkKB19zb3VyY2VCCQoHX3N0YXR1c0IMCgpfZGlyZWN0aW9uQgwKCl9hY2NvdW50SWRCCQoHX29yaWdpbiKfCAoPVHJhbnNhY3Rpb25JdGVtEgoKAmlkGAEgASgJEi0KBnNvdXJjZRgCIAEoDjIdLnBheW1lbnQudjEuVHJhbnNhY3Rpb25Tb3VyY2USMwoJZGlyZWN0aW9uGAMgASgOMiAucGF5bWVudC52MS5UcmFuc2FjdGlvbkRpcmVjdGlvbhI7CgpvY2N1cnJlZEF0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFILb2NjdXJyZWRfYXQSIgoJYWNjb3VudElkGAUgASgJSABSCmFjY291bnRfaWSIAQESLgoGc3RhdHVzGAYgASgOMhkucGF5bWVudC52MS5QYXltZW50U3RhdHVzSAGIAQESJgoLYW1vdW50Q2VudHMYByABKAVIAlIMYW1vdW50X2NlbnRziAEBEhUKCGN1cnJlbmN5GAggASgJSAOIAQESKwoNYnV5ZXJPbGFyZXNJZBgJIAEoCUgEUg9idXllcl9vbGFyZXNfaWSIAQESMQoHcHJvZHVjdBgKIAEoCzIbLnBheW1lbnQudjEuUHJvZHVjdFNuYXBzaG90SAWIAQESHAoGdHhIYXNoGAsgASgJSAZSB3R4X2hhc2iIAQESEgoFY2hhaW4YDCABKAlIB4gBARITCgZhbW91bnQYDSABKAlICIgBARITCgZzeW1ib2wYDiABKAlICYgBARI2ChNjb3VudGVycGFydHlBZGRyZXNzGA8gASgJSApSFGNvdW50ZXJwYXJ0eV9hZGRyZXNziAEBEhIKBXBheWVyGBAgASgJSAuIAQESMgoGb3JpZ2luGBEgASgOMh0ucGF5bWVudC52MS5UcmFuc2FjdGlvbk9yaWdpbkgMiAEBEkQKCWFzc2V0S2luZBgSIAEoDjIgLnBheW1lbnQudjEuVHJhbnNhY3Rpb25Bc3NldEtpbmRIDVIKYXNzZXRfa2luZIgBARInCgtpc09sYXJlc1BheRgTIAEoCEgOUg1pc19vbGFyZXNfcGF5iAEBEkUKDWJ1eWVyRXh0ZXJuYWwYFCABKAsyGS5wYXltZW50LnYxLkJ1eWVyRXh0ZXJuYWxID1IOYnV5ZXJfZXh0ZXJuYWyIAQFCDAoKX2FjY291bnRJZEIJCgdfc3RhdHVzQg4KDF9hbW91bnRDZW50c0ILCglfY3VycmVuY3lCEAoOX2J1eWVyT2xhcmVzSWRCCgoIX3Byb2R1Y3RCCQoHX3R4SGFzaEIICgZfY2hhaW5CCQoHX2Ftb3VudEIJCgdfc3ltYm9sQhYKFF9jb3VudGVycGFydHlBZGRyZXNzQggKBl9wYXllckIJCgdfb3JpZ2luQgwKCl9hc3NldEtpbmRCDgoMX2lzT2xhcmVzUGF5QhAKDl9idXllckV4dGVybmFsIpYBChhMaXN0VHJhbnNhY3Rpb25zUmVzcG9uc2USKgoFaXRlbXMYASADKAsyGy5wYXltZW50LnYxLlRyYW5zYWN0aW9uSXRlbRIZCgdoYXNNb3JlGAIgASgIUghoYXNfbW9yZRIkCgpuZXh0Q3Vyc29yGAMgASgJSABSC25leHRfY3Vyc29yiAEBQg0KC19uZXh0Q3Vyc29yImMKE0xpc3RXYWxsZXRBc3NldHNSZXESFAoHYWRkcmVzcxgBIAEoCUgAiAEBEh4KB2NoYWluSWQYAiABKAVIAVIIY2hhaW5faWSIAQFCCgoIX2FkZHJlc3NCCgoIX2NoYWluSWQigAEKGExpc3RXYWxsZXRBc3NldHNSZXNwb25zZRIbCgh0b3RhbFVzZBgBIAEoAVIJdG90YWxfdXNkEh0KCWZldGNoZWRBdBgCIAEoCVIKZmV0Y2hlZF9hdBIoCgRyb3dzGAMgAygLMhoucGF5bWVudC52MS5XYWxsZXRBc3NldFJvdyIZChdMaXN0V2ViaG9va0VuZHBvaW50c1JlcSJOChxMaXN0V2ViaG9va0VuZHBvaW50c1Jlc3BvbnNlEi4KCWVuZHBvaW50cxgBIAMoCzIbLnBheW1lbnQudjEuV2ViaG9va0VuZHBvaW50InAKEENyZWF0ZVdlYmhvb2tSZXESCwoDdXJsGAEgASgJEiUKDWVuYWJsZWRFdmVudHMYAiADKAlSDmVuYWJsZWRfZXZlbnRzEhgKC2Rlc2NyaXB0aW9uGAMgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIqkBChBVcGRhdGVXZWJob29rUmVxEgoKAmlkGAEgASgJEhAKA3VybBgCIAEoCUgAiAEBEiUKDWVuYWJsZWRFdmVudHMYAyADKAlSDmVuYWJsZWRfZXZlbnRzEhMKBnN0YXR1cxgEIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAUgASgJSAKIAQFCBgoEX3VybEIJCgdfc3RhdHVzQg4KDF9kZXNjcmlwdGlvbiImChhEZWxldGVXZWJob29rRW5kcG9pbnRSZXESCgoCaWQYASABKAkiJAoWVGVzdFdlYmhvb2tFbmRwb2ludFJlcRIKCgJpZBgBIAEoCSKBAQoTVGVzdFdlYmhvb2tSZXNwb25zZRIKCgJvaxgBIAEoCBIfCgpodHRwU3RhdHVzGAIgASgFUgtodHRwX3N0YXR1cxISCgVlcnJvchgDIAEoCUgAiAEBEh8KCmR1cmF0aW9uTXMYBCABKAVSC2R1cmF0aW9uX21zQggKBl9lcnJvciJAChFSZXBsYXlEZWxpdmVyeVJlcRIKCgJpZBgBIAEoCRIfCgpkZWxpdmVyeUlkGAIgASgJUgtkZWxpdmVyeV9pZCIXChVMaXN0Q2FsbGJhY2tFdmVudHNSZXEiTgoaTGlzdENhbGxiYWNrRXZlbnRzUmVzcG9uc2USMAoGZXZlbnRzGAEgAygLMiAucGF5bWVudC52MS5DYWxsYmFja0V2ZW50U3VtbWFyeSIZChdMaXN0RGV2ZWxvcGVyUnNhS2V5c1JlcSJ0ChxMaXN0RGV2ZWxvcGVyUnNhS2V5c1Jlc3BvbnNlEiMKBGtleXMYASADKAsyFS5wYXltZW50LnYxLlJzYUtleVJvdxIvCgtlbGlnaWJpbGl0eRgCIAEoCzIaLnBheW1lbnQudjEuUnNhRWxpZ2liaWxpdHkiYQoRR2VuZXJhdGVSc2FLZXlSZXESJAoMcHVibGljS2V5UGVtGAEgASgJUg5wdWJsaWNfa2V5X3BlbRImCg1wcml2YXRlS2V5UGVtGAIgASgJUg9wcml2YXRlX2tleV9wZW0iTAoWSW1wb3J0UnNhUHJpdmF0ZUtleVJlcRIKCgJpZBgBIAEoCRImCg1wcml2YXRlS2V5UGVtGAIgASgJUg9wcml2YXRlX2tleV9wZW0iJAoWUmVtb3ZlUnNhUHJpdmF0ZUtleVJlcRIKCgJpZBgBIAEoCSIPCg1MaXN0TXlBcHBzUmVxIj0KEkxpc3RNeUFwcHNSZXNwb25zZRInCgRhcHBzGAEgAygLMhkucGF5bWVudC52MS5BcHBQcm9kdWN0Um93IhcKFUxpc3RHaXRodWJCaW5kaW5nc1JlcSJMChpMaXN0R2l0aHViQmluZGluZ3NSZXNwb25zZRIuCghiaW5kaW5ncxgBIAMoCzIcLnBheW1lbnQudjEuR2l0aHViQmluZGluZ1JvdyI3ChJTdGFydEdpdGh1YkJpbmRSZXESIQoLZnJvbnRPcmlnaW4YASABKAlSDGZyb250X29yaWdpbiI+ChdTdGFydEdpdGh1YkJpbmRSZXNwb25zZRIjCgxhdXRob3JpemVVcmwYASABKAlSDWF1dGhvcml6ZV91cmwiJAoWRGVsZXRlR2l0aHViQmluZGluZ1JlcRIKCgJpZBgBIAEoCSqTAQoRVHJhbnNhY3Rpb25Tb3VyY2USIgoeVFJBTlNBQ1RJT05fU09VUkNFX1VOU1BFQ0lGSUVEEAASHAoYVFJBTlNBQ1RJT05fU09VUkNFX09SREVSEAESHQoZVFJBTlNBQ1RJT05fU09VUkNFX01BUktFVBACEh0KGVRSQU5TQUNUSU9OX1NPVVJDRV9ESVJFQ1QQAyq1AQoRVHJhbnNhY3Rpb25PcmlnaW4SIgoeVFJBTlNBQ1RJT05fT1JJR0lOX1VOU1BFQ0lGSUVEEAASHgoaVFJBTlNBQ1RJT05fT1JJR0lOX0lOVk9JQ0UQARIhCh1UUkFOU0FDVElPTl9PUklHSU5fU1RPUkVfUEFHRRACEhoKFlRSQU5TQUNUSU9OX09SSUdJTl9BUEkQAxIdChlUUkFOU0FDVElPTl9PUklHSU5fTUFSS0VUEAQqgwEKFFRyYW5zYWN0aW9uQXNzZXRLaW5kEiYKIlRSQU5TQUNUSU9OX0FTU0VUX0tJTkRfVU5TUEVDSUZJRUQQABIhCh1UUkFOU0FDVElPTl9BU1NFVF9LSU5EX05BVElWRRABEiAKHFRSQU5TQUNUSU9OX0FTU0VUX0tJTkRfRVJDMjAQAip6ChRUcmFuc2FjdGlvbkRpcmVjdGlvbhIlCiFUUkFOU0FDVElPTl9ESVJFQ1RJT05fVU5TUEVDSUZJRUQQABIcChhUUkFOU0FDVElPTl9ESVJFQ1RJT05fSU4QARIdChlUUkFOU0FDVElPTl9ESVJFQ1RJT05fT1VUEAIygxkKEERhc2hib2FyZFNlcnZpY2USRgoNQ3JlYXRlU2Vzc2lvbhIcLnBheW1lbnQudjEuQ3JlYXRlU2Vzc2lvblJlcRoXLnBheW1lbnQudjEuU2Vzc2lvblJlc3ASSQoMQXV0aENhbGxiYWNrEhcucGF5bWVudC52MS5DYWxsYmFja1JlcRogLnBheW1lbnQudjEuQXV0aENhbGxiYWNrUmVzcG9uc2USPQoIQXV0aFBvbGwSEy5wYXltZW50LnYxLlBvbGxSZXEaHC5wYXltZW50LnYxLkF1dGhQb2xsUmVzcG9uc2USRgoLQXV0aFJlZnJlc2gSFi5wYXltZW50LnYxLlJlZnJlc2hSZXEaHy5wYXltZW50LnYxLkF1dGhSZWZyZXNoUmVzcG9uc2USSgoLTGlzdEFwaUtleXMSGi5wYXltZW50LnYxLkxpc3RBcGlLZXlzUmVxGh8ucGF5bWVudC52MS5MaXN0QXBpS2V5c1Jlc3BvbnNlEjwKDENyZWF0ZUFwaUtleRIYLnBheW1lbnQudjEuQ3JlYXRlS2V5UmVxGhIucGF5bWVudC52MS5BcGlLZXkSTQoMUm90YXRlQXBpS2V5EhsucGF5bWVudC52MS5Sb3RhdGVBcGlLZXlSZXEaIC5wYXltZW50LnYxLlJvdGF0ZUFwaUtleVJlc3BvbnNlEkcKDERlbGV0ZUFwaUtleRIbLnBheW1lbnQudjEuRGVsZXRlQXBpS2V5UmVxGhoucGF5bWVudC52MS5EZWxldGVSZXNwb25zZRJlChRHZXRNeUFjY291bnRPdmVydmlldxIjLnBheW1lbnQudjEuR2V0TXlBY2NvdW50T3ZlcnZpZXdSZXEaKC5wYXltZW50LnYxLkdldE15QWNjb3VudE92ZXJ2aWV3UmVzcG9uc2USUAoUQ3JlYXRlQ29ubmVjdEFjY291bnQSIy5wYXltZW50LnYxLkNyZWF0ZUNvbm5lY3RBY2NvdW50UmVxGhMucGF5bWVudC52MS5BY2NvdW50EmIKE0xpc3RDb25uZWN0QWNjb3VudHMSIi5wYXltZW50LnYxLkxpc3RDb25uZWN0QWNjb3VudHNSZXEaJy5wYXltZW50LnYxLkxpc3RDb25uZWN0QWNjb3VudHNSZXNwb25zZRJgChhMaXN0UGF5bWVudE1ldGhvZENvbmZpZ3MSFi5wYXltZW50LnYxLkxpc3RQbWNSZXEaLC5wYXltZW50LnYxLkxpc3RQYXltZW50TWV0aG9kQ29uZmlnc1Jlc3BvbnNlElQKEFVwc2VydE9uY2hhaW5QbWMSHy5wYXltZW50LnYxLlVwc2VydE9uY2hhaW5QbWNSZXEaHy5wYXltZW50LnYxLlBheW1lbnRNZXRob2RDb25maWcSYgoTTGlzdFN1cHBvcnRlZENoYWlucxIiLnBheW1lbnQudjEuTGlzdFN1cHBvcnRlZENoYWluc1JlcRonLnBheW1lbnQudjEuTGlzdFN1cHBvcnRlZENoYWluc1Jlc3BvbnNlElAKDUxpc3RDaGVja291dHMSHC5wYXltZW50LnYxLkxpc3RDaGVja291dHNSZXEaIS5wYXltZW50LnYxLkxpc3RDaGVja291dHNSZXNwb25zZRJMCg5DcmVhdGVDaGVja291dBIdLnBheW1lbnQudjEuQ3JlYXRlQ2hlY2tvdXRSZXEaGy5wYXltZW50LnYxLkNoZWNrb3V0U3VtbWFyeRJcChFHZXRDaGVja291dERldGFpbBIgLnBheW1lbnQudjEuR2V0Q2hlY2tvdXREZXRhaWxSZXEaJS5wYXltZW50LnYxLkdldENoZWNrb3V0RGV0YWlsUmVzcG9uc2USXwoSU2V0RGVmYXVsdENoZWNrb3V0EiEucGF5bWVudC52MS5TZXREZWZhdWx0Q2hlY2tvdXRSZXEaJi5wYXltZW50LnYxLlNldERlZmF1bHRDaGVja291dFJlc3BvbnNlElAKDUNyZWF0ZUludm9pY2USHC5wYXltZW50LnYxLkNyZWF0ZUludm9pY2VSZXEaIS5wYXltZW50LnYxLkNyZWF0ZUludm9pY2VSZXNwb25zZRJoChZHZXRQYXltZW50SW50ZW50RGV0YWlsEiUucGF5bWVudC52MS5HZXRQYXltZW50SW50ZW50RGV0YWlsUmVxGicucGF5bWVudC52MS5QYXltZW50SW50ZW50RGV0YWlsUmVzcG9uc2USWQoQTGlzdFRyYW5zYWN0aW9ucxIfLnBheW1lbnQudjEuTGlzdFRyYW5zYWN0aW9uc1JlcRokLnBheW1lbnQudjEuTGlzdFRyYW5zYWN0aW9uc1Jlc3BvbnNlElkKEExpc3RXYWxsZXRBc3NldHMSHy5wYXltZW50LnYxLkxpc3RXYWxsZXRBc3NldHNSZXEaJC5wYXltZW50LnYxLkxpc3RXYWxsZXRBc3NldHNSZXNwb25zZRJlChRMaXN0V2ViaG9va0VuZHBvaW50cxIjLnBheW1lbnQudjEuTGlzdFdlYmhvb2tFbmRwb2ludHNSZXEaKC5wYXltZW50LnYxLkxpc3RXZWJob29rRW5kcG9pbnRzUmVzcG9uc2USUgoVQ3JlYXRlV2ViaG9va0VuZHBvaW50EhwucGF5bWVudC52MS5DcmVhdGVXZWJob29rUmVxGhsucGF5bWVudC52MS5XZWJob29rRW5kcG9pbnQSUgoVVXBkYXRlV2ViaG9va0VuZHBvaW50EhwucGF5bWVudC52MS5VcGRhdGVXZWJob29rUmVxGhsucGF5bWVudC52MS5XZWJob29rRW5kcG9pbnQSWQoVRGVsZXRlV2ViaG9va0VuZHBvaW50EiQucGF5bWVudC52MS5EZWxldGVXZWJob29rRW5kcG9pbnRSZXEaGi5wYXltZW50LnYxLkRlbGV0ZVJlc3BvbnNlEloKE1Rlc3RXZWJob29rRW5kcG9pbnQSIi5wYXltZW50LnYxLlRlc3RXZWJob29rRW5kcG9pbnRSZXEaHy5wYXltZW50LnYxLlRlc3RXZWJob29rUmVzcG9uc2USUQoOUmVwbGF5RGVsaXZlcnkSHS5wYXltZW50LnYxLlJlcGxheURlbGl2ZXJ5UmVxGiAucGF5bWVudC52MS5DYWxsYmFja0V2ZW50U3VtbWFyeRJfChJMaXN0Q2FsbGJhY2tFdmVudHMSIS5wYXltZW50LnYxLkxpc3RDYWxsYmFja0V2ZW50c1JlcRomLnBheW1lbnQudjEuTGlzdENhbGxiYWNrRXZlbnRzUmVzcG9uc2USZQoUTGlzdERldmVsb3BlclJzYUtleXMSIy5wYXltZW50LnYxLkxpc3REZXZlbG9wZXJSc2FLZXlzUmVxGigucGF5bWVudC52MS5MaXN0RGV2ZWxvcGVyUnNhS2V5c1Jlc3BvbnNlEkYKDkdlbmVyYXRlUnNhS2V5Eh0ucGF5bWVudC52MS5HZW5lcmF0ZVJzYUtleVJlcRoVLnBheW1lbnQudjEuUnNhS2V5Um93ElAKE0ltcG9ydFJzYVByaXZhdGVLZXkSIi5wYXltZW50LnYxLkltcG9ydFJzYVByaXZhdGVLZXlSZXEaFS5wYXltZW50LnYxLlJzYUtleVJvdxJVChNSZW1vdmVSc2FQcml2YXRlS2V5EiIucGF5bWVudC52MS5SZW1vdmVSc2FQcml2YXRlS2V5UmVxGhoucGF5bWVudC52MS5EZWxldGVSZXNwb25zZRJHCgpMaXN0TXlBcHBzEhkucGF5bWVudC52MS5MaXN0TXlBcHBzUmVxGh4ucGF5bWVudC52MS5MaXN0TXlBcHBzUmVzcG9uc2USXwoSTGlzdEdpdGh1YkJpbmRpbmdzEiEucGF5bWVudC52MS5MaXN0R2l0aHViQmluZGluZ3NSZXEaJi5wYXltZW50LnYxLkxpc3RHaXRodWJCaW5kaW5nc1Jlc3BvbnNlElYKD1N0YXJ0R2l0aHViQmluZBIeLnBheW1lbnQudjEuU3RhcnRHaXRodWJCaW5kUmVxGiMucGF5bWVudC52MS5TdGFydEdpdGh1YkJpbmRSZXNwb25zZRJVChNEZWxldGVHaXRodWJCaW5kaW5nEiIucGF5bWVudC52MS5EZWxldGVHaXRodWJCaW5kaW5nUmVxGhoucGF5bWVudC52MS5EZWxldGVSZXNwb25zZWIGcHJvdG8z", [file_google_protobuf_timestamp, file_v1_domain_common, file_v1_domain_account, file_v1_domain_payment, file_v1_domain_receive_wallet, file_v1_domain_webhook, file_v1_domain_developer_key]);
 
 /**
  * CallbackReq mirrors contract/dashboard.go; olares_id is never accepted from the
@@ -200,7 +202,7 @@ export const ListApiKeysReqSchema: GenMessage<ListApiKeysReq, {jsonType: ListApi
  */
 export type ListApiKeysResponse = Message<"payment.v1.ListApiKeysResponse"> & {
   /**
-   * key 列表(secret 恒不含)
+   * key 列表(含 api_secret,session 门后)
    *
    * @generated from field: repeated payment.v1.ApiKey keys = 1;
    */
@@ -215,7 +217,7 @@ export type ListApiKeysResponse = Message<"payment.v1.ListApiKeysResponse"> & {
  */
 export type ListApiKeysResponseJson = {
   /**
-   * key 列表(secret 恒不含)
+   * key 列表(含 api_secret,session 门后)
    *
    * @generated from field: repeated payment.v1.ApiKey keys = 1;
    */
@@ -311,7 +313,7 @@ export const RotateApiKeyReqSchema: GenMessage<RotateApiKeyReq, {jsonType: Rotat
 
 /**
  * RotateApiKeyResponse mirrors contract/account.go.
- * 轮换结果(新 secret 只在此时返回一次)
+ * 轮换结果(返回新 secret;list 亦可见)
  * 示例(JSON): {"id":1,"api_secret":"sk_live_ab12cd34ef..."}
  *
  * @generated from message payment.v1.RotateApiKeyResponse
@@ -334,7 +336,7 @@ export type RotateApiKeyResponse = Message<"payment.v1.RotateApiKeyResponse"> & 
 
 /**
  * RotateApiKeyResponse mirrors contract/account.go.
- * 轮换结果(新 secret 只在此时返回一次)
+ * 轮换结果(返回新 secret;list 亦可见)
  * 示例(JSON): {"id":1,"api_secret":"sk_live_ab12cd34ef..."}
  *
  * @generated from message payment.v1.RotateApiKeyResponse
@@ -426,7 +428,7 @@ export const GetMyAccountOverviewReqSchema: GenMessage<GetMyAccountOverviewReq, 
 
 /**
  * 我的账户概览响应:身份 + 名下账户列表
- * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...}}
+ * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...},"did_owner_address":"0xAbCd..."}
  *
  * @generated from message payment.v1.GetMyAccountOverviewResponse
  */
@@ -453,7 +455,7 @@ export type GetMyAccountOverviewResponse = Message<"payment.v1.GetMyAccountOverv
   currentAccountId?: string | undefined;
 
   /**
-   * 当前账户是否已有启用的链上收款钱包
+   * DEPRECATED(B2 裁决 2026-08-27):判定移消费方——前端按 ListCheckouts 事实自算「默认店 active 且有地址」(无默认 active 严格 false);行为冻结(仍按当前账户计),F8 随旧面板删除
    *
    * @generated from field: optional bool hasOnchainPmc = 4 [json_name = "has_onchain_pmc"];
    */
@@ -465,11 +467,18 @@ export type GetMyAccountOverviewResponse = Message<"payment.v1.GetMyAccountOverv
    * @generated from field: payment.v1.RsaEligibility paidApps = 5 [json_name = "paid_apps"];
    */
   paidApps?: RsaEligibility | undefined;
+
+  /**
+   * DID gate 解析的 owner 地址(LarePass 钱包注册的 Eth 地址);解析失败/无 did 缺省
+   *
+   * @generated from field: optional string didOwnerAddress = 6 [json_name = "did_owner_address"];
+   */
+  didOwnerAddress?: string | undefined;
 };
 
 /**
  * 我的账户概览响应:身份 + 名下账户列表
- * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...}}
+ * 示例(JSON): {"identity":{...Identity...},"accounts":[{...AccountSummary...}],"current_account_id":"acct_x8y9...","has_onchain_pmc":true,"paid_apps":{...RsaEligibility...},"did_owner_address":"0xAbCd..."}
  *
  * @generated from message payment.v1.GetMyAccountOverviewResponse
  */
@@ -496,7 +505,7 @@ export type GetMyAccountOverviewResponseJson = {
   current_account_id?: string;
 
   /**
-   * 当前账户是否已有启用的链上收款钱包
+   * DEPRECATED(B2 裁决 2026-08-27):判定移消费方——前端按 ListCheckouts 事实自算「默认店 active 且有地址」(无默认 active 严格 false);行为冻结(仍按当前账户计),F8 随旧面板删除
    *
    * @generated from field: optional bool hasOnchainPmc = 4 [json_name = "has_onchain_pmc"];
    */
@@ -508,6 +517,13 @@ export type GetMyAccountOverviewResponseJson = {
    * @generated from field: payment.v1.RsaEligibility paidApps = 5 [json_name = "paid_apps"];
    */
   paid_apps?: RsaEligibilityJson;
+
+  /**
+   * DID gate 解析的 owner 地址(LarePass 钱包注册的 Eth 地址);解析失败/无 did 缺省
+   *
+   * @generated from field: optional string didOwnerAddress = 6 [json_name = "did_owner_address"];
+   */
+  did_owner_address?: string;
 };
 
 /**
@@ -867,112 +883,433 @@ export const ListSupportedChainsResponseSchema: GenMessage<ListSupportedChainsRe
   messageDesc(file_v1_service_dashboard, 19);
 
 /**
- * Query params of GET /dashboard/payment-intents (contract/dashboard.go ListParams).
- * 支付单列表查询(offset 分页)
- * 示例(JSON): {"limit":20,"offset":0}
+ * 收银台列表请求(空;身份级,返回名下全部 checkout)
  *
- * @generated from message payment.v1.ListPaymentIntentsReq
+ * @generated from message payment.v1.ListCheckoutsReq
  */
-export type ListPaymentIntentsReq = Message<"payment.v1.ListPaymentIntentsReq"> & {
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
-   * 每页条数
-   *
-   * @generated from field: optional int32 limit = 1;
-   */
-  limit?: number | undefined;
-
-  /**
-   * 偏移
-   *
-   * @generated from field: optional int32 offset = 2;
-   */
-  offset?: number | undefined;
+export type ListCheckoutsReq = Message<"payment.v1.ListCheckoutsReq"> & {
 };
 
 /**
- * Query params of GET /dashboard/payment-intents (contract/dashboard.go ListParams).
- * 支付单列表查询(offset 分页)
- * 示例(JSON): {"limit":20,"offset":0}
+ * 收银台列表请求(空;身份级,返回名下全部 checkout)
  *
- * @generated from message payment.v1.ListPaymentIntentsReq
+ * @generated from message payment.v1.ListCheckoutsReq
  */
-export type ListPaymentIntentsReqJson = {
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
-   * 每页条数
-   *
-   * @generated from field: optional int32 limit = 1;
-   */
-  limit?: number;
-
-  /**
-   * 偏移
-   *
-   * @generated from field: optional int32 offset = 2;
-   */
-  offset?: number;
+export type ListCheckoutsReqJson = {
 };
 
 /**
- * Describes the message payment.v1.ListPaymentIntentsReq.
- * Use `create(ListPaymentIntentsReqSchema)` to create a new message.
+ * Describes the message payment.v1.ListCheckoutsReq.
+ * Use `create(ListCheckoutsReqSchema)` to create a new message.
  */
-export const ListPaymentIntentsReqSchema: GenMessage<ListPaymentIntentsReq, {jsonType: ListPaymentIntentsReqJson}> = /*@__PURE__*/
+export const ListCheckoutsReqSchema: GenMessage<ListCheckoutsReq, {jsonType: ListCheckoutsReqJson}> = /*@__PURE__*/
   messageDesc(file_v1_service_dashboard, 20);
 
 /**
- * 支付单列表响应
- * 示例(JSON): {"intents":[{...PaymentIntentSummary...}],"total":42}
+ * 收银台列表响应
+ * 示例(JSON): {"checkouts":[{...CheckoutSummary...}]}
  *
- * @generated from message payment.v1.ListPaymentIntentsResponse
+ * @generated from message payment.v1.ListCheckoutsResponse
  */
-export type ListPaymentIntentsResponse = Message<"payment.v1.ListPaymentIntentsResponse"> & {
+export type ListCheckoutsResponse = Message<"payment.v1.ListCheckoutsResponse"> & {
   /**
-   * 摘要列表
+   * 收银台卡片列表(创建时间升序)
    *
-   * @generated from field: repeated payment.v1.PaymentIntentSummary intents = 1;
+   * @generated from field: repeated payment.v1.CheckoutSummary checkouts = 1;
    */
-  intents: PaymentIntentSummary[];
-
-  /**
-   * 总条数
-   *
-   * @generated from field: uint32 total = 2;
-   */
-  total: number;
+  checkouts: CheckoutSummary[];
 };
 
 /**
- * 支付单列表响应
- * 示例(JSON): {"intents":[{...PaymentIntentSummary...}],"total":42}
+ * 收银台列表响应
+ * 示例(JSON): {"checkouts":[{...CheckoutSummary...}]}
  *
- * @generated from message payment.v1.ListPaymentIntentsResponse
+ * @generated from message payment.v1.ListCheckoutsResponse
  */
-export type ListPaymentIntentsResponseJson = {
+export type ListCheckoutsResponseJson = {
   /**
-   * 摘要列表
+   * 收银台卡片列表(创建时间升序)
    *
-   * @generated from field: repeated payment.v1.PaymentIntentSummary intents = 1;
+   * @generated from field: repeated payment.v1.CheckoutSummary checkouts = 1;
    */
-  intents?: PaymentIntentSummaryJson[];
-
-  /**
-   * 总条数
-   *
-   * @generated from field: uint32 total = 2;
-   */
-  total?: number;
+  checkouts?: CheckoutSummaryJson[];
 };
 
 /**
- * Describes the message payment.v1.ListPaymentIntentsResponse.
- * Use `create(ListPaymentIntentsResponseSchema)` to create a new message.
+ * Describes the message payment.v1.ListCheckoutsResponse.
+ * Use `create(ListCheckoutsResponseSchema)` to create a new message.
  */
-export const ListPaymentIntentsResponseSchema: GenMessage<ListPaymentIntentsResponse, {jsonType: ListPaymentIntentsResponseJson}> = /*@__PURE__*/
+export const ListCheckoutsResponseSchema: GenMessage<ListCheckoutsResponse, {jsonType: ListCheckoutsResponseJson}> = /*@__PURE__*/
   messageDesc(file_v1_service_dashboard, 21);
+
+/**
+ * 新建收银台请求(只要名字;store_slug 由 name slug 化派生,冲突/非法 1100;
+ * 新店一律 is_default=false 不抢默认——除非是身份名下首个账户,13.7 裁决)
+ * 示例(JSON): {"name":"副业小店"}
+ *
+ * @generated from message payment.v1.CreateCheckoutReq
+ */
+export type CreateCheckoutReq = Message<"payment.v1.CreateCheckoutReq"> & {
+  /**
+   * checkout 名(显示名)
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * 新建收银台请求(只要名字;store_slug 由 name slug 化派生,冲突/非法 1100;
+ * 新店一律 is_default=false 不抢默认——除非是身份名下首个账户,13.7 裁决)
+ * 示例(JSON): {"name":"副业小店"}
+ *
+ * @generated from message payment.v1.CreateCheckoutReq
+ */
+export type CreateCheckoutReqJson = {
+  /**
+   * checkout 名(显示名)
+   *
+   * @generated from field: string name = 1;
+   */
+  name?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateCheckoutReq.
+ * Use `create(CreateCheckoutReqSchema)` to create a new message.
+ */
+export const CreateCheckoutReqSchema: GenMessage<CreateCheckoutReq, {jsonType: CreateCheckoutReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 22);
+
+/**
+ * 收银台详情请求(path account_id;dashboard 内部门说内部 id,store_slug 只进公开门)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailReq
+ */
+export type GetCheckoutDetailReq = Message<"payment.v1.GetCheckoutDetailReq"> & {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * 收银台详情请求(path account_id;dashboard 内部门说内部 id,store_slug 只进公开门)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailReq
+ */
+export type GetCheckoutDetailReqJson = {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+};
+
+/**
+ * Describes the message payment.v1.GetCheckoutDetailReq.
+ * Use `create(GetCheckoutDetailReqSchema)` to create a new message.
+ */
+export const GetCheckoutDetailReqSchema: GenMessage<GetCheckoutDetailReq, {jsonType: GetCheckoutDetailReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 23);
+
+/**
+ * 收银台详情响应:卡片 + 近 30 天收款统计 + 钱包资产合计
+ * 示例(JSON): {"checkout":{...CheckoutSummary...},"received_count_30d":12,"received_usd_30d":1284.06,"total_assets_usd":42.5}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailResponse
+ */
+export type GetCheckoutDetailResponse = Message<"payment.v1.GetCheckoutDetailResponse"> & {
+  /**
+   * 收银台卡片
+   *
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummary | undefined;
+
+  /**
+   * 近 30 天收款笔数
+   *
+   * @generated from field: int32 receivedCount30d = 2 [json_name = "received_count_30d"];
+   */
+  receivedCount30d: number;
+
+  /**
+   * 近 30 天收款合计(USD)
+   *
+   * @generated from field: double receivedUsd30d = 3 [json_name = "received_usd_30d"];
+   */
+  receivedUsd30d: number;
+
+  /**
+   * 钱包资产合计(对齐 ListWalletAssetsResponse 的 double)
+   *
+   * @generated from field: double totalAssetsUsd = 4 [json_name = "total_assets_usd"];
+   */
+  totalAssetsUsd: number;
+};
+
+/**
+ * 收银台详情响应:卡片 + 近 30 天收款统计 + 钱包资产合计
+ * 示例(JSON): {"checkout":{...CheckoutSummary...},"received_count_30d":12,"received_usd_30d":1284.06,"total_assets_usd":42.5}
+ *
+ * @generated from message payment.v1.GetCheckoutDetailResponse
+ */
+export type GetCheckoutDetailResponseJson = {
+  /**
+   * 收银台卡片
+   *
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummaryJson;
+
+  /**
+   * 近 30 天收款笔数
+   *
+   * @generated from field: int32 receivedCount30d = 2 [json_name = "received_count_30d"];
+   */
+  received_count_30d?: number;
+
+  /**
+   * 近 30 天收款合计(USD)
+   *
+   * @generated from field: double receivedUsd30d = 3 [json_name = "received_usd_30d"];
+   */
+  received_usd_30d?: number | "NaN" | "Infinity" | "-Infinity";
+
+  /**
+   * 钱包资产合计(对齐 ListWalletAssetsResponse 的 double)
+   *
+   * @generated from field: double totalAssetsUsd = 4 [json_name = "total_assets_usd"];
+   */
+  total_assets_usd?: number | "NaN" | "Infinity" | "-Infinity";
+};
+
+/**
+ * Describes the message payment.v1.GetCheckoutDetailResponse.
+ * Use `create(GetCheckoutDetailResponseSchema)` to create a new message.
+ */
+export const GetCheckoutDetailResponseSchema: GenMessage<GetCheckoutDetailResponse, {jsonType: GetCheckoutDetailResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 24);
+
+/**
+ * 设为默认收银台请求(path account_id;事务内互斥切换,只影响新 market 订单的钱进向)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutReq
+ */
+export type SetDefaultCheckoutReq = Message<"payment.v1.SetDefaultCheckoutReq"> & {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * 设为默认收银台请求(path account_id;事务内互斥切换,只影响新 market 订单的钱进向)
+ * 示例(JSON): {"id":"acct_x8y9..."}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutReq
+ */
+export type SetDefaultCheckoutReqJson = {
+  /**
+   * 账户 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+};
+
+/**
+ * Describes the message payment.v1.SetDefaultCheckoutReq.
+ * Use `create(SetDefaultCheckoutReqSchema)` to create a new message.
+ */
+export const SetDefaultCheckoutReqSchema: GenMessage<SetDefaultCheckoutReq, {jsonType: SetDefaultCheckoutReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 25);
+
+/**
+ * 设为默认收银台响应(切换后的卡片)
+ * 示例(JSON): {"checkout":{...CheckoutSummary...,"is_default":true}}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutResponse
+ */
+export type SetDefaultCheckoutResponse = Message<"payment.v1.SetDefaultCheckoutResponse"> & {
+  /**
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummary | undefined;
+};
+
+/**
+ * 设为默认收银台响应(切换后的卡片)
+ * 示例(JSON): {"checkout":{...CheckoutSummary...,"is_default":true}}
+ *
+ * @generated from message payment.v1.SetDefaultCheckoutResponse
+ */
+export type SetDefaultCheckoutResponseJson = {
+  /**
+   * @generated from field: payment.v1.CheckoutSummary checkout = 1;
+   */
+  checkout?: CheckoutSummaryJson;
+};
+
+/**
+ * Describes the message payment.v1.SetDefaultCheckoutResponse.
+ * Use `create(SetDefaultCheckoutResponseSchema)` to create a new message.
+ */
+export const SetDefaultCheckoutResponseSchema: GenMessage<SetDefaultCheckoutResponse, {jsonType: SetDefaultCheckoutResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 26);
+
+/**
+ * 开收款单请求(金额锁死在 intent 上;买家永久匿名、无 buyer 字段,13.7 裁决)
+ * 示例(JSON): {"id":"acct_x8y9...","amount_cents":1000,"ref":"咨询费","return_url":"https://shop.example.com/done"}
+ *
+ * @generated from message payment.v1.CreateInvoiceReq
+ */
+export type CreateInvoiceReq = Message<"payment.v1.CreateInvoiceReq"> & {
+  /**
+   * path account_id(落在本店账户)
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * 金额(美分)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amountCents: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string | undefined;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  returnUrl?: string | undefined;
+
+  /**
+   * 付款人标注(任意字符串,商户自用归类) → intent metadata.payer
+   *
+   * @generated from field: optional string payer = 5;
+   */
+  payer?: string | undefined;
+};
+
+/**
+ * 开收款单请求(金额锁死在 intent 上;买家永久匿名、无 buyer 字段,13.7 裁决)
+ * 示例(JSON): {"id":"acct_x8y9...","amount_cents":1000,"ref":"咨询费","return_url":"https://shop.example.com/done"}
+ *
+ * @generated from message payment.v1.CreateInvoiceReq
+ */
+export type CreateInvoiceReqJson = {
+  /**
+   * path account_id(落在本店账户)
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+
+  /**
+   * 金额(美分)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amount_cents?: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  return_url?: string;
+
+  /**
+   * 付款人标注(任意字符串,商户自用归类) → intent metadata.payer
+   *
+   * @generated from field: optional string payer = 5;
+   */
+  payer?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateInvoiceReq.
+ * Use `create(CreateInvoiceReqSchema)` to create a new message.
+ */
+export const CreateInvoiceReqSchema: GenMessage<CreateInvoiceReq, {jsonType: CreateInvoiceReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 27);
+
+/**
+ * 开收款单响应(一步返回可分享付款链接)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.CreateInvoiceResponse
+ */
+export type CreateInvoiceResponse = Message<"payment.v1.CreateInvoiceResponse"> & {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intentId: string;
+
+  /**
+   * 收银台 URL(可分享)
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkoutUrl: string;
+};
+
+/**
+ * 开收款单响应(一步返回可分享付款链接)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.CreateInvoiceResponse
+ */
+export type CreateInvoiceResponseJson = {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intent_id?: string;
+
+  /**
+   * 收银台 URL(可分享)
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkout_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.CreateInvoiceResponse.
+ * Use `create(CreateInvoiceResponseSchema)` to create a new message.
+ */
+export const CreateInvoiceResponseSchema: GenMessage<CreateInvoiceResponse, {jsonType: CreateInvoiceResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 28);
 
 /**
  * Path id of GET /dashboard/payment-intents/:id.
@@ -1011,7 +1348,7 @@ export type GetPaymentIntentDetailReqJson = {
  * Use `create(GetPaymentIntentDetailReqSchema)` to create a new message.
  */
 export const GetPaymentIntentDetailReqSchema: GenMessage<GetPaymentIntentDetailReq, {jsonType: GetPaymentIntentDetailReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 22);
+  messageDesc(file_v1_service_dashboard, 29);
 
 /**
  * PaymentIntentDetailResponse mirrors contract/payment.go: summary + pmc tokens,
@@ -1108,94 +1445,453 @@ export type PaymentIntentDetailResponseJson = {
  * Use `create(PaymentIntentDetailResponseSchema)` to create a new message.
  */
 export const PaymentIntentDetailResponseSchema: GenMessage<PaymentIntentDetailResponse, {jsonType: PaymentIntentDetailResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 23);
+  messageDesc(file_v1_service_dashboard, 30);
 
 /**
- * Query params of GET /dashboard/wallet-transactions (session-gate mirror of the
- * gateway's listReceiveWalletTransactions; keyset pagination, fixed block_number DESC).
- * 收款钱包流水查询(全部可选,keyset 分页)
- * 示例(JSON): {"limit":20,"address":"0xAbCd...","cursor":"..."}
+ * 交易聚合查询(keyset 分页;全部可选,缺省 = 全部来源/状态/方向)
+ * 示例(JSON): {"limit":20,"cursor":"...","source":"TRANSACTION_SOURCE_DIRECT","account_id":"acct_x8y9..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsReq
+ * @generated from message payment.v1.ListTransactionsReq
  */
-export type ListWalletTransactionsReq = Message<"payment.v1.ListWalletTransactionsReq"> & {
+export type ListTransactionsReq = Message<"payment.v1.ListTransactionsReq"> & {
   /**
-   * 按收款钱包地址过滤(须属于当前账户)
-   *
-   * @generated from field: optional string address = 1;
-   */
-  address?: string | undefined;
-
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
    * 每页条数,默认 20,上限 200
    *
-   * @generated from field: optional int32 limit = 2;
+   * @generated from field: optional int32 limit = 1;
    */
   limit?: number | undefined;
 
   /**
-   * 上一页 next_cursor
+   * 上一页 next_cursor(opaque keyset)
    *
-   * @generated from field: optional string cursor = 3;
+   * @generated from field: optional string cursor = 2;
    */
   cursor?: string | undefined;
+
+  /**
+   * 来源过滤(来源 chips)
+   *
+   * @generated from field: optional payment.v1.TransactionSource source = 3;
+   */
+  source?: TransactionSource | undefined;
+
+  /**
+   * 状态过滤;直转行无状态概念,恒映射 SUCCEEDED 桶(13.7)
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 4;
+   */
+  status?: PaymentStatus | undefined;
+
+  /**
+   * 方向过滤;OUT 只命中直转腿
+   *
+   * @generated from field: optional payment.v1.TransactionDirection direction = 5;
+   */
+  direction?: TransactionDirection | undefined;
+
+  /**
+   * 按单 checkout 过滤(须本身份名下)
+   *
+   * @generated from field: optional string accountId = 6 [json_name = "account_id"];
+   */
+  accountId?: string | undefined;
+
+  /**
+   * 按订单渠道过滤(Invoice/Store/API/Market chips)
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 7;
+   */
+  origin?: TransactionOrigin | undefined;
 };
 
 /**
- * Query params of GET /dashboard/wallet-transactions (session-gate mirror of the
- * gateway's listReceiveWalletTransactions; keyset pagination, fixed block_number DESC).
- * 收款钱包流水查询(全部可选,keyset 分页)
- * 示例(JSON): {"limit":20,"address":"0xAbCd...","cursor":"..."}
+ * 交易聚合查询(keyset 分页;全部可选,缺省 = 全部来源/状态/方向)
+ * 示例(JSON): {"limit":20,"cursor":"...","source":"TRANSACTION_SOURCE_DIRECT","account_id":"acct_x8y9..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsReq
+ * @generated from message payment.v1.ListTransactionsReq
  */
-export type ListWalletTransactionsReqJson = {
+export type ListTransactionsReqJson = {
   /**
-   * 按收款钱包地址过滤(须属于当前账户)
-   *
-   * @generated from field: optional string address = 1;
-   */
-  address?: string;
-
-  /**
-   * Go contract is *int64; int32 keeps the wire a JSON number (decision 1).
-   *
    * 每页条数,默认 20,上限 200
    *
-   * @generated from field: optional int32 limit = 2;
+   * @generated from field: optional int32 limit = 1;
    */
   limit?: number;
 
   /**
-   * 上一页 next_cursor
+   * 上一页 next_cursor(opaque keyset)
    *
-   * @generated from field: optional string cursor = 3;
+   * @generated from field: optional string cursor = 2;
    */
   cursor?: string;
+
+  /**
+   * 来源过滤(来源 chips)
+   *
+   * @generated from field: optional payment.v1.TransactionSource source = 3;
+   */
+  source?: TransactionSourceJson;
+
+  /**
+   * 状态过滤;直转行无状态概念,恒映射 SUCCEEDED 桶(13.7)
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 4;
+   */
+  status?: PaymentStatusJson;
+
+  /**
+   * 方向过滤;OUT 只命中直转腿
+   *
+   * @generated from field: optional payment.v1.TransactionDirection direction = 5;
+   */
+  direction?: TransactionDirectionJson;
+
+  /**
+   * 按单 checkout 过滤(须本身份名下)
+   *
+   * @generated from field: optional string accountId = 6 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * 按订单渠道过滤(Invoice/Store/API/Market chips)
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 7;
+   */
+  origin?: TransactionOriginJson;
 };
 
 /**
- * Describes the message payment.v1.ListWalletTransactionsReq.
- * Use `create(ListWalletTransactionsReqSchema)` to create a new message.
+ * Describes the message payment.v1.ListTransactionsReq.
+ * Use `create(ListTransactionsReqSchema)` to create a new message.
  */
-export const ListWalletTransactionsReqSchema: GenMessage<ListWalletTransactionsReq, {jsonType: ListWalletTransactionsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 24);
+export const ListTransactionsReqSchema: GenMessage<ListTransactionsReq, {jsonType: ListTransactionsReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 31);
 
 /**
- * 收款钱包流水响应
- * 示例(JSON): {"items":[{...ReceiveWalletTransactionItem...}],"has_more":true,"next_cursor":"..."}
+ * 聚合行:订单腿(payment_intents)∪ 直转腿(receive_wallet_transactions,intent_id IS NULL)
+ * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
+ * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
+ * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsResponse
+ * @generated from message payment.v1.TransactionItem
  */
-export type ListWalletTransactionsResponse = Message<"payment.v1.ListWalletTransactionsResponse"> & {
+export type TransactionItem = Message<"payment.v1.TransactionItem"> & {
   /**
-   * 流水列表
+   * 支付单 ID(pi_xxx)或流水行 ID
    *
-   * @generated from field: repeated payment.v1.ReceiveWalletTransactionItem items = 1;
+   * @generated from field: string id = 1;
    */
-  items: ReceiveWalletTransactionItem[];
+  id: string;
+
+  /**
+   * ORDER 或 DIRECT
+   *
+   * @generated from field: payment.v1.TransactionSource source = 2;
+   */
+  source: TransactionSource;
+
+  /**
+   * 订单恒 IN;直转按链上方向
+   *
+   * @generated from field: payment.v1.TransactionDirection direction = 3;
+   */
+  direction: TransactionDirection;
+
+  /**
+   * 排序键:订单=created_at,直转=block_time
+   *
+   * @generated from field: google.protobuf.Timestamp occurredAt = 4 [json_name = "occurred_at"];
+   */
+  occurredAt?: Timestamp | undefined;
+
+  /**
+   * 归属 checkout(订单=merchant_account_id;直转=钱包所属账户)
+   *
+   * @generated from field: optional string accountId = 5 [json_name = "account_id"];
+   */
+  accountId?: string | undefined;
+
+  /**
+   * 仅订单行
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 6;
+   */
+  status?: PaymentStatus | undefined;
+
+  /**
+   * 仅订单行(计价币种美分)
+   *
+   * @generated from field: optional int32 amountCents = 7 [json_name = "amount_cents"];
+   */
+  amountCents?: number | undefined;
+
+  /**
+   * 仅订单行,如 "usd"
+   *
+   * @generated from field: optional string currency = 8;
+   */
+  currency?: string | undefined;
+
+  /**
+   * 买家用户名(缺省 = 匿名买家,13.7)
+   *
+   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
+   */
+  buyerOlaresId?: string | undefined;
+
+  /**
+   * 有值 = 市场徽章
+   *
+   * @generated from field: optional payment.v1.ProductSnapshot product = 10;
+   */
+  product?: ProductSnapshot | undefined;
+
+  /**
+   * 直转行哈希;订单行 = 已关联结算流水哈希(未支付缺省)
+   *
+   * @generated from field: optional string txHash = 11 [json_name = "tx_hash"];
+   */
+  txHash?: string | undefined;
+
+  /**
+   * 直转行链 slug;订单行 = 结算链 slug(未支付缺省)
+   *
+   * @generated from field: optional string chain = 12;
+   */
+  chain?: string | undefined;
+
+  /**
+   * 直转行链上金额(human units);订单行 = 结算金额(未支付缺省)
+   *
+   * @generated from field: optional string amount = 13;
+   */
+  amount?: string | undefined;
+
+  /**
+   * 直转行代币符号;订单行 = 结算代币符号(未支付缺省)
+   *
+   * @generated from field: optional string symbol = 14;
+   */
+  symbol?: string | undefined;
+
+  /**
+   * 直转行对方地址(in=from/out=to)
+   *
+   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
+   */
+  counterpartyAddress?: string | undefined;
+
+  /**
+   * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
+   *
+   * @generated from field: optional string payer = 16;
+   */
+  payer?: string | undefined;
+
+  /**
+   * 订单行创建渠道(类型 SSOT);直转行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 17;
+   */
+  origin?: TransactionOrigin | undefined;
+
+  /**
+   * 直转行资产类型(派生);订单行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionAssetKind assetKind = 18 [json_name = "asset_kind"];
+   */
+  assetKind?: TransactionAssetKind | undefined;
+
+  /**
+   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   *
+   * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
+   */
+  isOlaresPay?: boolean | undefined;
+
+  /**
+   * 外部买家快照(external 档订单;直转行缺省)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
+};
+
+/**
+ * 聚合行:订单腿(payment_intents)∪ 直转腿(receive_wallet_transactions,intent_id IS NULL)
+ * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
+ * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
+ * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
+ *
+ * @generated from message payment.v1.TransactionItem
+ */
+export type TransactionItemJson = {
+  /**
+   * 支付单 ID(pi_xxx)或流水行 ID
+   *
+   * @generated from field: string id = 1;
+   */
+  id?: string;
+
+  /**
+   * ORDER 或 DIRECT
+   *
+   * @generated from field: payment.v1.TransactionSource source = 2;
+   */
+  source?: TransactionSourceJson;
+
+  /**
+   * 订单恒 IN;直转按链上方向
+   *
+   * @generated from field: payment.v1.TransactionDirection direction = 3;
+   */
+  direction?: TransactionDirectionJson;
+
+  /**
+   * 排序键:订单=created_at,直转=block_time
+   *
+   * @generated from field: google.protobuf.Timestamp occurredAt = 4 [json_name = "occurred_at"];
+   */
+  occurred_at?: TimestampJson;
+
+  /**
+   * 归属 checkout(订单=merchant_account_id;直转=钱包所属账户)
+   *
+   * @generated from field: optional string accountId = 5 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * 仅订单行
+   *
+   * @generated from field: optional payment.v1.PaymentStatus status = 6;
+   */
+  status?: PaymentStatusJson;
+
+  /**
+   * 仅订单行(计价币种美分)
+   *
+   * @generated from field: optional int32 amountCents = 7 [json_name = "amount_cents"];
+   */
+  amount_cents?: number;
+
+  /**
+   * 仅订单行,如 "usd"
+   *
+   * @generated from field: optional string currency = 8;
+   */
+  currency?: string;
+
+  /**
+   * 买家用户名(缺省 = 匿名买家,13.7)
+   *
+   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
+   */
+  buyer_olares_id?: string;
+
+  /**
+   * 有值 = 市场徽章
+   *
+   * @generated from field: optional payment.v1.ProductSnapshot product = 10;
+   */
+  product?: ProductSnapshotJson;
+
+  /**
+   * 直转行哈希;订单行 = 已关联结算流水哈希(未支付缺省)
+   *
+   * @generated from field: optional string txHash = 11 [json_name = "tx_hash"];
+   */
+  tx_hash?: string;
+
+  /**
+   * 直转行链 slug;订单行 = 结算链 slug(未支付缺省)
+   *
+   * @generated from field: optional string chain = 12;
+   */
+  chain?: string;
+
+  /**
+   * 直转行链上金额(human units);订单行 = 结算金额(未支付缺省)
+   *
+   * @generated from field: optional string amount = 13;
+   */
+  amount?: string;
+
+  /**
+   * 直转行代币符号;订单行 = 结算代币符号(未支付缺省)
+   *
+   * @generated from field: optional string symbol = 14;
+   */
+  symbol?: string;
+
+  /**
+   * 直转行对方地址(in=from/out=to)
+   *
+   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
+   */
+  counterparty_address?: string;
+
+  /**
+   * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
+   *
+   * @generated from field: optional string payer = 16;
+   */
+  payer?: string;
+
+  /**
+   * 订单行创建渠道(类型 SSOT);直转行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionOrigin origin = 17;
+   */
+  origin?: TransactionOriginJson;
+
+  /**
+   * 直转行资产类型(派生);订单行缺省
+   *
+   * @generated from field: optional payment.v1.TransactionAssetKind assetKind = 18 [json_name = "asset_kind"];
+   */
+  asset_kind?: TransactionAssetKindJson;
+
+  /**
+   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   *
+   * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
+   */
+  is_olares_pay?: boolean;
+
+  /**
+   * 外部买家快照(external 档订单;直转行缺省)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
+};
+
+/**
+ * Describes the message payment.v1.TransactionItem.
+ * Use `create(TransactionItemSchema)` to create a new message.
+ */
+export const TransactionItemSchema: GenMessage<TransactionItem, {jsonType: TransactionItemJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 32);
+
+/**
+ * 交易聚合响应
+ * 示例(JSON): {"items":[{...TransactionItem...}],"has_more":true,"next_cursor":"..."}
+ *
+ * @generated from message payment.v1.ListTransactionsResponse
+ */
+export type ListTransactionsResponse = Message<"payment.v1.ListTransactionsResponse"> & {
+  /**
+   * 聚合行(已按 occurred_at DESC 排好)
+   *
+   * @generated from field: repeated payment.v1.TransactionItem items = 1;
+   */
+  items: TransactionItem[];
 
   /**
    * 是否还有下一页
@@ -1213,18 +1909,18 @@ export type ListWalletTransactionsResponse = Message<"payment.v1.ListWalletTrans
 };
 
 /**
- * 收款钱包流水响应
- * 示例(JSON): {"items":[{...ReceiveWalletTransactionItem...}],"has_more":true,"next_cursor":"..."}
+ * 交易聚合响应
+ * 示例(JSON): {"items":[{...TransactionItem...}],"has_more":true,"next_cursor":"..."}
  *
- * @generated from message payment.v1.ListWalletTransactionsResponse
+ * @generated from message payment.v1.ListTransactionsResponse
  */
-export type ListWalletTransactionsResponseJson = {
+export type ListTransactionsResponseJson = {
   /**
-   * 流水列表
+   * 聚合行(已按 occurred_at DESC 排好)
    *
-   * @generated from field: repeated payment.v1.ReceiveWalletTransactionItem items = 1;
+   * @generated from field: repeated payment.v1.TransactionItem items = 1;
    */
-  items?: ReceiveWalletTransactionItemJson[];
+  items?: TransactionItemJson[];
 
   /**
    * 是否还有下一页
@@ -1242,11 +1938,11 @@ export type ListWalletTransactionsResponseJson = {
 };
 
 /**
- * Describes the message payment.v1.ListWalletTransactionsResponse.
- * Use `create(ListWalletTransactionsResponseSchema)` to create a new message.
+ * Describes the message payment.v1.ListTransactionsResponse.
+ * Use `create(ListTransactionsResponseSchema)` to create a new message.
  */
-export const ListWalletTransactionsResponseSchema: GenMessage<ListWalletTransactionsResponse, {jsonType: ListWalletTransactionsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 25);
+export const ListTransactionsResponseSchema: GenMessage<ListTransactionsResponse, {jsonType: ListTransactionsResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_dashboard, 33);
 
 /**
  * Query params of GET /dashboard/assets: live ankr_getAccountBalance fan-out over the
@@ -1301,7 +1997,7 @@ export type ListWalletAssetsReqJson = {
  * Use `create(ListWalletAssetsReqSchema)` to create a new message.
  */
 export const ListWalletAssetsReqSchema: GenMessage<ListWalletAssetsReq, {jsonType: ListWalletAssetsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 26);
+  messageDesc(file_v1_service_dashboard, 34);
 
 /**
  * 收款钱包资产响应(实时快照,零余额行不返回)
@@ -1366,7 +2062,7 @@ export type ListWalletAssetsResponseJson = {
  * Use `create(ListWalletAssetsResponseSchema)` to create a new message.
  */
 export const ListWalletAssetsResponseSchema: GenMessage<ListWalletAssetsResponse, {jsonType: ListWalletAssetsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 27);
+  messageDesc(file_v1_service_dashboard, 35);
 
 /**
  * webhook 端点列表请求(空)
@@ -1389,7 +2085,7 @@ export type ListWebhookEndpointsReqJson = {
  * Use `create(ListWebhookEndpointsReqSchema)` to create a new message.
  */
 export const ListWebhookEndpointsReqSchema: GenMessage<ListWebhookEndpointsReq, {jsonType: ListWebhookEndpointsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 28);
+  messageDesc(file_v1_service_dashboard, 36);
 
 /**
  * webhook 端点列表响应
@@ -1399,7 +2095,7 @@ export const ListWebhookEndpointsReqSchema: GenMessage<ListWebhookEndpointsReq, 
  */
 export type ListWebhookEndpointsResponse = Message<"payment.v1.ListWebhookEndpointsResponse"> & {
   /**
-   * 端点列表(secret 恒不含)
+   * 端点列表(含 secret,session 门后)
    *
    * @generated from field: repeated payment.v1.WebhookEndpoint endpoints = 1;
    */
@@ -1414,7 +2110,7 @@ export type ListWebhookEndpointsResponse = Message<"payment.v1.ListWebhookEndpoi
  */
 export type ListWebhookEndpointsResponseJson = {
   /**
-   * 端点列表(secret 恒不含)
+   * 端点列表(含 secret,session 门后)
    *
    * @generated from field: repeated payment.v1.WebhookEndpoint endpoints = 1;
    */
@@ -1426,7 +2122,7 @@ export type ListWebhookEndpointsResponseJson = {
  * Use `create(ListWebhookEndpointsResponseSchema)` to create a new message.
  */
 export const ListWebhookEndpointsResponseSchema: GenMessage<ListWebhookEndpointsResponse, {jsonType: ListWebhookEndpointsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 29);
+  messageDesc(file_v1_service_dashboard, 37);
 
 /**
  * CreateWebhookReq mirrors contract/dashboard.go.
@@ -1493,7 +2189,7 @@ export type CreateWebhookReqJson = {
  * Use `create(CreateWebhookReqSchema)` to create a new message.
  */
 export const CreateWebhookReqSchema: GenMessage<CreateWebhookReq, {jsonType: CreateWebhookReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 30);
+  messageDesc(file_v1_service_dashboard, 38);
 
 /**
  * UpdateWebhookReq mirrors contract/dashboard.go plus the path id (BIGSERIAL string).
@@ -1588,7 +2284,7 @@ export type UpdateWebhookReqJson = {
  * Use `create(UpdateWebhookReqSchema)` to create a new message.
  */
 export const UpdateWebhookReqSchema: GenMessage<UpdateWebhookReq, {jsonType: UpdateWebhookReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 31);
+  messageDesc(file_v1_service_dashboard, 39);
 
 /**
  * Path id is BIGSERIAL and travels as a string end to end (redline 4).
@@ -1627,7 +2323,7 @@ export type DeleteWebhookEndpointReqJson = {
  * Use `create(DeleteWebhookEndpointReqSchema)` to create a new message.
  */
 export const DeleteWebhookEndpointReqSchema: GenMessage<DeleteWebhookEndpointReq, {jsonType: DeleteWebhookEndpointReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 32);
+  messageDesc(file_v1_service_dashboard, 40);
 
 /**
  * Path id is BIGSERIAL and travels as a string end to end (redline 4).
@@ -1666,7 +2362,7 @@ export type TestWebhookEndpointReqJson = {
  * Use `create(TestWebhookEndpointReqSchema)` to create a new message.
  */
 export const TestWebhookEndpointReqSchema: GenMessage<TestWebhookEndpointReq, {jsonType: TestWebhookEndpointReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 33);
+  messageDesc(file_v1_service_dashboard, 41);
 
 /**
  * TestWebhookResponse mirrors contract/webhook.go (connectivity test result).
@@ -1751,7 +2447,7 @@ export type TestWebhookResponseJson = {
  * Use `create(TestWebhookResponseSchema)` to create a new message.
  */
 export const TestWebhookResponseSchema: GenMessage<TestWebhookResponse, {jsonType: TestWebhookResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 34);
+  messageDesc(file_v1_service_dashboard, 42);
 
 /**
  * ReplayDeliveryReq carries the two path params of
@@ -1806,7 +2502,7 @@ export type ReplayDeliveryReqJson = {
  * Use `create(ReplayDeliveryReqSchema)` to create a new message.
  */
 export const ReplayDeliveryReqSchema: GenMessage<ReplayDeliveryReq, {jsonType: ReplayDeliveryReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 35);
+  messageDesc(file_v1_service_dashboard, 43);
 
 /**
  * 回调事件列表请求(空)
@@ -1829,7 +2525,7 @@ export type ListCallbackEventsReqJson = {
  * Use `create(ListCallbackEventsReqSchema)` to create a new message.
  */
 export const ListCallbackEventsReqSchema: GenMessage<ListCallbackEventsReq, {jsonType: ListCallbackEventsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 36);
+  messageDesc(file_v1_service_dashboard, 44);
 
 /**
  * 回调事件列表响应(逐端点取最近 50 条)
@@ -1866,7 +2562,7 @@ export type ListCallbackEventsResponseJson = {
  * Use `create(ListCallbackEventsResponseSchema)` to create a new message.
  */
 export const ListCallbackEventsResponseSchema: GenMessage<ListCallbackEventsResponse, {jsonType: ListCallbackEventsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 37);
+  messageDesc(file_v1_service_dashboard, 45);
 
 /**
  * 密钥列表请求(空;每次调用先把链上公钥 upsert 落库再返回)
@@ -1889,7 +2585,7 @@ export type ListDeveloperRsaKeysReqJson = {
  * Use `create(ListDeveloperRsaKeysReqSchema)` to create a new message.
  */
 export const ListDeveloperRsaKeysReqSchema: GenMessage<ListDeveloperRsaKeysReq, {jsonType: ListDeveloperRsaKeysReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 38);
+  messageDesc(file_v1_service_dashboard, 46);
 
 /**
  * 密钥列表响应:链上同步 ∪ 本地托管全量行 + 资格
@@ -1940,7 +2636,7 @@ export type ListDeveloperRsaKeysResponseJson = {
  * Use `create(ListDeveloperRsaKeysResponseSchema)` to create a new message.
  */
 export const ListDeveloperRsaKeysResponseSchema: GenMessage<ListDeveloperRsaKeysResponse, {jsonType: ListDeveloperRsaKeysResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 39);
+  messageDesc(file_v1_service_dashboard, 47);
 
 /**
  * 生成请求(浏览器 WebCrypto 生成 RSASSA-PKCS1-v1_5 2048,PKCS#8/SPKI PEM 上传,网端加密落库)
@@ -1991,7 +2687,7 @@ export type GenerateRsaKeyReqJson = {
  * Use `create(GenerateRsaKeyReqSchema)` to create a new message.
  */
 export const GenerateRsaKeyReqSchema: GenMessage<GenerateRsaKeyReq, {jsonType: GenerateRsaKeyReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 40);
+  messageDesc(file_v1_service_dashboard, 48);
 
 /**
  * 导入私钥请求(公钥须为链上已有且已落库的行)
@@ -2042,7 +2738,7 @@ export type ImportRsaPrivateKeyReqJson = {
  * Use `create(ImportRsaPrivateKeyReqSchema)` to create a new message.
  */
 export const ImportRsaPrivateKeyReqSchema: GenMessage<ImportRsaPrivateKeyReq, {jsonType: ImportRsaPrivateKeyReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 41);
+  messageDesc(file_v1_service_dashboard, 49);
 
 /**
  * 移除托管请求(path id,清空托管私钥;链上公钥事实不动)
@@ -2079,7 +2775,7 @@ export type RemoveRsaPrivateKeyReqJson = {
  * Use `create(RemoveRsaPrivateKeyReqSchema)` to create a new message.
  */
 export const RemoveRsaPrivateKeyReqSchema: GenMessage<RemoveRsaPrivateKeyReq, {jsonType: RemoveRsaPrivateKeyReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 42);
+  messageDesc(file_v1_service_dashboard, 50);
 
 /**
  * 我的应用列表请求(空;按当前身份 olares_id 过滤 market 目录)
@@ -2102,7 +2798,7 @@ export type ListMyAppsReqJson = {
  * Use `create(ListMyAppsReqSchema)` to create a new message.
  */
 export const ListMyAppsReqSchema: GenMessage<ListMyAppsReq, {jsonType: ListMyAppsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 43);
+  messageDesc(file_v1_service_dashboard, 51);
 
 /**
  * 我的应用列表响应(只读同步 market)
@@ -2139,7 +2835,7 @@ export type ListMyAppsResponseJson = {
  * Use `create(ListMyAppsResponseSchema)` to create a new message.
  */
 export const ListMyAppsResponseSchema: GenMessage<ListMyAppsResponse, {jsonType: ListMyAppsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 44);
+  messageDesc(file_v1_service_dashboard, 52);
 
 /**
  * 绑定列表请求(空)
@@ -2162,7 +2858,7 @@ export type ListGithubBindingsReqJson = {
  * Use `create(ListGithubBindingsReqSchema)` to create a new message.
  */
 export const ListGithubBindingsReqSchema: GenMessage<ListGithubBindingsReq, {jsonType: ListGithubBindingsReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 45);
+  messageDesc(file_v1_service_dashboard, 53);
 
 /**
  * 绑定列表响应
@@ -2199,7 +2895,7 @@ export type ListGithubBindingsResponseJson = {
  * Use `create(ListGithubBindingsResponseSchema)` to create a new message.
  */
 export const ListGithubBindingsResponseSchema: GenMessage<ListGithubBindingsResponse, {jsonType: ListGithubBindingsResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 46);
+  messageDesc(file_v1_service_dashboard, 54);
 
 /**
  * 发起绑定请求(每次发起生成 10min 单次 state,可重复 = 多绑定)
@@ -2236,7 +2932,7 @@ export type StartGithubBindReqJson = {
  * Use `create(StartGithubBindReqSchema)` to create a new message.
  */
 export const StartGithubBindReqSchema: GenMessage<StartGithubBindReq, {jsonType: StartGithubBindReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 47);
+  messageDesc(file_v1_service_dashboard, 55);
 
 /**
  * 发起绑定响应
@@ -2273,7 +2969,7 @@ export type StartGithubBindResponseJson = {
  * Use `create(StartGithubBindResponseSchema)` to create a new message.
  */
 export const StartGithubBindResponseSchema: GenMessage<StartGithubBindResponse, {jsonType: StartGithubBindResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 48);
+  messageDesc(file_v1_service_dashboard, 56);
 
 /**
  * 解绑请求(path id;允许解绑最后一行,资格自然回落)
@@ -2310,11 +3006,195 @@ export type DeleteGithubBindingReqJson = {
  * Use `create(DeleteGithubBindingReqSchema)` to create a new message.
  */
 export const DeleteGithubBindingReqSchema: GenMessage<DeleteGithubBindingReq, {jsonType: DeleteGithubBindingReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_dashboard, 49);
+  messageDesc(file_v1_service_dashboard, 57);
+
+/**
+ * 交易来源(来源 chips 过滤维度;MARKET 只是过滤值,不落行——订单行 origin=market 即市场)
+ *
+ * @generated from enum payment.v1.TransactionSource
+ */
+export enum TransactionSource {
+  /**
+   * 全部
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 订单行(payment_intents,任一 checkout)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_ORDER = 1;
+   */
+  ORDER = 1,
+
+  /**
+   * 订单行且 origin=market(市场;行上类型以 TransactionOrigin 为准)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_MARKET = 2;
+   */
+  MARKET = 2,
+
+  /**
+   * 未关联收款钱包流水(直接转账/转出)
+   *
+   * @generated from enum value: TRANSACTION_SOURCE_DIRECT = 3;
+   */
+  DIRECT = 3,
+}
+
+/**
+ * 交易来源(来源 chips 过滤维度;MARKET 只是过滤值,不落行——订单行 origin=market 即市场)
+ *
+ * @generated from enum payment.v1.TransactionSource
+ */
+export type TransactionSourceJson = "TRANSACTION_SOURCE_UNSPECIFIED" | "TRANSACTION_SOURCE_ORDER" | "TRANSACTION_SOURCE_MARKET" | "TRANSACTION_SOURCE_DIRECT";
+
+/**
+ * Describes the enum payment.v1.TransactionSource.
+ */
+export const TransactionSourceSchema: GenEnum<TransactionSource, TransactionSourceJson> = /*@__PURE__*/
+  enumDesc(file_v1_service_dashboard, 0);
+
+/**
+ * 订单创建渠道(订单行类型 SSOT;创建时由入口打标,落库后不变;直转行不设)。
+ * 值与 payment_intents.origin 列一致(migration 017)。
+ *
+ * @generated from enum payment.v1.TransactionOrigin
+ */
+export enum TransactionOrigin {
+  /**
+   * @generated from enum value: TRANSACTION_ORIGIN_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 商户 dashboard 开票(固定金额,可带 payer 标注)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_INVOICE = 1;
+   */
+  INVOICE = 1,
+
+  /**
+   * 公开店铺页买家自填金额(store slug 页)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_STORE_PAGE = 2;
+   */
+  STORE_PAGE = 2,
+
+  /**
+   * SDK/HMAC key 程序化建单
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_API = 3;
+   */
+  API = 3,
+
+  /**
+   * catalog 建单(product_snapshot 冻结)
+   *
+   * @generated from enum value: TRANSACTION_ORIGIN_MARKET = 4;
+   */
+  MARKET = 4,
+}
+
+/**
+ * 订单创建渠道(订单行类型 SSOT;创建时由入口打标,落库后不变;直转行不设)。
+ * 值与 payment_intents.origin 列一致(migration 017)。
+ *
+ * @generated from enum payment.v1.TransactionOrigin
+ */
+export type TransactionOriginJson = "TRANSACTION_ORIGIN_UNSPECIFIED" | "TRANSACTION_ORIGIN_INVOICE" | "TRANSACTION_ORIGIN_STORE_PAGE" | "TRANSACTION_ORIGIN_API" | "TRANSACTION_ORIGIN_MARKET";
+
+/**
+ * Describes the enum payment.v1.TransactionOrigin.
+ */
+export const TransactionOriginSchema: GenEnum<TransactionOrigin, TransactionOriginJson> = /*@__PURE__*/
+  enumDesc(file_v1_service_dashboard, 1);
+
+/**
+ * 链上资产类型(直转行派生维度:contract_address IS NULL → NATIVE;无 NFT 数据源,不预留)
+ *
+ * @generated from enum payment.v1.TransactionAssetKind
+ */
+export enum TransactionAssetKind {
+  /**
+   * @generated from enum value: TRANSACTION_ASSET_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 原生币(ETH/BNB,随链)
+   *
+   * @generated from enum value: TRANSACTION_ASSET_KIND_NATIVE = 1;
+   */
+  NATIVE = 1,
+
+  /**
+   * 同质化代币(USDC 等)
+   *
+   * @generated from enum value: TRANSACTION_ASSET_KIND_ERC20 = 2;
+   */
+  ERC20 = 2,
+}
+
+/**
+ * 链上资产类型(直转行派生维度:contract_address IS NULL → NATIVE;无 NFT 数据源,不预留)
+ *
+ * @generated from enum payment.v1.TransactionAssetKind
+ */
+export type TransactionAssetKindJson = "TRANSACTION_ASSET_KIND_UNSPECIFIED" | "TRANSACTION_ASSET_KIND_NATIVE" | "TRANSACTION_ASSET_KIND_ERC20";
+
+/**
+ * Describes the enum payment.v1.TransactionAssetKind.
+ */
+export const TransactionAssetKindSchema: GenEnum<TransactionAssetKind, TransactionAssetKindJson> = /*@__PURE__*/
+  enumDesc(file_v1_service_dashboard, 2);
+
+/**
+ * 交易方向(订单行恒 IN;OUT 只命中直转腿)
+ *
+ * @generated from enum payment.v1.TransactionDirection
+ */
+export enum TransactionDirection {
+  /**
+   * 全部
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 进账
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_IN = 1;
+   */
+  IN = 1,
+
+  /**
+   * 出账(转出)
+   *
+   * @generated from enum value: TRANSACTION_DIRECTION_OUT = 2;
+   */
+  OUT = 2,
+}
+
+/**
+ * 交易方向(订单行恒 IN;OUT 只命中直转腿)
+ *
+ * @generated from enum payment.v1.TransactionDirection
+ */
+export type TransactionDirectionJson = "TRANSACTION_DIRECTION_UNSPECIFIED" | "TRANSACTION_DIRECTION_IN" | "TRANSACTION_DIRECTION_OUT";
+
+/**
+ * Describes the enum payment.v1.TransactionDirection.
+ */
+export const TransactionDirectionSchema: GenEnum<TransactionDirection, TransactionDirectionJson> = /*@__PURE__*/
+  enumDesc(file_v1_service_dashboard, 3);
 
 /**
  * DashboardService is the dashboard process (/dashboard/* merchant self-service),
- * 36 rpc matching the actual routes in src/dashboard/*.controller.ts.
+ * 37 rpc(2026-09 读路径收敛:ListPaymentIntents 列表与 ListWalletTransactions 镜像移除,
+ * 交易列表唯一入口 = ListTransactions union feed;详情/对账专用视图保留)。
  *
  * @generated from service payment.v1.DashboardService
  */
@@ -2440,16 +3320,60 @@ export const DashboardService: GenService<{
     output: typeof ListSupportedChainsResponseSchema;
   },
   /**
-   * Transactions(交易查询)
+   * Checkout store(开发者中心:一收银台 = 一账户;@LoginSession,身份级)
    *
-   * @generated from rpc payment.v1.DashboardService.ListPaymentIntents
+   * GET  /dashboard/checkouts
+   *
+   * @generated from rpc payment.v1.DashboardService.ListCheckouts
    */
-  listPaymentIntents: {
+  listCheckouts: {
     methodKind: "unary";
-    input: typeof ListPaymentIntentsReqSchema;
-    output: typeof ListPaymentIntentsResponseSchema;
+    input: typeof ListCheckoutsReqSchema;
+    output: typeof ListCheckoutsResponseSchema;
   },
   /**
+   * POST /dashboard/checkouts
+   *
+   * @generated from rpc payment.v1.DashboardService.CreateCheckout
+   */
+  createCheckout: {
+    methodKind: "unary";
+    input: typeof CreateCheckoutReqSchema;
+    output: typeof CheckoutSummarySchema;
+  },
+  /**
+   * GET  /dashboard/checkouts/:id
+   *
+   * @generated from rpc payment.v1.DashboardService.GetCheckoutDetail
+   */
+  getCheckoutDetail: {
+    methodKind: "unary";
+    input: typeof GetCheckoutDetailReqSchema;
+    output: typeof GetCheckoutDetailResponseSchema;
+  },
+  /**
+   * POST /dashboard/checkouts/:id/set-default
+   *
+   * @generated from rpc payment.v1.DashboardService.SetDefaultCheckout
+   */
+  setDefaultCheckout: {
+    methodKind: "unary";
+    input: typeof SetDefaultCheckoutReqSchema;
+    output: typeof SetDefaultCheckoutResponseSchema;
+  },
+  /**
+   * POST /dashboard/checkouts/:id/invoices
+   *
+   * @generated from rpc payment.v1.DashboardService.CreateInvoice
+   */
+  createInvoice: {
+    methodKind: "unary";
+    input: typeof CreateInvoiceReqSchema;
+    output: typeof CreateInvoiceResponseSchema;
+  },
+  /**
+   * Transactions(交易查询;列表唯一入口 = union feed,详情供 drawer)
+   *
    * @generated from rpc payment.v1.DashboardService.GetPaymentIntentDetail
    */
   getPaymentIntentDetail: {
@@ -2458,12 +3382,14 @@ export const DashboardService: GenService<{
     output: typeof PaymentIntentDetailResponseSchema;
   },
   /**
-   * @generated from rpc payment.v1.DashboardService.ListWalletTransactions
+   * GET /dashboard/transactions(交易聚合 union 端点,禁止前端归并)
+   *
+   * @generated from rpc payment.v1.DashboardService.ListTransactions
    */
-  listWalletTransactions: {
+  listTransactions: {
     methodKind: "unary";
-    input: typeof ListWalletTransactionsReqSchema;
-    output: typeof ListWalletTransactionsResponseSchema;
+    input: typeof ListTransactionsReqSchema;
+    output: typeof ListTransactionsResponseSchema;
   },
   /**
    * Assets(收款钱包实时资产)

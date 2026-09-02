@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file v1/service/checkout.proto.
  */
 export const file_v1_service_checkout: GenFile = /*@__PURE__*/
-  fileDesc("Chl2MS9zZXJ2aWNlL2NoZWNrb3V0LnByb3RvEgpwYXltZW50LnYxIk0KCUludGVudFJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldCLFAQoKQ29uZmlybVJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldBIXCgZ0eEhhc2gYAyABKAlSB3R4X2hhc2gSKAoOY2hhaW5OZXR3b3JrSWQYBCABKAlSEGNoYWluX25ldHdvcmtfaWQSIQoLdG9rZW5TeW1ib2wYBSABKAlSDHRva2VuX3N5bWJvbBIPCgdjaGFubmVsGAYgASgJImoKEFN1Ym1pdFR4UmVzcG9uc2USKwoHYXR0ZW1wdBgBIAEoCzIaLnBheW1lbnQudjEuUGF5bWVudEF0dGVtcHQSKQoGaW50ZW50GAIgASgLMhkucGF5bWVudC52MS5QYXltZW50SW50ZW50MpIBCg9DaGVja291dFNlcnZpY2USPgoJR2V0SW50ZW50EhUucGF5bWVudC52MS5JbnRlbnRSZXEaGi5wYXltZW50LnYxLkNoZWNrb3V0SW50ZW50Ej8KB0NvbmZpcm0SFi5wYXltZW50LnYxLkNvbmZpcm1SZXEaHC5wYXltZW50LnYxLlN1Ym1pdFR4UmVzcG9uc2ViBnByb3RvMw", [file_v1_domain_payment]);
+  fileDesc("Chl2MS9zZXJ2aWNlL2NoZWNrb3V0LnByb3RvEgpwYXltZW50LnYxIk0KCUludGVudFJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldCLFAQoKQ29uZmlybVJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldBIXCgZ0eEhhc2gYAyABKAlSB3R4X2hhc2gSKAoOY2hhaW5OZXR3b3JrSWQYBCABKAlSEGNoYWluX25ldHdvcmtfaWQSIQoLdG9rZW5TeW1ib2wYBSABKAlSDHRva2VuX3N5bWJvbBIPCgdjaGFubmVsGAYgASgJImoKEFN1Ym1pdFR4UmVzcG9uc2USKwoHYXR0ZW1wdBgBIAEoCzIaLnBheW1lbnQudjEuUGF5bWVudEF0dGVtcHQSKQoGaW50ZW50GAIgASgLMhkucGF5bWVudC52MS5QYXltZW50SW50ZW50IikKCFN0b3JlUmVxEh0KCXN0b3JlU2x1ZxgBIAEoCVIKc3RvcmVfc2x1ZyIrCgtQdWJsaWNTdG9yZRIMCgRuYW1lGAEgASgJEg4KBmFjdGl2ZRgCIAEoCCKbAQoLUGF5U3RvcmVSZXESHQoJc3RvcmVTbHVnGAEgASgJUgpzdG9yZV9zbHVnEiEKC2Ftb3VudENlbnRzGAIgASgFUgxhbW91bnRfY2VudHMSEAoDcmVmGAMgASgJSACIAQESIgoJcmV0dXJuVXJsGAQgASgJSAFSCnJldHVybl91cmyIAQFCBgoEX3JlZkIMCgpfcmV0dXJuVXJsIlIKEFBheVN0b3JlUmVzcG9uc2USGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIhCgtjaGVja291dFVybBgCIAEoCVIMY2hlY2tvdXRfdXJsMpYCCg9DaGVja291dFNlcnZpY2USPgoJR2V0SW50ZW50EhUucGF5bWVudC52MS5JbnRlbnRSZXEaGi5wYXltZW50LnYxLkNoZWNrb3V0SW50ZW50Ej8KB0NvbmZpcm0SFi5wYXltZW50LnYxLkNvbmZpcm1SZXEaHC5wYXltZW50LnYxLlN1Ym1pdFR4UmVzcG9uc2USPAoLR2V0Q2hlY2tvdXQSFC5wYXltZW50LnYxLlN0b3JlUmVxGhcucGF5bWVudC52MS5QdWJsaWNTdG9yZRJECgtQYXlDaGVja291dBIXLnBheW1lbnQudjEuUGF5U3RvcmVSZXEaHC5wYXltZW50LnYxLlBheVN0b3JlUmVzcG9uc2ViBnByb3RvMw", [file_v1_domain_payment]);
 
 /**
  * 收银台取单请求
@@ -226,8 +226,227 @@ export const SubmitTxResponseSchema: GenMessage<SubmitTxResponse, {jsonType: Sub
   messageDesc(file_v1_service_checkout, 2);
 
 /**
- * CheckoutService is the checkout process (/checkout/* public cashier), 2 rpc.
- * 收银台公开接口(无 HMAC,凭 intent_id + client_secret 访问)
+ * 公开店页元信息请求(path store_slug;按 slug 定位 checkout,不暴露 account_id)
+ * 示例(JSON): {"store_slug":"bob.olares.com"}
+ *
+ * @generated from message payment.v1.StoreReq
+ */
+export type StoreReq = Message<"payment.v1.StoreReq"> & {
+  /**
+   * 店页 slug(path 参数)
+   *
+   * @generated from field: string storeSlug = 1 [json_name = "store_slug"];
+   */
+  storeSlug: string;
+};
+
+/**
+ * 公开店页元信息请求(path store_slug;按 slug 定位 checkout,不暴露 account_id)
+ * 示例(JSON): {"store_slug":"bob.olares.com"}
+ *
+ * @generated from message payment.v1.StoreReq
+ */
+export type StoreReqJson = {
+  /**
+   * 店页 slug(path 参数)
+   *
+   * @generated from field: string storeSlug = 1 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+};
+
+/**
+ * Describes the message payment.v1.StoreReq.
+ * Use `create(StoreReqSchema)` to create a new message.
+ */
+export const StoreReqSchema: GenMessage<StoreReq, {jsonType: StoreReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 3);
+
+/**
+ * 公开店页元信息(仅店名与营业状态,无商品、无 account_id)
+ * 示例(JSON): {"name":"Bob 的小店","active":true}
+ *
+ * @generated from message payment.v1.PublicStore
+ */
+export type PublicStore = Message<"payment.v1.PublicStore"> & {
+  /**
+   * 店名(display_name,缺省回退 Olares ID)
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * 营业状态(账户 active)
+   *
+   * @generated from field: bool active = 2;
+   */
+  active: boolean;
+};
+
+/**
+ * 公开店页元信息(仅店名与营业状态,无商品、无 account_id)
+ * 示例(JSON): {"name":"Bob 的小店","active":true}
+ *
+ * @generated from message payment.v1.PublicStore
+ */
+export type PublicStoreJson = {
+  /**
+   * 店名(display_name,缺省回退 Olares ID)
+   *
+   * @generated from field: string name = 1;
+   */
+  name?: string;
+
+  /**
+   * 营业状态(账户 active)
+   *
+   * @generated from field: bool active = 2;
+   */
+  active?: boolean;
+};
+
+/**
+ * Describes the message payment.v1.PublicStore.
+ * Use `create(PublicStoreSchema)` to create a new message.
+ */
+export const PublicStoreSchema: GenMessage<PublicStore, {jsonType: PublicStoreJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 4);
+
+/**
+ * 任意金额建单请求(买家永久匿名、无 buyer 字段,13.7 裁决;落在本店账户)
+ * 示例(JSON): {"store_slug":"bob.olares.com","amount_cents":1000,"ref":"打赏","return_url":"https://buyer.example.com/done"}
+ *
+ * @generated from message payment.v1.PayStoreReq
+ */
+export type PayStoreReq = Message<"payment.v1.PayStoreReq"> & {
+  /**
+   * 店页 slug(path 参数)
+   *
+   * @generated from field: string storeSlug = 1 [json_name = "store_slug"];
+   */
+  storeSlug: string;
+
+  /**
+   * 金额(美分,必填;缺失/非法 1803)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amountCents: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string | undefined;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  returnUrl?: string | undefined;
+};
+
+/**
+ * 任意金额建单请求(买家永久匿名、无 buyer 字段,13.7 裁决;落在本店账户)
+ * 示例(JSON): {"store_slug":"bob.olares.com","amount_cents":1000,"ref":"打赏","return_url":"https://buyer.example.com/done"}
+ *
+ * @generated from message payment.v1.PayStoreReq
+ */
+export type PayStoreReqJson = {
+  /**
+   * 店页 slug(path 参数)
+   *
+   * @generated from field: string storeSlug = 1 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+
+  /**
+   * 金额(美分,必填;缺失/非法 1803)
+   *
+   * @generated from field: int32 amountCents = 2 [json_name = "amount_cents"];
+   */
+  amount_cents?: number;
+
+  /**
+   * 说明 → intent metadata.ref
+   *
+   * @generated from field: optional string ref = 3;
+   */
+  ref?: string;
+
+  /**
+   * 支付后跳转地址(可选)
+   *
+   * @generated from field: optional string returnUrl = 4 [json_name = "return_url"];
+   */
+  return_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.PayStoreReq.
+ * Use `create(PayStoreReqSchema)` to create a new message.
+ */
+export const PayStoreReqSchema: GenMessage<PayStoreReq, {jsonType: PayStoreReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 5);
+
+/**
+ * 任意金额建单响应(一步返回收银台 URL)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.PayStoreResponse
+ */
+export type PayStoreResponse = Message<"payment.v1.PayStoreResponse"> & {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intentId: string;
+
+  /**
+   * 收银台 URL
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkoutUrl: string;
+};
+
+/**
+ * 任意金额建单响应(一步返回收银台 URL)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","checkout_url":"http://localhost:21000/checkout?intent_id=...&client_secret=..."}
+ *
+ * @generated from message payment.v1.PayStoreResponse
+ */
+export type PayStoreResponseJson = {
+  /**
+   * 支付单 ID
+   *
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intent_id?: string;
+
+  /**
+   * 收银台 URL
+   *
+   * @generated from field: string checkoutUrl = 2 [json_name = "checkout_url"];
+   */
+  checkout_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.PayStoreResponse.
+ * Use `create(PayStoreResponseSchema)` to create a new message.
+ */
+export const PayStoreResponseSchema: GenMessage<PayStoreResponse, {jsonType: PayStoreResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 6);
+
+/**
+ * CheckoutService is the checkout process (/checkout/* public cashier), 4 rpc.
+ * 收银台公开接口(无 HMAC;GetIntent/Confirm 凭 intent_id + client_secret,
+ * GetCheckout/PayCheckout 为 P1b 公开店页 @Public 骨架,实现在 B5)
  *
  * @generated from service payment.v1.CheckoutService
  */
@@ -251,6 +470,26 @@ export const CheckoutService: GenService<{
     methodKind: "unary";
     input: typeof ConfirmReqSchema;
     output: typeof SubmitTxResponseSchema;
+  },
+  /**
+   * 公开店页元信息(GET /checkout/c/:store_slug)
+   *
+   * @generated from rpc payment.v1.CheckoutService.GetCheckout
+   */
+  getCheckout: {
+    methodKind: "unary";
+    input: typeof StoreReqSchema;
+    output: typeof PublicStoreSchema;
+  },
+  /**
+   * 任意金额建单(POST /checkout/c/:store_slug/pay)
+   *
+   * @generated from rpc payment.v1.CheckoutService.PayCheckout
+   */
+  payCheckout: {
+    methodKind: "unary";
+    input: typeof PayStoreReqSchema;
+    output: typeof PayStoreResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_v1_service_checkout, 0);

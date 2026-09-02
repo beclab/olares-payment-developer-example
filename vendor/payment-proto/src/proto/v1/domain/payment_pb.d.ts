@@ -503,11 +503,11 @@ export declare type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
   merchantAccountId: string;
 
   /**
-   * 买家 Olares 用户名快照(创建时落库)
+   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分),如 1000 = $10.00
@@ -606,6 +606,20 @@ export declare type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
    * @generated from field: optional payment.v1.ProductSnapshot product = 17;
    */
   product?: ProductSnapshot | undefined;
+
+  /**
+   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
+
+  /**
+   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
+   */
+  buyerDid?: string | undefined;
 };
 
 /**
@@ -630,9 +644,9 @@ export declare type PaymentIntentJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家 Olares 用户名快照(创建时落库)
+   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -733,6 +747,20 @@ export declare type PaymentIntentJson = {
    * @generated from field: optional payment.v1.ProductSnapshot product = 17;
    */
   product?: ProductSnapshotJson;
+
+  /**
+   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
+
+  /**
+   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
+   */
+  buyer_did?: string;
 };
 
 /**
@@ -740,6 +768,72 @@ export declare type PaymentIntentJson = {
  * Use `create(PaymentIntentSchema)` to create a new message.
  */
 export declare const PaymentIntentSchema: GenMessage<PaymentIntent, {jsonType: PaymentIntentJson}>;
+
+/**
+ * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
+ * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
+ * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
+ *
+ * @generated from message payment.v1.BuyerExternal
+ */
+export declare type BuyerExternal = Message<"payment.v1.BuyerExternal"> & {
+  /**
+   * 调用方内部 userId(对账键,非空 ≤128)
+   *
+   * @generated from field: string ref = 1;
+   */
+  ref: string;
+
+  /**
+   * 调用方自愿披露的展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 调用方自愿披露的头像(绝对 https URL ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
+   */
+  avatarUrl?: string | undefined;
+};
+
+/**
+ * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
+ * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
+ * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
+ *
+ * @generated from message payment.v1.BuyerExternal
+ */
+export declare type BuyerExternalJson = {
+  /**
+   * 调用方内部 userId(对账键,非空 ≤128)
+   *
+   * @generated from field: string ref = 1;
+   */
+  ref?: string;
+
+  /**
+   * 调用方自愿披露的展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 调用方自愿披露的头像(绝对 https URL ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
+   */
+  avatar_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.BuyerExternal.
+ * Use `create(BuyerExternalSchema)` to create a new message.
+ */
+export declare const BuyerExternalSchema: GenMessage<BuyerExternal, {jsonType: BuyerExternalJson}>;
 
 /**
  * 收银台可选的代币(onchain_tokens 派生 + 收款钱包)
@@ -967,11 +1061,11 @@ export declare type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
   returnUrl?: string | undefined;
 
   /**
-   * 买家 Olares 用户名(前端查 did-gate 解析 DID)
+   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
    *
-   * @generated from field: string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 商品 ID(从 metadata 提取)
@@ -979,6 +1073,20 @@ export declare type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
    */
   productId?: string | undefined;
+
+  /**
+   * 支付时限(TTL 到点收敛为 canceled)
+   *
+   * @generated from field: optional google.protobuf.Timestamp expiresAt = 13 [json_name = "expires_at"];
+   */
+  expiresAt?: Timestamp | undefined;
+
+  /**
+   * 收款单备注(建单时 metadata.ref 透出,收款单/店页场景)
+   *
+   * @generated from field: optional string memo = 14;
+   */
+  memo?: string | undefined;
 };
 
 /**
@@ -1059,9 +1167,9 @@ export declare type CheckoutIntentJson = {
   return_url?: string;
 
   /**
-   * 买家 Olares 用户名(前端查 did-gate 解析 DID)
+   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
    *
-   * @generated from field: string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -1071,6 +1179,20 @@ export declare type CheckoutIntentJson = {
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
    */
   product_id?: string;
+
+  /**
+   * 支付时限(TTL 到点收敛为 canceled)
+   *
+   * @generated from field: optional google.protobuf.Timestamp expiresAt = 13 [json_name = "expires_at"];
+   */
+  expires_at?: TimestampJson;
+
+  /**
+   * 收款单备注(建单时 metadata.ref 透出,收款单/店页场景)
+   *
+   * @generated from field: optional string memo = 14;
+   */
+  memo?: string;
 };
 
 /**
@@ -1249,11 +1371,11 @@ export declare type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSumm
   merchantAccountId: string;
 
   /**
-   * 买家用户名
+   * 买家用户名(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分)
@@ -1303,6 +1425,13 @@ export declare type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSumm
    * @generated from field: optional string txHash = 10 [json_name = "tx_hash"];
    */
   txHash?: string | undefined;
+
+  /**
+   * 外部买家快照(external 档建单;列表无需 did)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
 };
 
 /**
@@ -1327,9 +1456,9 @@ export declare type PaymentIntentSummaryJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家用户名
+   * 买家用户名(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -1381,6 +1510,13 @@ export declare type PaymentIntentSummaryJson = {
    * @generated from field: optional string txHash = 10 [json_name = "tx_hash"];
    */
   tx_hash?: string;
+
+  /**
+   * 外部买家快照(external 档建单;列表无需 did)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
 };
 
 /**

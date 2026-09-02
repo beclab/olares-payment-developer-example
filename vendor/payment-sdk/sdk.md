@@ -1,379 +1,339 @@
-# Olares Payment SDK 使用指南
+# API Reference
 
-> `@olares/payment-sdk` — 通过 HMAC 签名访问 Olares Payment 网关的 TypeScript SDK。
-> 仅供后端使用（持有 secret，勿暴露到浏览器）。
+`@olares/payment-sdk` 通过 HMAC 调用网关 `POST /api/{method}`。本文说明 `MerchantClient` 的构造、方法与错误。入门见 [README.md](./README.md)。
+
+公开类型为 camelCase，支付单标识为 `paymentId`。线上 JSON 仍使用 proto 的 `json_name`（如 `intent_id`），由 SDK 在边界处转换。
 
 ---
 
-## 快速开始
-
-### 安装
-
-```bash
-npm install @olares/payment-sdk
-```
-
-### Market（平台）后端 — 3 行跑通支付
+## Client
 
 ```ts
-import { PlatformClient } from '@olares/payment-sdk';
+import { MerchantClient } from '@olares/payment-sdk';
 
-const market = new PlatformClient({
+const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY!,
-  apiSecret: process.env.PAYMENT_SECRET!,
+  apiSecret: process.env.PAYMENT_API_SECRET!,
   baseUrl: process.env.PAYMENT_ENDPOINT!,
 });
-
-// 替买家下单 → 一步拿到收银台 URL
-const { paymentId, checkoutUrl } = await market.createPayment({
-  merchantAccountId: 'acct_xxx',       // 收款方（已挂接的商户）
-  buyerOlaresId: 'alice.olares.com',   // 可选，省略 = 匿名单
-  amountCents: 1999,                   // $19.99
-  currency: 'usd',                     // 计价币种（目前只支持 usd）
-  returnUrl: 'https://your-app.com/done',
-});
-
-// 把 checkoutUrl 给前端跳转，买家在收银台付款
 ```
 
-### Merchant（商户）后端 — 查 + 收 webhook
+### ClientOptions
+
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `apiKey` | `string` | — | 商户公钥，形如 `pk_live_…`。HMAC 方法必填。 |
+| `apiSecret` | `string` | — | 商户密钥，形如 `sk_live_…`。仅用于签名，不得下发客户端。 |
+| `baseUrl` | `string` | `http://localhost:31000` | 网关根地址，不含 `/api`。 |
+| `timeoutMs` | `number` | `30000` | 单次 HTTP 超时（毫秒），亦用于直连 RPC 核验。 |
+| `logger` | `SdkLogger` | `console` | `(level, msg, ctx?) => void`。传入 `() => {}` 可关闭日志。 |
+| `rpcUrl` | `string` | — | 配置后，`verifyTransaction` 直连该 EVM RPC 的 `eth_getTransactionReceipt`，不再走网关。 |
+
+`baseUrl` 不要带尾斜杠以外的路径。密钥与环境一一对应：测试与生产应使用不同实例。
+
+### Multiple instances
+
+可为不同环境或用途构造多个 client，彼此独立。
 
 ```ts
-import { MerchantClient, webhooks } from '@olares/payment-sdk';
-
-const merchant = new MerchantClient({
-  apiKey: process.env.MERCHANT_API_KEY!,
-  apiSecret: process.env.MERCHANT_SECRET!,
-  baseUrl: process.env.PAYMENT_ENDPOINT!,
+const live = new MerchantClient({
+  apiKey: process.env.PAYMENT_LIVE_KEY!,
+  apiSecret: process.env.PAYMENT_LIVE_SECRET!,
+  baseUrl: 'https://api.example.com',
+  timeoutMs: 15_000,
+  logger: () => {},
 });
 
-// 查一笔付款是否到账
-const result = await merchant.getPayment(paymentId);
-if (result.paid) {
-  console.log(result.credential.txHash);  // 链上凭证 → 发货
-}
+const staging = new MerchantClient({
+  apiKey: process.env.PAYMENT_TEST_KEY!,
+  apiSecret: process.env.PAYMENT_TEST_SECRET!,
+  baseUrl: 'https://api-test.example.com',
+});
 
-// 收到 payment 回调时验签（Express 示例）
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const event = webhooks.constructEvent(req, WEBHOOK_SECRET);
-  if (event.type === 'payment.succeeded') {
-    // event.paymentId + event.credential.txHash
-  }
-  res.status(200).send('ok');
+const withRpc = new MerchantClient({
+  apiKey: process.env.PAYMENT_API_KEY!,
+  apiSecret: process.env.PAYMENT_API_SECRET!,
+  baseUrl: process.env.PAYMENT_ENDPOINT!,
+  rpcUrl: process.env.EVM_RPC_URL,
 });
 ```
 
 ---
 
-## SDK 整体架构
+## Gateway methods
 
-SDK 提供两个 Client，**按你的角色选一个**：
+`MerchantClient` 覆盖网关中商户密钥可调用的接口。
 
-- **PlatformClient** — 给**平台**（如 Market 应用商店）后端用。平台替买家发起收款（代商户收），持有 **platform key**。
-- **MerchantClient** — 给**商户**（卖家）后端用。商户自助收款 + 管自己的订单和钱包，持有 **merchant key**。
-
-两个 Client 底层共用同一个传输层（HMAC 签名 + axios + timeout），区别只是：**暴露哪些方法 + 用什么 key**。用 platform key 调 merchant 专属方法（如 `listReceiveWalletTransactions`），网关会直接拒绝——权限由后端的 capability 矩阵强制。
-
-### 怎么选？
-
-```
-你是 Market（平台）后端？  → PlatformClient + platform key
-你是 Merchant（商户）后端？ → MerchantClient + merchant key
-```
-
-### 职责对比
-
-| | PlatformClient | MerchantClient |
+| SDK 方法 | 网关 | 说明 |
 |---|---|---|
-| **角色** | 代收方（替买家下单，代商户收款） | 收款方（自助收款，管自己的订单/钱包） |
-| **持什么 key** | platform key（绑平台账户） | merchant key（绑商户自己的账户） |
-| **createPayment** | 代已挂接的商户收款（merchantAccountId **必填**） | 自助收款（merchantAccountId 省略，从 key 推断） |
-| **getPayment** | ✅ 查询 + 轮询 | ✅ 查询 + 履约判断 |
-| **listPayments** | ❌（平台不枚举） | ✅（订单列表 / 对账） |
-| **listChannels / listReceiveWalletTransactions** | ❌（网关拒） | ✅（收款通道 / 收款钱包流水） |
-| **getAccount** | ❌（/api/getAccount 拒 platform） | ✅（读自己账户） |
-| **ping** | ✅（连通 + key 身份） | ✅（连通 + key 身份） |
-| **verifyTransaction** | ✅ | ✅ |
-| **webhook 验签** | ✅（`webhooks.constructEvent`） | ✅（同左） |
+| `createPayment` | `POST /api/createPayment` | 创建支付，一步返回收银台 URL。收款账户由密钥推断。 |
+| `getPayment` | `POST /api/getPayment` | 查询支付，并给出履约判断 `paid`。 |
+| `listPayments` | `POST /api/listPayments` | 支付列表，按 `created_at` 倒序，keyset 分页。 |
+| `listChannels` | `POST /api/listChannels` | 收款通道；onchain 通道附带收款钱包。 |
+| `listReceiveWalletTransactions` | `POST /api/listReceiveWalletTransactions` | 收款钱包链上流水，按 `blockNumber` 倒序。 |
+| `listPaymentMethodConfigs` | `POST /api/listPaymentMethodConfigs` | 当前账户的收款方式配置。 |
+| `upsertOnchainPmc` | `POST /api/upsertOnchainPmc` | 覆盖写入 onchain 收款钱包（链、地址、代币白名单）。 |
+| `listSupportedChains` | `POST /api/listSupportedChains` | 官方支持的链与代币，只读。 |
+| `getAccount` | `POST /api/getAccount` | 密钥绑定的商户账户。 |
+| `clientInfo` | `POST /api/clientInfo` | 密钥类别与绑定账户（需 HMAC）。 |
+| `ping` | `POST /api/ping` | 健康检查，返回服务器时间。 |
+| `verifyTransaction` | `POST /api/verifyTx` 或直连 RPC | 按交易哈希读取 EVM receipt。 |
+
+Webhook 端点在 Dashboard 登记。SDK 提供 `webhooks.constructEvent` 做验签与解析，不发起网关请求。
+
+建单可附加 `Idempotency-Key`：
+
+```ts
+await client.createPayment(params, { idempotencyKey: 'order:ord_123' });
+```
+
+键由调用方按业务身份派生并在重试时复用。命中则返回首次结果；相同键、不同请求体将失败。SDK 不会自动生成该键。
 
 ---
 
-## 核心场景
-
-### PlatformClient 场景（平台 / Market 后端）
-
-平台是**代收方**——替买家下单，钱进商户的钱包。
-
-#### 创建支付（代商户收款）
+## createPayment
 
 ```ts
-const { paymentId, checkoutUrl } = await market.createPayment({
-  merchantAccountId: 'acct_xxx',       // 必填：指定代哪个商户收款（须已挂接）
-  buyerOlaresId: 'alice.olares.com',   // 可选，省略 = 匿名单
-  buyerDid: 'did:olares:xxx',          // 可选（扫码登录带入，需配对 buyerOlaresId）
-  amountCents: 1999,
-  currency: 'usd',                     // 可选，默认 usd
-  metadata: { productId: 'app-123' },  // 可选业务字段
-  returnUrl: 'https://your-app.com/done',
+createPayment(
+  params: CreatePaymentRequest,
+  opts?: { idempotencyKey?: string },
+): Promise<CreatePaymentResult>
+```
+
+### CreatePaymentRequest
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `amountCents` | `number` | 是 | 计价金额，单位美分。`1000` 表示 $10.00。 |
+| `currency` | `'usd'` | 否 | 计价币种，默认 `usd`。 |
+| `returnUrl` | `string` | 否 | 支付完成后的绝对 `http(s)` URL。省略则收银台不回跳。 |
+| `metadata` | `Record<string, unknown>` | 否 | 透传字段，出现在查询、列表与 Webhook 中，便于对账。 |
+| `buyer` | `BuyerRef` | 否 | 买家披露。省略为匿名订单。 |
+
+### BuyerRef
+
+三档互斥。混用或半披露由网关以 `1100` 拒绝。
+
+| `kind` | 字段 | 网关行为 |
+|---|---|---|
+| 省略 `buyer` | — | 匿名。不建身份、不建账户。 |
+| `'external'` | `ref`（1–128 字符）；可选 `display.name` / `display.avatarUrl` | 商户侧标签。不验证身份，快照写入支付单，供 Dashboard 对账。 |
+| `'olares'` | `olaresId` 与 `did` 必须同时提供 | 走 DID 门并关闭 customer 账户，保留 VC 资格。 |
+
+`ref` 是调用方自己的用户标识，不是 Olares 账号。`display` 仅作展示，网关只做格式校验。
+
+```ts
+await client.createPayment({ amountCents: 500 });
+
+await client.createPayment({
+  amountCents: 500,
+  buyer: { kind: 'external', ref: 'user_8817', display: { name: 'Ada' } },
+});
+
+await client.createPayment({
+  amountCents: 500,
+  buyer: { kind: 'olares', olaresId: 'alice.olares.com', did: 'did:olares:0x…' },
 });
 ```
 
-返回 `{ paymentId, checkoutUrl }`——把 checkoutUrl 给前端跳转，买家进收银台付款。
+### CreatePaymentResult
 
-**幂等**（防重复下单，重试安全）：
-```ts
-await market.createPayment(params, {
-  idempotencyKey: `purchase:${orderId}`,  // 按业务身份派生，重试复用
-});
-```
+| 字段 | 说明 |
+|---|---|
+| `paymentId` | 支付单 ID，后续查询与对账使用。 |
+| `checkoutUrl` | 托管收银台地址（含 `intent_id`、`client_secret` 及回跳参数）。 |
 
-#### 查询支付状态（轮询是否成功）
-
-```ts
-const result = await market.getPayment(paymentId);
-if (result.paid) {
-  // 买家付了 → 给买家开通权益
-} else {
-  // 还没付 → 看 result.payment.status
-}
-```
-
-#### 连通性检查（启动自检）
-
-```ts
-const info = await market.ping();
-// { isPlatform: true, accountId: 'acct_olares_market', ... }
-```
-
-#### 核验链上交易（极端场景用）
-
-```ts
-const v = await market.verifyTransaction(txHash, 'optimism', 'mainnet');
-if (v.confirmed) { /* 链上确认了 */ }
-```
+支付单有过期时间（默认约 30 分钟，以网关 `INTENT_TTL_SECS` 为准）。过期后同一 `checkoutUrl` 不可再付。
 
 ---
 
-### MerchantClient 场景（商户 / 卖家后端）
-
-商户是**收款方**——收钱、查自己的订单、管钱包。
-
-#### 创建支付（自助收款）
+## getPayment
 
 ```ts
-const { paymentId, checkoutUrl } = await merchant.createPayment({
-  amountCents: 1999,
-  currency: 'usd',
-  returnUrl: 'https://your-app.com/done',
-  metadata: { order_id: 'ord_123' },   // 回调时凭它找回自己的单
-  // buyerOlaresId 省略——匿名单，买家身份不进网关
-  // merchantAccountId 省略——网关从 key 自动推断为"自己"
-});
+getPayment(paymentId: string): Promise<PaymentResult>
 ```
 
-#### 查询支付状态（履约判断）
+未支付不抛错。`paid: true` 当且仅当 `status === 'PAYMENT_STATUS_SUCCEEDED'` 且最近一次尝试带有 `txHash`。成功但缺少 `txHash` 时返回 `paid: false`，不得履约。
 
 ```ts
-const result = await merchant.getPayment(paymentId);
+const result = await client.getPayment(paymentId);
 
 if (result.paid) {
-  // 已支付：result.credential 含链上凭证
   const { txHash, payAmount, payCurrency, chain } = result.credential;
-  // → 发货 / 签发 VC
 } else {
-  // 未支付：读 result.payment.status 了解卡在哪
-  // requires_payment_method / processing / canceled
+  // result.payment.status
 }
 ```
 
-> **履约判断封装在 SDK 里**：`paid: true` = `status === 'succeeded' AND latestAttempt.txHash`。succeeded 但无 txHash 的异常返回 `paid: false`（不履约）。
+---
 
-#### 订单列表（对账）
+## listPayments
 
 ```ts
-const { items, hasMore, nextCursor } = await merchant.listPayments({
-  status: 'succeeded',   // 可选：按状态过滤
-  limit: 20,             // 默认 20，上限 200
-});
-// 翻页：下次传 cursor: nextCursor
+listPayments(params?: ListPaymentsRequest): Promise<ListPaymentsResponse>
 ```
 
-#### 收款通道 + 收款钱包流水
+| 字段 | 说明 |
+|---|---|
+| `status` | 精确状态过滤。 |
+| `metadata` | JSONB 包含匹配（`metadata @> filter`）。 |
+| `cursor` | 上一页的 `nextCursor`。 |
+| `limit` | 默认 20，上限 200。 |
+
+列表条目不含 `clientSecret`。
 
 ```ts
-// 收款通道（哪些链 + 哪些币 + 收款钱包地址）
-const { channels } = await merchant.listChannels();
+const { items, hasMore, nextCursor } = await client.listPayments({
+  status: 'PAYMENT_STATUS_SUCCEEDED',
+  metadata: { order_id: 'ord_123' },
+  limit: 20,
+});
+```
 
-// 收款钱包流水（按 blockNumber 倒序）
-const { items } = await merchant.listReceiveWalletTransactions({
-  address: '0xYourWallet',  // 可选：按收款钱包过滤
+---
+
+## Channels and wallets
+
+```ts
+const { channels } = await client.listChannels();
+
+const { items, hasMore, nextCursor } = await client.listReceiveWalletTransactions({
+  address: '0x…', // 须属于当前账户的收款钱包；省略则不按地址过滤
   limit: 50,
 });
 ```
 
-#### 读取自己的账户信息
+`listSupportedChains` 返回官方链与代币目录。`listPaymentMethodConfigs` / `upsertOnchainPmc` 用于配置各链收款地址与代币白名单（`tokens` 为空表示该链不收款）。
 
 ```ts
-const info = await merchant.getAccount();
-// { accountId, did, olaresId, status }
-```
-
-#### 连通性检查 + 核验
-
-```ts
-await merchant.ping();  // { isPlatform: false, accountId: 'acct_xxx', ... }
-
-const v = await merchant.verifyTransaction(txHash, 'optimism');
-// 或配了 rpcUrl 直连链上：
-const v = await merchant.verifyTransaction(txHash);  // 走 rpcUrl
+await client.upsertOnchainPmc({
+  chains: [
+    { chainId: '10', receiveWallet: '0x…', tokens: ['USDC'] },
+  ],
+});
 ```
 
 ---
 
-### 两边通用：Webhook 验签
+## Account and connectivity
 
-不管你是平台还是商户，收到 payment 回调时都用同一个函数验签：
+```ts
+const account = await client.getAccount();
+// { accountId, did, olaresId, status }
+
+const info = await client.clientInfo();
+// { keyType, accountId, did, olaresId }
+
+const { serverTime } = await client.ping();
+```
+
+`ping` 为公开接口。当前实现仍走签名路径，构造 client 时需要密钥。
+
+---
+
+## verifyTransaction
+
+日常履约使用 `getPayment` 与 Webhook。本方法用于独立核验链上 receipt。
+
+```ts
+const v = await client.verifyTransaction(txHash, 'optimism', 'mainnet');
+if (v.confirmed) {
+  // v.blockNumber, v.status === 'success'
+}
+```
+
+未配置 `rpcUrl` 时请求 `POST /api/verifyTx`。已配置则直连该 RPC。仅支持 EVM。`chain` / `network` 仅网关透传路径需要。
+
+---
+
+## Webhooks
+
+Dashboard 登记接收 URL 后获得 `whsec_`。验签规范：
+
+- 请求头：`x-olares-payment-webhook-timestamp`、`x-olares-payment-webhook-signature`
+- 签名原文：`{timestamp}\n{rawBody}`，HMAC-SHA256，十六进制
+- 默认允许 5 分钟时钟偏差
+- **body 必须是原始字节**（Express 使用 `express.raw`，不要先 `express.json`）
 
 ```ts
 import { webhooks } from '@olares/payment-sdk';
 
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   try {
-    const event = webhooks.constructEvent(
-      req,                           // Express req（body + headers，SDK 自己拆）
-      process.env.WEBHOOK_SECRET!,   // whsec_...（dashboard 登记时拿到）
-    );
-
+    const event = webhooks.constructEvent(req, process.env.PAYMENT_WEBHOOK_SECRET!);
     switch (event.type) {
       case 'payment.succeeded':
-        // event.paymentId, event.credential.txHash, event.paidAt
         break;
       case 'payment.failed':
-        // event.paymentId, event.failReason
         break;
       case 'payment.canceled':
-        // event.paymentId, event.cancellationReason
         break;
     }
-    res.status(200).send('ok');  // 必须 2xx，否则网关重试
-  } catch (e) {
-    // 验签失败 — 绝不能当成功处理
+    res.status(200).send('ok');
+  } catch {
     res.status(400).send('bad signature');
   }
 });
 ```
 
-> **webhook endpoint 在 dashboard 登记**，登记时拿到 `whsec_`（只此一次，存好）。
-> **body 必须是原始字节**（用 `express.raw`，不是 `express.json`）；SDK 从 `response.body` / `response.headers` 自己拆签名头。
+亦可传入 `{ body, headers }`。验签失败抛出 `PaymentError`，不得当作已投递。接收方须返回 2xx，否则网关重试。
 
 ---
 
-## ClientOptions 参数说明
+## Errors
+
+失败时抛出 `PaymentError`。
 
 ```ts
-new PlatformClient({
-  apiKey: string;        // 必填：pk_live_xxx
-  apiSecret: string;     // 必填：sk_live_xxx（HMAC 签名用，勿泄露）
-  baseUrl?: string;      // 网关地址，默认 http://localhost:31000
-  logger?: SdkLogger;    // 日志器，默认 console；传 () => {} 静默
-  timeoutMs?: number;    // 请求超时(ms)，默认 30000
-  rpcUrl?: string;       // EVM RPC URL；配了则 verifyTransaction 直连 RPC
-});
-```
-
----
-
-## 何时使用 verifyTransaction？
-
-**短回答：正常场景不需要。**
-
-你的日常履约流程：
-
-```
-getPayment → paid: true → 看 credential.txHash → 发货
-                  ↑
-            或 webhook payment.succeeded（推送 credential）
-```
-
-这两条已经覆盖了 99% 的场景。网关已经帮你查了链上确认（succeeded = tx 已上链 + status success），SDK 把判定封装在 `paid` 里。
-
-**verifyTransaction 是保险栓，只在「不信任网关判定」的极端场景用：**
-
-| 场景 | 为什么 |
-|---|---|
-| **高价值履约前二次核验**（签发 VC / 开通永久权益） | 防网关误判或被攻破，独立确认 tx_hash 真在链上 success |
-| **网关不可达时的降级** | 网关宕机，但你有 tx_hash，配 `rpcUrl` 直连链上查 |
-| **争议对账** | 买家说"付了"但网关 unpaid → 直连链上查，谁对谁错一目了然 |
-
-**一句话**：`getPayment` + `webhook` 是两条腿（查询 + 推送），`verifyTransaction` 是第三条独立核验腿。日常走路两条腿够，关键时刻（大额/永久权益）加第三条保险。
-
----
-
-## 错误处理
-
-SDK 统一抛 `PaymentError`：
-
-```ts
-import { PaymentError, PAYMENT_NOT_FOUND, PERMISSION_DENIED } from '@olares/payment-sdk';
+import { PaymentError, PAYMENT_NOT_FOUND } from '@olares/payment-sdk';
 
 try {
   await client.getPayment(paymentId);
-} catch (e) {
-  if (e instanceof PaymentError) {
-    console.log(e.code);        // 错误码（数字）
-    console.log(e.httpStatus);  // HTTP 状态码（SDK 本地错误为 0）
-    console.log(e.message);     // 错误描述
+} catch (err) {
+  if (err instanceof PaymentError) {
+    err.code;
+    err.httpStatus; // SDK 本地错误为 0
+    err.message;
   }
 }
 ```
 
-### 错误码表
+| 范围 | 含义 |
+|---|---|
+| `1000–1699` | 请求已到达网关。按 `code` 处理。 |
+| `1900–1999` | 请求未到达网关（超时、网络、直连 RPC）。可考虑重试。 |
 
-**网关业务码（1000-1699）**：请求到达了网关，网关返回的业务错误。
-
-| 段 | 代表码 | 含义 |
+| 码 | 常量 | 说明 |
 |---|---|---|
-| 1000-1099 System | 1000 INTERNAL_ERROR | 服务端内部错误 |
-| 1100-1199 Parameter | 1100 INVALID_ARGUMENT | 参数错误 |
-| 1200-1299 Resource | 1203 PAYMENT_NOT_FOUND | 支付不存在 |
-| 1300-1399 Permission | 1300 PERMISSION_DENIED | 权限不足 |
-| 1400-1499 Business | 1402 STATE_MACHINE_VIOLATION | 非法状态转换 |
-| 1500-1599 Auth | 1500 SIGNATURE_MISMATCH / 1501 INVALID_API_KEY | 鉴权失败 |
-
-**SDK 传输码（1900+）**：请求没到网关（本地失败）。
-
-| 码 | 常量 | 含义 |
-|---|---|---|
-| 1901 | SDK_TIMEOUT | 请求超时 |
-| 1902 | SDK_NETWORK_ERROR | 网络错误（连不上 / 非 JSON） |
-| 1903 | SDK_RPC_ERROR | 直连 RPC 失败 |
-
-**判断逻辑**：
-```ts
-if (e.code >= 1900) {
-  // SDK 本地错误（网关没收到请求）→ 重试可能有效
-} else {
-  // 网关业务错误 → 看 e.code 决定怎么处理
-}
-```
+| 1000 | `INTERNAL_ERROR` | 服务端内部错误 |
+| 1100 | `INVALID_ARGUMENT` | 参数错误（含买家档位混用） |
+| 1104 | `INVALID_RETURN_URL` | `returnUrl` 非法 |
+| 1203 | `PAYMENT_NOT_FOUND` | 支付不存在 |
+| 1300 | `PERMISSION_DENIED` | 权限不足 |
+| 1500 | `SIGNATURE_MISMATCH` | HMAC 或 Webhook 签名不匹配 |
+| 1501 | `INVALID_API_KEY` | 密钥无效 |
+| 1502 | `TIMESTAMP_EXPIRED` | 时间戳超出窗口 |
+| 1901 | `SDK_TIMEOUT` | 请求超时 |
+| 1902 | `SDK_NETWORK_ERROR` | 网络或非 JSON 响应 |
+| 1903 | `SDK_RPC_ERROR` | 直连 RPC 失败 |
 
 ---
 
-## Payment 对象（返回值）
+## Payment
 
-```ts
-interface Payment {
-  paymentId: string;
-  merchantAccountId: string;
-  buyerOlaresId: string;
-  amountCents: number;
-  currency: 'usd';
-  status: 'requires_payment_method' | 'processing' | 'succeeded' | 'canceled';
-  settlementCurrency: string | null;  // 实付币种（USDC/USDT）
-  settlementAmount: number | null;
-  clientSecret: string | null;        // 仅 createPayment 返回时非空
-  latestAttempt: LatestAttempt | null; // 最近一次扣款尝试
-  metadata: Record<string, unknown>;
-  expiresAt / canceledAt / paidAt / createdAt / updatedAt: Timestamp | null;
-}
-```
+`getPayment` / `listPayments` 返回的支付对象（字段以类型定义为准）：
+
+| 字段 | 说明 |
+|---|---|
+| `paymentId` | 支付单 ID |
+| `merchantAccountId` | 收款账户 |
+| `buyer` | 创建时的买家快照；匿名为 `null` |
+| `amountCents` / `currency` | 计价 |
+| `status` | `PAYMENT_STATUS_*` |
+| `settlementCurrency` / `settlementAmount` | 链上结算币种与数量 |
+| `metadata` | 创建时写入的透传字段 |
+| `clientSecret` | 仅创建响应路径可能有值；列表项不回填 |
+| `latestAttempt` | 最近一次尝试（含 `txHash` 等） |
+| `expiresAt` / `canceledAt` / `paidAt` / `createdAt` / `updatedAt` | RFC3339 时间戳 |
+
+`PaymentResult` 在 `paid: true` 时另带 `credential`（`txHash`、`payAmount`、`payCurrency`、`chain`、`chainType`、`networkId`），与 Webhook `payment.succeeded` 的凭证形状一致。

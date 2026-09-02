@@ -507,7 +507,7 @@ export declare const PaymentMethodConfigSchema: GenMessage<PaymentMethodConfig, 
 /**
  * API 密钥(api_clients 表):HMAC 调用网关的凭据
  * 示例(JSON): {"id":1,"client_id":"client_merchant_ab12cd34","client_name":"my app","client_type":"API_CLIENT_TYPE_MERCHANT","api_key":"pk_live_...","api_secret":"sk_live_...","active":true,"created_at":"2026-08-05T12:00:00Z"}
- * 注意:api_secret 只在创建/轮换时返回一次(完整凭据不重复下发)
+ * 注意:api_secret 在创建/轮换与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.ApiKey
  */
@@ -541,14 +541,14 @@ export declare type ApiKey = Message<"payment.v1.ApiKey"> & {
   clientType: ApiClientType;
 
   /**
-   * 公钥,如 "pk_live_..."(签名头 x-olares-key)
+   * 公钥,如 "pk_live_..."(签名头 x-olares-payment-key)
    *
    * @generated from field: string apiKey = 5 [json_name = "api_key"];
    */
   apiKey: string;
 
   /**
-   * 密钥,如 "sk_live_..."(仅创建/轮换时返回)
+   * 密钥,如 "sk_live_..."(创建/轮换/list 均返回)
    *
    * @generated from field: optional string apiSecret = 6 [json_name = "api_secret"];
    */
@@ -572,7 +572,7 @@ export declare type ApiKey = Message<"payment.v1.ApiKey"> & {
 /**
  * API 密钥(api_clients 表):HMAC 调用网关的凭据
  * 示例(JSON): {"id":1,"client_id":"client_merchant_ab12cd34","client_name":"my app","client_type":"API_CLIENT_TYPE_MERCHANT","api_key":"pk_live_...","api_secret":"sk_live_...","active":true,"created_at":"2026-08-05T12:00:00Z"}
- * 注意:api_secret 只在创建/轮换时返回一次(完整凭据不重复下发)
+ * 注意:api_secret 在创建/轮换与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.ApiKey
  */
@@ -606,14 +606,14 @@ export declare type ApiKeyJson = {
   client_type?: ApiClientTypeJson;
 
   /**
-   * 公钥,如 "pk_live_..."(签名头 x-olares-key)
+   * 公钥,如 "pk_live_..."(签名头 x-olares-payment-key)
    *
    * @generated from field: string apiKey = 5 [json_name = "api_key"];
    */
   api_key?: string;
 
   /**
-   * 密钥,如 "sk_live_..."(仅创建/轮换时返回)
+   * 密钥,如 "sk_live_..."(创建/轮换/list 均返回)
    *
    * @generated from field: optional string apiSecret = 6 [json_name = "api_secret"];
    */
@@ -642,7 +642,7 @@ export declare const ApiKeySchema: GenMessage<ApiKey, {jsonType: ApiKeyJson}>;
 
 /**
  * 账户摘要(账户列表页条目)
- * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z"}
+ * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true}
  *
  * @generated from message payment.v1.AccountSummary
  */
@@ -667,11 +667,32 @@ export declare type AccountSummary = Message<"payment.v1.AccountSummary"> & {
    * @generated from field: google.protobuf.Timestamp createdAt = 3 [json_name = "created_at"];
    */
   createdAt?: Timestamp | undefined;
+
+  /**
+   * checkout 名;缺省显示 Olares ID / 默认收银台
+   *
+   * @generated from field: optional string displayName = 4 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 公开店页 slug(归一化小写点形式,如 "bob.olares.com")
+   *
+   * @generated from field: optional string storeSlug = 5 [json_name = "store_slug"];
+   */
+  storeSlug?: string | undefined;
+
+  /**
+   * 默认收银台标记(016)
+   *
+   * @generated from field: optional bool isDefault = 6 [json_name = "is_default"];
+   */
+  isDefault?: boolean | undefined;
 };
 
 /**
  * 账户摘要(账户列表页条目)
- * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z"}
+ * 示例(JSON): {"id":"acct_x8y9...","status":"ACCOUNT_STATUS_ACTIVE","created_at":"2026-08-05T12:00:00Z","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true}
  *
  * @generated from message payment.v1.AccountSummary
  */
@@ -696,6 +717,27 @@ export declare type AccountSummaryJson = {
    * @generated from field: google.protobuf.Timestamp createdAt = 3 [json_name = "created_at"];
    */
   created_at?: TimestampJson;
+
+  /**
+   * checkout 名;缺省显示 Olares ID / 默认收银台
+   *
+   * @generated from field: optional string displayName = 4 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 公开店页 slug(归一化小写点形式,如 "bob.olares.com")
+   *
+   * @generated from field: optional string storeSlug = 5 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+
+  /**
+   * 默认收银台标记(016)
+   *
+   * @generated from field: optional bool isDefault = 6 [json_name = "is_default"];
+   */
+  is_default?: boolean;
 };
 
 /**
@@ -703,6 +745,204 @@ export declare type AccountSummaryJson = {
  * Use `create(AccountSummarySchema)` to create a new message.
  */
 export declare const AccountSummarySchema: GenMessage<AccountSummary, {jsonType: AccountSummaryJson}>;
+
+/**
+ * 收银台单链收款地址(该账户 onchain pmc config.chains[] 的一行)
+ * 示例(JSON): {"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC","USDT"]}
+ *
+ * @generated from message payment.v1.CheckoutChain
+ */
+export declare type CheckoutChain = Message<"payment.v1.CheckoutChain"> & {
+  /**
+   * 链网络 ID,如 "10"(对齐 ChainCfgReq 的 string)
+   *
+   * @generated from field: string chainId = 1 [json_name = "chain_id"];
+   */
+  chainId: string;
+
+  /**
+   * 收款钱包地址
+   *
+   * @generated from field: string receiveWallet = 2 [json_name = "receive_wallet"];
+   */
+  receiveWallet: string;
+
+  /**
+   * 接受的代币符号白名单
+   *
+   * @generated from field: repeated string tokens = 3;
+   */
+  tokens: string[];
+};
+
+/**
+ * 收银台单链收款地址(该账户 onchain pmc config.chains[] 的一行)
+ * 示例(JSON): {"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC","USDT"]}
+ *
+ * @generated from message payment.v1.CheckoutChain
+ */
+export declare type CheckoutChainJson = {
+  /**
+   * 链网络 ID,如 "10"(对齐 ChainCfgReq 的 string)
+   *
+   * @generated from field: string chainId = 1 [json_name = "chain_id"];
+   */
+  chain_id?: string;
+
+  /**
+   * 收款钱包地址
+   *
+   * @generated from field: string receiveWallet = 2 [json_name = "receive_wallet"];
+   */
+  receive_wallet?: string;
+
+  /**
+   * 接受的代币符号白名单
+   *
+   * @generated from field: repeated string tokens = 3;
+   */
+  tokens?: string[];
+};
+
+/**
+ * Describes the message payment.v1.CheckoutChain.
+ * Use `create(CheckoutChainSchema)` to create a new message.
+ */
+export declare const CheckoutChainSchema: GenMessage<CheckoutChain, {jsonType: CheckoutChainJson}>;
+
+/**
+ * 收银台卡片(开发者中心一收银台 = 一账户;ListCheckouts 整页数据源)
+ * 示例(JSON): {"account_id":"acct_x8y9...","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true,"status":"ACCOUNT_STATUS_ACTIVE","has_address":true,"chains":[{"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC"]}],"created_at":"2026-08-05T12:00:00Z"}
+ *
+ * @generated from message payment.v1.CheckoutSummary
+ */
+export declare type CheckoutSummary = Message<"payment.v1.CheckoutSummary"> & {
+  /**
+   * 账户 ID(acct_ 前缀)
+   *
+   * @generated from field: string accountId = 1 [json_name = "account_id"];
+   */
+  accountId: string;
+
+  /**
+   * checkout 名
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 公开店页 slug
+   *
+   * @generated from field: optional string storeSlug = 3 [json_name = "store_slug"];
+   */
+  storeSlug?: string | undefined;
+
+  /**
+   * 默认收银台标记
+   *
+   * @generated from field: bool isDefault = 4 [json_name = "is_default"];
+   */
+  isDefault: boolean;
+
+  /**
+   * 状态
+   *
+   * @generated from field: payment.v1.AccountStatus status = 5;
+   */
+  status: AccountStatus;
+
+  /**
+   * 有任一 enabled onchain 收款地址
+   *
+   * @generated from field: bool hasAddress = 6 [json_name = "has_address"];
+   */
+  hasAddress: boolean;
+
+  /**
+   * 各链收款地址
+   *
+   * @generated from field: repeated payment.v1.CheckoutChain chains = 7;
+   */
+  chains: CheckoutChain[];
+
+  /**
+   * 创建时间
+   *
+   * @generated from field: google.protobuf.Timestamp createdAt = 8 [json_name = "created_at"];
+   */
+  createdAt?: Timestamp | undefined;
+};
+
+/**
+ * 收银台卡片(开发者中心一收银台 = 一账户;ListCheckouts 整页数据源)
+ * 示例(JSON): {"account_id":"acct_x8y9...","display_name":"副业小店","store_slug":"bob.olares.com","is_default":true,"status":"ACCOUNT_STATUS_ACTIVE","has_address":true,"chains":[{"chain_id":"10","receive_wallet":"0xAbCd...","tokens":["USDC"]}],"created_at":"2026-08-05T12:00:00Z"}
+ *
+ * @generated from message payment.v1.CheckoutSummary
+ */
+export declare type CheckoutSummaryJson = {
+  /**
+   * 账户 ID(acct_ 前缀)
+   *
+   * @generated from field: string accountId = 1 [json_name = "account_id"];
+   */
+  account_id?: string;
+
+  /**
+   * checkout 名
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 公开店页 slug
+   *
+   * @generated from field: optional string storeSlug = 3 [json_name = "store_slug"];
+   */
+  store_slug?: string;
+
+  /**
+   * 默认收银台标记
+   *
+   * @generated from field: bool isDefault = 4 [json_name = "is_default"];
+   */
+  is_default?: boolean;
+
+  /**
+   * 状态
+   *
+   * @generated from field: payment.v1.AccountStatus status = 5;
+   */
+  status?: AccountStatusJson;
+
+  /**
+   * 有任一 enabled onchain 收款地址
+   *
+   * @generated from field: bool hasAddress = 6 [json_name = "has_address"];
+   */
+  has_address?: boolean;
+
+  /**
+   * 各链收款地址
+   *
+   * @generated from field: repeated payment.v1.CheckoutChain chains = 7;
+   */
+  chains?: CheckoutChainJson[];
+
+  /**
+   * 创建时间
+   *
+   * @generated from field: google.protobuf.Timestamp createdAt = 8 [json_name = "created_at"];
+   */
+  created_at?: TimestampJson;
+};
+
+/**
+ * Describes the message payment.v1.CheckoutSummary.
+ * Use `create(CheckoutSummarySchema)` to create a new message.
+ */
+export declare const CheckoutSummarySchema: GenMessage<CheckoutSummary, {jsonType: CheckoutSummaryJson}>;
 
 /**
  * 支持的链(onchain_networks 链目录派生)

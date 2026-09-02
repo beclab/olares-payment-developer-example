@@ -18,12 +18,14 @@ import type {
 import type {
   AccountInfo,
   AttemptStatus,
+  BuyerRef,
   ChainSlug,
   ChainType,
   ClientInfoResult,
   CreateOrderFromCatalogRequest,
   CreatePaymentRequest,
   CreatePaymentResult,
+  ExternalBuyerSnapshot,
   LatestAttempt,
   ListPaymentsRequest,
   ListPaymentsResponse,
@@ -81,6 +83,38 @@ function toLatestAttempt(w: WireLatestAttempt): LatestAttempt {
   };
 }
 
+/** Wire buyer_external snapshot → public ExternalBuyerSnapshot (null when absent). */
+export function wireToExternalBuyer(w: WirePayment['buyer_external']): ExternalBuyerSnapshot | null {
+  if (w == null) return null;
+  return { ref: w.ref ?? '', displayName: w.display_name ?? null, avatarUrl: w.avatar_url ?? null };
+}
+
+/**
+ * Rebuilds the public BuyerRef from the intent's creation-time snapshot columns
+ * (ruling 11 — never re-derived from live identity rows):
+ * name + did → 'olares'; external snapshot → 'external' (display included);
+ * legacy name-only orders → { kind: 'external', ref: name }; all absent → null.
+ */
+function wireToBuyer(w: WirePayment): BuyerRef | null {
+  if (w.buyer_did != null && w.buyer_olares_id != null) {
+    return { kind: 'olares', olaresId: w.buyer_olares_id, did: w.buyer_did };
+  }
+  const ext = w.buyer_external;
+  if (ext != null && ext.ref != null && ext.ref !== '') {
+    const name = ext.display_name;
+    const avatarUrl = ext.avatar_url;
+    const display =
+      name != null || avatarUrl != null
+        ? { name: name ?? undefined, avatarUrl: avatarUrl ?? undefined }
+        : undefined;
+    return display != null ? { kind: 'external', ref: ext.ref, display } : { kind: 'external', ref: ext.ref };
+  }
+  if (w.buyer_olares_id != null && w.buyer_olares_id !== '') {
+    return { kind: 'external', ref: w.buyer_olares_id }; // legacy name-only order: an unverifiable label
+  }
+  return null;
+}
+
 function wireToProductSnapshot(w: NonNullable<WirePayment['product']>): Payment['product'] {
   return {
     productId: w.product_id ?? '',
@@ -99,7 +133,7 @@ export function wireToPayment(w: WirePayment): Payment {
   return {
     paymentId: w.id ?? '',
     merchantAccountId: w.merchant_account_id ?? '',
-    buyerOlaresId: w.buyer_olares_id ?? '',
+    buyer: wireToBuyer(w),
     amountCents: w.amount_cents ?? 0,
     currency: (w.currency ?? 'usd') as Payment['currency'],
     settlementCurrency: w.settlement_currency ?? null,
@@ -150,17 +184,33 @@ export function wireToCredential(c: WireWebhookCredential): PaymentCredential {
   };
 }
 
-/** createPayment request: public camelCase → gateway snake_case body. */
-export function createPaymentRequestToWire(p: CreatePaymentRequest): CreatePaymentReqJson {
-  return {
-    merchant_account_id: p.merchantAccountId,
-    buyer_olares_id: p.buyerOlaresId,
-    buyer_did: p.buyerDid,
+/** createPayment request: public camelCase → gateway snake_case body.
+ *  The buyer discriminant maps to exactly one wire tier (olares: name+did;
+ *  external: buyer_external); merchantAccountId only rides the platform variant. */
+export function createPaymentRequestToWire(
+  p: CreatePaymentRequest | (CreatePaymentRequest & { merchantAccountId?: string }),
+): CreatePaymentReqJson {
+  const w: CreatePaymentReqJson = {
     amount_cents: p.amountCents,
     currency: p.currency,
     metadata: p.metadata as CreatePaymentReqJson['metadata'],
     return_url: p.returnUrl,
   };
+  const merchantAccountId = (p as { merchantAccountId?: string }).merchantAccountId;
+  if (merchantAccountId != null) w.merchant_account_id = merchantAccountId;
+  if (p.buyer != null) {
+    if (p.buyer.kind === 'olares') {
+      w.buyer_olares_id = p.buyer.olaresId;
+      w.buyer_did = p.buyer.did;
+    } else {
+      w.buyer_external = {
+        ref: p.buyer.ref,
+        display_name: p.buyer.display?.name,
+        avatar_url: p.buyer.display?.avatarUrl,
+      };
+    }
+  }
+  return w;
 }
 
 /** getPayment request: paymentId → gateway intent_id body. */

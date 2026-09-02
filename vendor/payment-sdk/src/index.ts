@@ -20,7 +20,8 @@ export * from './types/merchant';
 
 // ---------- Clients ----------
 export { PaymentSDK } from './core/client';
-export { PlatformClient } from './platform-client';
+// PlatformClient is not part of the public surface yet.
+// export { PlatformClient } from './platform-client';
 export { MerchantClient } from './merchant-client';
 
 // ---------- Errors ----------

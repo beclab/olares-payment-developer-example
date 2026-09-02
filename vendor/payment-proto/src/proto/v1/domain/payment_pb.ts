@@ -12,7 +12,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/domain/payment.proto.
  */
 export const file_v1_domain_payment: GenFile = /*@__PURE__*/
-  fileDesc("Chd2MS9kb21haW4vcGF5bWVudC5wcm90bxIKcGF5bWVudC52MSJcChFDaGFubmVsQ2FwYWJpbGl0eRIPCgdjaGFubmVsGAEgASgJEg8KB2VuYWJsZWQYAiABKAgSJQoEZGF0YRgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QimwMKDUxhdGVzdEF0dGVtcHQSKQoGc3RhdHVzGAEgASgOMhkucGF5bWVudC52MS5BdHRlbXB0U3RhdHVzEhwKBnR4SGFzaBgCIAEoCUgAUgd0eF9oYXNoiAEBEiQKCmZhaWxSZWFzb24YAyABKAlIAVILZmFpbF9yZWFzb26IAQESIgoJcGF5QW1vdW50GAQgASgJSAJSCnBheV9hbW91bnSIAQESJgoLcGF5Q3VycmVuY3kYBSABKAlIA1IMcGF5X2N1cnJlbmN5iAEBEhIKBWNoYWluGAYgASgJSASIAQESOQoJY2hhaW5UeXBlGAcgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVIBVIKY2hhaW5fdHlwZYgBARIiCgluZXR3b3JrSWQYCCABKAVIBlIKbmV0d29ya19pZIgBAUIJCgdfdHhIYXNoQg0KC19mYWlsUmVhc29uQgwKCl9wYXlBbW91bnRCDgoMX3BheUN1cnJlbmN5QggKBl9jaGFpbkIMCgpfY2hhaW5UeXBlQgwKCl9uZXR3b3JrSWQihwYKDlBheW1lbnRBdHRlbXB0EgoKAmlkGAEgASgJEhsKCGludGVudElkGAIgASgJUglpbnRlbnRfaWQSJQoNYXR0ZW1wdE51bWJlchgDIAEoDVIOYXR0ZW1wdF9udW1iZXISJAoHY2hhbm5lbBgEIAEoDjITLnBheW1lbnQudjEuQ2hhbm5lbBIcCgZ0eEhhc2gYBSABKAlIAFIHdHhfaGFzaIgBARImCgtwYXlDdXJyZW5jeRgGIAEoCUgBUgxwYXlfY3VycmVuY3mIAQESIgoJcGF5QW1vdW50GAcgASgJSAJSCnBheV9hbW91bnSIAQESKgoNcmVjZWl2ZVdhbGxldBgIIAEoCUgDUg5yZWNlaXZlX3dhbGxldIgBARIgCgh0b2tlbktleRgJIAEoCUgEUgl0b2tlbl9rZXmIAQESEgoFY2hhaW4YCiABKAlIBYgBARI5CgljaGFpblR5cGUYCyABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZUgGUgpjaGFpbl90eXBliAEBEiIKCW5ldHdvcmtJZBgMIAEoBUgHUgpuZXR3b3JrX2lkiAEBEhAKCHByb3RvY29sGA0gASgJEikKBnN0YXR1cxgOIAEoDjIZLnBheW1lbnQudjEuQXR0ZW1wdFN0YXR1cxIkCgpmYWlsUmVhc29uGA8gASgJSAhSC2ZhaWxfcmVhc29uiAEBEjkKCWNyZWF0ZWRBdBgQIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSOQoJdXBkYXRlZEF0GBEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdEIJCgdfdHhIYXNoQg4KDF9wYXlDdXJyZW5jeUIMCgpfcGF5QW1vdW50QhAKDl9yZWNlaXZlV2FsbGV0QgsKCV90b2tlbktleUIICgZfY2hhaW5CDAoKX2NoYWluVHlwZUIMCgpfbmV0d29ya0lkQg0KC19mYWlsUmVhc29uIvEGCg1QYXltZW50SW50ZW50EgoKAmlkGAEgASgJEi4KEW1lcmNoYW50QWNjb3VudElkGAIgASgJUhNtZXJjaGFudF9hY2NvdW50X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIhCgthbW91bnRDZW50cxgEIAEoBVIMYW1vdW50X2NlbnRzEhAKCGN1cnJlbmN5GAUgASgJEjQKEnNldHRsZW1lbnRDdXJyZW5jeRgGIAEoCUgAUhNzZXR0bGVtZW50X2N1cnJlbmN5iAEBEjAKEHNldHRsZW1lbnRBbW91bnQYByABKAVIAVIRc2V0dGxlbWVudF9hbW91bnSIAQESKQoGc3RhdHVzGAggASgOMhkucGF5bWVudC52MS5QYXltZW50U3RhdHVzEikKCG1ldGFkYXRhGAkgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIoCgxjbGllbnRTZWNyZXQYCiABKAlIAlINY2xpZW50X3NlY3JldIgBARJACg1sYXRlc3RBdHRlbXB0GAsgASgLMhkucGF5bWVudC52MS5MYXRlc3RBdHRlbXB0Ug5sYXRlc3RfYXR0ZW1wdBI5CglleHBpcmVzQXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpleHBpcmVzX2F0EjsKCmNhbmNlbGVkQXQYDSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgtjYW5jZWxlZF9hdBIzCgZwYWlkQXQYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgdwYWlkX2F0EjkKCWNyZWF0ZWRBdBgPIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSOQoJdXBkYXRlZEF0GBAgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdBIxCgdwcm9kdWN0GBEgASgLMhsucGF5bWVudC52MS5Qcm9kdWN0U25hcHNob3RIA4gBAUIVChNfc2V0dGxlbWVudEN1cnJlbmN5QhMKEV9zZXR0bGVtZW50QW1vdW50Qg8KDV9jbGllbnRTZWNyZXRCCgoIX3Byb2R1Y3Qi7QIKDUNoZWNrb3V0VG9rZW4SDgoGc3ltYm9sGAEgASgJEg0KBWNoYWluGAIgASgJEjQKCWNoYWluVHlwZRgDIAEoDjIVLnBheW1lbnQudjEuQ2hhaW5UeXBlUgpjaGFpbl90eXBlEi0KDmNoYWluTmV0d29ya0lkGAQgASgJSABSEGNoYWluX25ldHdvcmtfaWSIAQESDwoHbmV0d29yaxgFIAEoCRIuCg9jb250cmFjdEFkZHJlc3MYBiABKAlIAVIQY29udHJhY3RfYWRkcmVzc4gBARIVCghkZWNpbWFscxgHIAEoBUgCiAEBEiUKDWFkZHJlc3NGb3JtYXQYCCABKAlSDmFkZHJlc3NfZm9ybWF0EiUKDXJlY2VpdmVXYWxsZXQYCSABKAlSDnJlY2VpdmVfd2FsbGV0QhEKD19jaGFpbk5ldHdvcmtJZEISChBfY29udHJhY3RBZGRyZXNzQgsKCV9kZWNpbWFscyKoBAoOQ2hlY2tvdXRJbnRlbnQSGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIuChFtZXJjaGFudEFjY291bnRJZBgCIAEoCVITbWVyY2hhbnRfYWNjb3VudF9pZBIjCgxtZXJjaGFudE5hbWUYAyABKAlSDW1lcmNoYW50X25hbWUSKAoOc2VsbGVyT2xhcmVzSWQYBCABKAlSEHNlbGxlcl9vbGFyZXNfaWQSIQoLYW1vdW50Q2VudHMYBSABKAVSDGFtb3VudF9jZW50cxIpCgZzdGF0dXMYBiABKA4yGS5wYXltZW50LnYxLlBheW1lbnRTdGF0dXMSKQoGdG9rZW5zGAcgAygLMhkucGF5bWVudC52MS5DaGVja291dFRva2VuEkAKDWxhdGVzdEF0dGVtcHQYCCABKAsyGS5wYXltZW50LnYxLkxhdGVzdEF0dGVtcHRSDmxhdGVzdF9hdHRlbXB0EjMKDGNhcGFiaWxpdGllcxgJIAMoCzIdLnBheW1lbnQudjEuQ2hhbm5lbENhcGFiaWxpdHkSIgoJcmV0dXJuVXJsGAogASgJSABSCnJldHVybl91cmyIAQESJgoNYnV5ZXJPbGFyZXNJZBgLIAEoCVIPYnV5ZXJfb2xhcmVzX2lkEiIKCXByb2R1Y3RJZBgMIAEoCUgBUgpwcm9kdWN0X2lkiAEBQgwKCl9yZXR1cm5VcmxCDAoKX3Byb2R1Y3RJZCLgAgoPUHJvZHVjdFNuYXBzaG90Eh0KCXByb2R1Y3RJZBgBIAEoCVIKcHJvZHVjdF9pZBISCgV0aXRsZRgCIAEoCUgAiAEBEhQKB3ZlcnNpb24YAyABKAlIAYgBARIRCgR0eXBlGAQgASgJSAKIAQESJAoKcHJpY2VDZW50cxgFIAEoBUgDUgtwcmljZV9jZW50c4gBARIVCghjdXJyZW5jeRgGIAEoCUgEiAEBEhYKCWRldmVsb3BlchgHIAEoCUgFiAEBEhMKBnN0YXR1cxgIIAEoCUgGiAEBEiQKCnJlc29sdmVkQXQYCSABKAlIB1ILcmVzb2x2ZWRfYXSIAQFCCAoGX3RpdGxlQgoKCF92ZXJzaW9uQgcKBV90eXBlQg0KC19wcmljZUNlbnRzQgsKCV9jdXJyZW5jeUIMCgpfZGV2ZWxvcGVyQgkKB19zdGF0dXNCDQoLX3Jlc29sdmVkQXQisgMKFFBheW1lbnRJbnRlbnRTdW1tYXJ5EgoKAmlkGAEgASgJEi4KEW1lcmNoYW50QWNjb3VudElkGAIgASgJUhNtZXJjaGFudF9hY2NvdW50X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIhCgthbW91bnRDZW50cxgEIAEoBVIMYW1vdW50X2NlbnRzEhAKCGN1cnJlbmN5GAUgASgJEikKBnN0YXR1cxgGIAEoDjIZLnBheW1lbnQudjEuUGF5bWVudFN0YXR1cxIzCgZwYWlkQXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgdwYWlkX2F0EjkKCWNyZWF0ZWRBdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSMQoHcHJvZHVjdBgJIAEoCzIbLnBheW1lbnQudjEuUHJvZHVjdFNuYXBzaG90SACIAQESHAoGdHhIYXNoGAogASgJSAFSB3R4X2hhc2iIAQFCCgoIX3Byb2R1Y3RCCQoHX3R4SGFzaCq1AQoNUGF5bWVudFN0YXR1cxIeChpQQVlNRU5UX1NUQVRVU19VTlNQRUNJRklFRBAAEioKJlBBWU1FTlRfU1RBVFVTX1JFUVVJUkVTX1BBWU1FTlRfTUVUSE9EEAESHQoZUEFZTUVOVF9TVEFUVVNfUFJPQ0VTU0lORxACEhwKGFBBWU1FTlRfU1RBVFVTX1NVQ0NFRURFRBADEhsKF1BBWU1FTlRfU1RBVFVTX0NBTkNFTEVEEAQqhAEKDUF0dGVtcHRTdGF0dXMSHgoaQVRURU1QVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIaChZBVFRFTVBUX1NUQVRVU19QRU5ESU5HEAESHAoYQVRURU1QVF9TVEFUVVNfU1VDQ0VFREVEEAISGQoVQVRURU1QVF9TVEFUVVNfRkFJTEVEEAMqNwoHQ2hhbm5lbBIXChNDSEFOTkVMX1VOU1BFQ0lGSUVEEAASEwoPQ0hBTk5FTF9PTkNIQUlOEAEqZwoJQ2hhaW5UeXBlEhoKFkNIQUlOX1RZUEVfVU5TUEVDSUZJRUQQABISCg5DSEFJTl9UWVBFX0VWTRABEhUKEUNIQUlOX1RZUEVfU09MQU5BEAISEwoPQ0hBSU5fVFlQRV9VVFhPEANiBnByb3RvMw", [file_google_protobuf_struct, file_google_protobuf_timestamp]);
+  fileDesc("Chd2MS9kb21haW4vcGF5bWVudC5wcm90bxIKcGF5bWVudC52MSJcChFDaGFubmVsQ2FwYWJpbGl0eRIPCgdjaGFubmVsGAEgASgJEg8KB2VuYWJsZWQYAiABKAgSJQoEZGF0YRgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QimwMKDUxhdGVzdEF0dGVtcHQSKQoGc3RhdHVzGAEgASgOMhkucGF5bWVudC52MS5BdHRlbXB0U3RhdHVzEhwKBnR4SGFzaBgCIAEoCUgAUgd0eF9oYXNoiAEBEiQKCmZhaWxSZWFzb24YAyABKAlIAVILZmFpbF9yZWFzb26IAQESIgoJcGF5QW1vdW50GAQgASgJSAJSCnBheV9hbW91bnSIAQESJgoLcGF5Q3VycmVuY3kYBSABKAlIA1IMcGF5X2N1cnJlbmN5iAEBEhIKBWNoYWluGAYgASgJSASIAQESOQoJY2hhaW5UeXBlGAcgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVIBVIKY2hhaW5fdHlwZYgBARIiCgluZXR3b3JrSWQYCCABKAVIBlIKbmV0d29ya19pZIgBAUIJCgdfdHhIYXNoQg0KC19mYWlsUmVhc29uQgwKCl9wYXlBbW91bnRCDgoMX3BheUN1cnJlbmN5QggKBl9jaGFpbkIMCgpfY2hhaW5UeXBlQgwKCl9uZXR3b3JrSWQihwYKDlBheW1lbnRBdHRlbXB0EgoKAmlkGAEgASgJEhsKCGludGVudElkGAIgASgJUglpbnRlbnRfaWQSJQoNYXR0ZW1wdE51bWJlchgDIAEoDVIOYXR0ZW1wdF9udW1iZXISJAoHY2hhbm5lbBgEIAEoDjITLnBheW1lbnQudjEuQ2hhbm5lbBIcCgZ0eEhhc2gYBSABKAlIAFIHdHhfaGFzaIgBARImCgtwYXlDdXJyZW5jeRgGIAEoCUgBUgxwYXlfY3VycmVuY3mIAQESIgoJcGF5QW1vdW50GAcgASgJSAJSCnBheV9hbW91bnSIAQESKgoNcmVjZWl2ZVdhbGxldBgIIAEoCUgDUg5yZWNlaXZlX3dhbGxldIgBARIgCgh0b2tlbktleRgJIAEoCUgEUgl0b2tlbl9rZXmIAQESEgoFY2hhaW4YCiABKAlIBYgBARI5CgljaGFpblR5cGUYCyABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZUgGUgpjaGFpbl90eXBliAEBEiIKCW5ldHdvcmtJZBgMIAEoBUgHUgpuZXR3b3JrX2lkiAEBEhAKCHByb3RvY29sGA0gASgJEikKBnN0YXR1cxgOIAEoDjIZLnBheW1lbnQudjEuQXR0ZW1wdFN0YXR1cxIkCgpmYWlsUmVhc29uGA8gASgJSAhSC2ZhaWxfcmVhc29uiAEBEjkKCWNyZWF0ZWRBdBgQIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmNyZWF0ZWRfYXQSOQoJdXBkYXRlZEF0GBEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKdXBkYXRlZF9hdEIJCgdfdHhIYXNoQg4KDF9wYXlDdXJyZW5jeUIMCgpfcGF5QW1vdW50QhAKDl9yZWNlaXZlV2FsbGV0QgsKCV90b2tlbktleUIICgZfY2hhaW5CDAoKX2NoYWluVHlwZUIMCgpfbmV0d29ya0lkQg0KC19mYWlsUmVhc29uIpAICg1QYXltZW50SW50ZW50EgoKAmlkGAEgASgJEi4KEW1lcmNoYW50QWNjb3VudElkGAIgASgJUhNtZXJjaGFudF9hY2NvdW50X2lkEisKDWJ1eWVyT2xhcmVzSWQYAyABKAlIAFIPYnV5ZXJfb2xhcmVzX2lkiAEBEiEKC2Ftb3VudENlbnRzGAQgASgFUgxhbW91bnRfY2VudHMSEAoIY3VycmVuY3kYBSABKAkSNAoSc2V0dGxlbWVudEN1cnJlbmN5GAYgASgJSAFSE3NldHRsZW1lbnRfY3VycmVuY3mIAQESMAoQc2V0dGxlbWVudEFtb3VudBgHIAEoBUgCUhFzZXR0bGVtZW50X2Ftb3VudIgBARIpCgZzdGF0dXMYCCABKA4yGS5wYXltZW50LnYxLlBheW1lbnRTdGF0dXMSKQoIbWV0YWRhdGEYCSABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EigKDGNsaWVudFNlY3JldBgKIAEoCUgDUg1jbGllbnRfc2VjcmV0iAEBEkAKDWxhdGVzdEF0dGVtcHQYCyABKAsyGS5wYXltZW50LnYxLkxhdGVzdEF0dGVtcHRSDmxhdGVzdF9hdHRlbXB0EjkKCWV4cGlyZXNBdBgMIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSCmV4cGlyZXNfYXQSOwoKY2FuY2VsZWRBdBgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSC2NhbmNlbGVkX2F0EjMKBnBhaWRBdBgOIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB3BhaWRfYXQSOQoJY3JlYXRlZEF0GA8gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdBI5Cgl1cGRhdGVkQXQYECABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgp1cGRhdGVkX2F0EjEKB3Byb2R1Y3QYESABKAsyGy5wYXltZW50LnYxLlByb2R1Y3RTbmFwc2hvdEgEiAEBEkUKDWJ1eWVyRXh0ZXJuYWwYEiABKAsyGS5wYXltZW50LnYxLkJ1eWVyRXh0ZXJuYWxIBVIOYnV5ZXJfZXh0ZXJuYWyIAQESIAoIYnV5ZXJEaWQYEyABKAlIBlIJYnV5ZXJfZGlkiAEBQhAKDl9idXllck9sYXJlc0lkQhUKE19zZXR0bGVtZW50Q3VycmVuY3lCEwoRX3NldHRsZW1lbnRBbW91bnRCDwoNX2NsaWVudFNlY3JldEIKCghfcHJvZHVjdEIQCg5fYnV5ZXJFeHRlcm5hbEILCglfYnV5ZXJEaWQihgEKDUJ1eWVyRXh0ZXJuYWwSCwoDcmVmGAEgASgJEiYKC2Rpc3BsYXlOYW1lGAIgASgJSABSDGRpc3BsYXlfbmFtZYgBARIiCglhdmF0YXJVcmwYAyABKAlIAVIKYXZhdGFyX3VybIgBAUIOCgxfZGlzcGxheU5hbWVCDAoKX2F2YXRhclVybCLtAgoNQ2hlY2tvdXRUb2tlbhIOCgZzeW1ib2wYASABKAkSDQoFY2hhaW4YAiABKAkSNAoJY2hhaW5UeXBlGAMgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSLQoOY2hhaW5OZXR3b3JrSWQYBCABKAlIAFIQY2hhaW5fbmV0d29ya19pZIgBARIPCgduZXR3b3JrGAUgASgJEi4KD2NvbnRyYWN0QWRkcmVzcxgGIAEoCUgBUhBjb250cmFjdF9hZGRyZXNziAEBEhUKCGRlY2ltYWxzGAcgASgFSAKIAQESJQoNYWRkcmVzc0Zvcm1hdBgIIAEoCVIOYWRkcmVzc19mb3JtYXQSJQoNcmVjZWl2ZVdhbGxldBgJIAEoCVIOcmVjZWl2ZV93YWxsZXRCEQoPX2NoYWluTmV0d29ya0lkQhIKEF9jb250cmFjdEFkZHJlc3NCCwoJX2RlY2ltYWxzIqkFCg5DaGVja291dEludGVudBIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEi4KEW1lcmNoYW50QWNjb3VudElkGAIgASgJUhNtZXJjaGFudF9hY2NvdW50X2lkEiMKDG1lcmNoYW50TmFtZRgDIAEoCVINbWVyY2hhbnRfbmFtZRIoCg5zZWxsZXJPbGFyZXNJZBgEIAEoCVIQc2VsbGVyX29sYXJlc19pZBIhCgthbW91bnRDZW50cxgFIAEoBVIMYW1vdW50X2NlbnRzEikKBnN0YXR1cxgGIAEoDjIZLnBheW1lbnQudjEuUGF5bWVudFN0YXR1cxIpCgZ0b2tlbnMYByADKAsyGS5wYXltZW50LnYxLkNoZWNrb3V0VG9rZW4SQAoNbGF0ZXN0QXR0ZW1wdBgIIAEoCzIZLnBheW1lbnQudjEuTGF0ZXN0QXR0ZW1wdFIObGF0ZXN0X2F0dGVtcHQSMwoMY2FwYWJpbGl0aWVzGAkgAygLMh0ucGF5bWVudC52MS5DaGFubmVsQ2FwYWJpbGl0eRIiCglyZXR1cm5VcmwYCiABKAlIAFIKcmV0dXJuX3VybIgBARIrCg1idXllck9sYXJlc0lkGAsgASgJSAFSD2J1eWVyX29sYXJlc19pZIgBARIiCglwcm9kdWN0SWQYDCABKAlIAlIKcHJvZHVjdF9pZIgBARI+CglleHBpcmVzQXQYDSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSANSCmV4cGlyZXNfYXSIAQESEQoEbWVtbxgOIAEoCUgEiAEBQgwKCl9yZXR1cm5VcmxCEAoOX2J1eWVyT2xhcmVzSWRCDAoKX3Byb2R1Y3RJZEIMCgpfZXhwaXJlc0F0QgcKBV9tZW1vIuACCg9Qcm9kdWN0U25hcHNob3QSHQoJcHJvZHVjdElkGAEgASgJUgpwcm9kdWN0X2lkEhIKBXRpdGxlGAIgASgJSACIAQESFAoHdmVyc2lvbhgDIAEoCUgBiAEBEhEKBHR5cGUYBCABKAlIAogBARIkCgpwcmljZUNlbnRzGAUgASgFSANSC3ByaWNlX2NlbnRziAEBEhUKCGN1cnJlbmN5GAYgASgJSASIAQESFgoJZGV2ZWxvcGVyGAcgASgJSAWIAQESEwoGc3RhdHVzGAggASgJSAaIAQESJAoKcmVzb2x2ZWRBdBgJIAEoCUgHUgtyZXNvbHZlZF9hdIgBAUIICgZfdGl0bGVCCgoIX3ZlcnNpb25CBwoFX3R5cGVCDQoLX3ByaWNlQ2VudHNCCwoJX2N1cnJlbmN5QgwKCl9kZXZlbG9wZXJCCQoHX3N0YXR1c0INCgtfcmVzb2x2ZWRBdCKiBAoUUGF5bWVudEludGVudFN1bW1hcnkSCgoCaWQYASABKAkSLgoRbWVyY2hhbnRBY2NvdW50SWQYAiABKAlSE21lcmNoYW50X2FjY291bnRfaWQSKwoNYnV5ZXJPbGFyZXNJZBgDIAEoCUgAUg9idXllcl9vbGFyZXNfaWSIAQESIQoLYW1vdW50Q2VudHMYBCABKAVSDGFtb3VudF9jZW50cxIQCghjdXJyZW5jeRgFIAEoCRIpCgZzdGF0dXMYBiABKA4yGS5wYXltZW50LnYxLlBheW1lbnRTdGF0dXMSMwoGcGFpZEF0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIHcGFpZF9hdBI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0EjEKB3Byb2R1Y3QYCSABKAsyGy5wYXltZW50LnYxLlByb2R1Y3RTbmFwc2hvdEgBiAEBEhwKBnR4SGFzaBgKIAEoCUgCUgd0eF9oYXNoiAEBEkUKDWJ1eWVyRXh0ZXJuYWwYCyABKAsyGS5wYXltZW50LnYxLkJ1eWVyRXh0ZXJuYWxIA1IOYnV5ZXJfZXh0ZXJuYWyIAQFCEAoOX2J1eWVyT2xhcmVzSWRCCgoIX3Byb2R1Y3RCCQoHX3R4SGFzaEIQCg5fYnV5ZXJFeHRlcm5hbCq1AQoNUGF5bWVudFN0YXR1cxIeChpQQVlNRU5UX1NUQVRVU19VTlNQRUNJRklFRBAAEioKJlBBWU1FTlRfU1RBVFVTX1JFUVVJUkVTX1BBWU1FTlRfTUVUSE9EEAESHQoZUEFZTUVOVF9TVEFUVVNfUFJPQ0VTU0lORxACEhwKGFBBWU1FTlRfU1RBVFVTX1NVQ0NFRURFRBADEhsKF1BBWU1FTlRfU1RBVFVTX0NBTkNFTEVEEAQqhAEKDUF0dGVtcHRTdGF0dXMSHgoaQVRURU1QVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIaChZBVFRFTVBUX1NUQVRVU19QRU5ESU5HEAESHAoYQVRURU1QVF9TVEFUVVNfU1VDQ0VFREVEEAISGQoVQVRURU1QVF9TVEFUVVNfRkFJTEVEEAMqNwoHQ2hhbm5lbBIXChNDSEFOTkVMX1VOU1BFQ0lGSUVEEAASEwoPQ0hBTk5FTF9PTkNIQUlOEAEqZwoJQ2hhaW5UeXBlEhoKFkNIQUlOX1RZUEVfVU5TUEVDSUZJRUQQABISCg5DSEFJTl9UWVBFX0VWTRABEhUKEUNIQUlOX1RZUEVfU09MQU5BEAISEwoPQ0hBSU5fVFlQRV9VVFhPEANiBnByb3RvMw", [file_google_protobuf_struct, file_google_protobuf_timestamp]);
 
 /**
  * ChannelCapability keeps channel as string per proto-schema (capability slots are
@@ -509,11 +509,11 @@ export type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
   merchantAccountId: string;
 
   /**
-   * 买家 Olares 用户名快照(创建时落库)
+   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分),如 1000 = $10.00
@@ -612,6 +612,20 @@ export type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
    * @generated from field: optional payment.v1.ProductSnapshot product = 17;
    */
   product?: ProductSnapshot | undefined;
+
+  /**
+   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
+
+  /**
+   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
+   */
+  buyerDid?: string | undefined;
 };
 
 /**
@@ -636,9 +650,9 @@ export type PaymentIntentJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家 Olares 用户名快照(创建时落库)
+   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -739,6 +753,20 @@ export type PaymentIntentJson = {
    * @generated from field: optional payment.v1.ProductSnapshot product = 17;
    */
   product?: ProductSnapshotJson;
+
+  /**
+   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
+
+  /**
+   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
+   */
+  buyer_did?: string;
 };
 
 /**
@@ -747,6 +775,73 @@ export type PaymentIntentJson = {
  */
 export const PaymentIntentSchema: GenMessage<PaymentIntent, {jsonType: PaymentIntentJson}> = /*@__PURE__*/
   messageDesc(file_v1_domain_payment, 3);
+
+/**
+ * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
+ * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
+ * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
+ *
+ * @generated from message payment.v1.BuyerExternal
+ */
+export type BuyerExternal = Message<"payment.v1.BuyerExternal"> & {
+  /**
+   * 调用方内部 userId(对账键,非空 ≤128)
+   *
+   * @generated from field: string ref = 1;
+   */
+  ref: string;
+
+  /**
+   * 调用方自愿披露的展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * 调用方自愿披露的头像(绝对 https URL ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
+   */
+  avatarUrl?: string | undefined;
+};
+
+/**
+ * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
+ * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
+ * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
+ *
+ * @generated from message payment.v1.BuyerExternal
+ */
+export type BuyerExternalJson = {
+  /**
+   * 调用方内部 userId(对账键,非空 ≤128)
+   *
+   * @generated from field: string ref = 1;
+   */
+  ref?: string;
+
+  /**
+   * 调用方自愿披露的展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * 调用方自愿披露的头像(绝对 https URL ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
+   */
+  avatar_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.BuyerExternal.
+ * Use `create(BuyerExternalSchema)` to create a new message.
+ */
+export const BuyerExternalSchema: GenMessage<BuyerExternal, {jsonType: BuyerExternalJson}> = /*@__PURE__*/
+  messageDesc(file_v1_domain_payment, 4);
 
 /**
  * 收银台可选的代币(onchain_tokens 派生 + 收款钱包)
@@ -895,7 +990,7 @@ export type CheckoutTokenJson = {
  * Use `create(CheckoutTokenSchema)` to create a new message.
  */
 export const CheckoutTokenSchema: GenMessage<CheckoutToken, {jsonType: CheckoutTokenJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_payment, 4);
+  messageDesc(file_v1_domain_payment, 5);
 
 /**
  * 收银台支付单视图(公开接口,不泄露敏感字段)
@@ -975,11 +1070,11 @@ export type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
   returnUrl?: string | undefined;
 
   /**
-   * 买家 Olares 用户名(前端查 did-gate 解析 DID)
+   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
    *
-   * @generated from field: string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 商品 ID(从 metadata 提取)
@@ -987,6 +1082,20 @@ export type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
    */
   productId?: string | undefined;
+
+  /**
+   * 支付时限(TTL 到点收敛为 canceled)
+   *
+   * @generated from field: optional google.protobuf.Timestamp expiresAt = 13 [json_name = "expires_at"];
+   */
+  expiresAt?: Timestamp | undefined;
+
+  /**
+   * 收款单备注(建单时 metadata.ref 透出,收款单/店页场景)
+   *
+   * @generated from field: optional string memo = 14;
+   */
+  memo?: string | undefined;
 };
 
 /**
@@ -1067,9 +1176,9 @@ export type CheckoutIntentJson = {
   return_url?: string;
 
   /**
-   * 买家 Olares 用户名(前端查 did-gate 解析 DID)
+   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
    *
-   * @generated from field: string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -1079,6 +1188,20 @@ export type CheckoutIntentJson = {
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
    */
   product_id?: string;
+
+  /**
+   * 支付时限(TTL 到点收敛为 canceled)
+   *
+   * @generated from field: optional google.protobuf.Timestamp expiresAt = 13 [json_name = "expires_at"];
+   */
+  expires_at?: TimestampJson;
+
+  /**
+   * 收款单备注(建单时 metadata.ref 透出,收款单/店页场景)
+   *
+   * @generated from field: optional string memo = 14;
+   */
+  memo?: string;
 };
 
 /**
@@ -1086,7 +1209,7 @@ export type CheckoutIntentJson = {
  * Use `create(CheckoutIntentSchema)` to create a new message.
  */
 export const CheckoutIntentSchema: GenMessage<CheckoutIntent, {jsonType: CheckoutIntentJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_payment, 5);
+  messageDesc(file_v1_domain_payment, 6);
 
 /**
  * 下单商品快照(payment_intents.product_snapshot,建单时从目录固化;事后改价不影响)
@@ -1235,7 +1358,7 @@ export type ProductSnapshotJson = {
  * Use `create(ProductSnapshotSchema)` to create a new message.
  */
 export const ProductSnapshotSchema: GenMessage<ProductSnapshot, {jsonType: ProductSnapshotJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_payment, 6);
+  messageDesc(file_v1_domain_payment, 7);
 
 /**
  * 支付单摘要(商户后台交易列表条目)
@@ -1259,11 +1382,11 @@ export type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSummary"> & 
   merchantAccountId: string;
 
   /**
-   * 买家用户名
+   * 买家用户名(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分)
@@ -1313,6 +1436,13 @@ export type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSummary"> & 
    * @generated from field: optional string txHash = 10 [json_name = "tx_hash"];
    */
   txHash?: string | undefined;
+
+  /**
+   * 外部买家快照(external 档建单;列表无需 did)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
 };
 
 /**
@@ -1337,9 +1467,9 @@ export type PaymentIntentSummaryJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家用户名
+   * 买家用户名(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -1391,6 +1521,13 @@ export type PaymentIntentSummaryJson = {
    * @generated from field: optional string txHash = 10 [json_name = "tx_hash"];
    */
   tx_hash?: string;
+
+  /**
+   * 外部买家快照(external 档建单;列表无需 did)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
 };
 
 /**
@@ -1398,7 +1535,7 @@ export type PaymentIntentSummaryJson = {
  * Use `create(PaymentIntentSummarySchema)` to create a new message.
  */
 export const PaymentIntentSummarySchema: GenMessage<PaymentIntentSummary, {jsonType: PaymentIntentSummaryJson}> = /*@__PURE__*/
-  messageDesc(file_v1_domain_payment, 7);
+  messageDesc(file_v1_domain_payment, 8);
 
 /**
  * 支付单状态(payment_intents.status 列,DB 文本值)

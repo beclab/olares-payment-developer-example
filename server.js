@@ -319,7 +319,7 @@ app.get('/api/admin/orders', requireAdmin, (_req, res) => {
 app.get('/api/admin/stats', requireAdmin, (_req, res) => res.json(stats()));
 
 app.listen(CONFIG.port, '0.0.0.0', () => {
-  console.log(`shop   ${CONFIG.shopPublicUrl}`);
-  console.log(`admin  ${CONFIG.shopPublicUrl}/admin`);
-  console.log(`pay    ${CONFIG.paymentEndpoint}`);
+  console.log(`           shop    ${CONFIG.shopPublicUrl}`);
+  console.log(`          admin    ${CONFIG.shopPublicUrl}/admin`);
+  console.log(`payment gateway    ${CONFIG.paymentEndpoint}`);
 });

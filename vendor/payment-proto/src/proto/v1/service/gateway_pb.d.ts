@@ -4,11 +4,11 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
+import type { BuyerExternal, BuyerExternalJson, CheckoutIntentSchema, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
-import type { CheckoutIntentSchema, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
 import type { ChannelInfo, ChannelInfoJson, ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson } from "../domain/receive-wallet_pb";
 import type { AccountInfoSchema, ApiClientType, ApiClientTypeJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
-import type { VcApplicationSchemaReqSchema, VcApplicationSchemaRespSchema, VcRequestReqSchema, VcRequestRespSchema } from "../domain/vc_pb";
+import type { IssuedCredentialViewSchema, VcApplicationSchemaReqSchema, VcApplicationSchemaRespSchema, VcRequestReqSchema, VcRequestRespSchema } from "../domain/vc_pb";
 import type { DeveloperStatusSchema } from "../domain/developer-key_pb";
 
 /**
@@ -40,7 +40,7 @@ export declare type CreateOrderFromCatalogReq = Message<"payment.v1.CreateOrderF
   buyerOlaresId: string;
 
   /**
-   * buyer DID (optional)
+   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
    *
    * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
    */
@@ -78,7 +78,7 @@ export declare type CreateOrderFromCatalogReqJson = {
   buyer_olares_id?: string;
 
   /**
-   * buyer DID (optional)
+   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
    *
    * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
    */
@@ -101,6 +101,8 @@ export declare const CreateOrderFromCatalogReqSchema: GenMessage<CreateOrderFrom
 /**
  * 创建支付单请求
  * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
+ * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -115,14 +117,14 @@ export declare type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & 
   merchantAccountId?: string | undefined;
 
   /**
-   * 买家 Olares 用户名,如 "bob.olares.com"
+   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
    *
-   * @generated from field: string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
-   * 买家 DID(扫码登录会话回填 identities.did)
+   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
    *
    * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
    */
@@ -157,11 +159,20 @@ export declare type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & 
    * @generated from field: optional string returnUrl = 7 [json_name = "return_url"];
    */
   returnUrl?: string | undefined;
+
+  /**
+   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
 };
 
 /**
  * 创建支付单请求
  * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
+ * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -176,14 +187,14 @@ export declare type CreatePaymentReqJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家 Olares 用户名,如 "bob.olares.com"
+   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
    *
-   * @generated from field: string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
   /**
-   * 买家 DID(扫码登录会话回填 identities.did)
+   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
    *
    * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
    */
@@ -218,6 +229,13 @@ export declare type CreatePaymentReqJson = {
    * @generated from field: optional string returnUrl = 7 [json_name = "return_url"];
    */
   return_url?: string;
+
+  /**
+   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
 };
 
 /**
@@ -1241,47 +1259,39 @@ export declare type GetDeveloperStatusReqJson = {
 export declare const GetDeveloperStatusReqSchema: GenMessage<GetDeveloperStatusReq, {jsonType: GetDeveloperStatusReqJson}>;
 
 /**
- * 已签发凭证查询(x-internal-token 鉴权 = INTERNAL_API_TOKEN;市场本地账本丢失后按买家+商品找回)
- * 示例(JSON): {"buyer_olares_id":"bob.olares.com","product_id":"olares-apps-demoapp-pro"}
+ * 已签发凭证查询(市场本地账本丢失后按买家+商品找回)。
+ * 示例(JSON): {"jws":"eyJhbGciOiJFZERTQSIs..."}
+ * 入参只有一个签好的凭证申请 JWS:买家身份和商品都从 JWS 里读,不接受调用方
+ * 另行声明(否则任何人都能拿别人的 olares_id 来查)。签名内容与后续 requestVc 用的完全一样,
+ * 所以买家只需在钱包里签一次。
  *
  * @generated from message payment.v1.GetIssuedCredentialReq
  */
 export declare type GetIssuedCredentialReq = Message<"payment.v1.GetIssuedCredentialReq"> & {
   /**
-   * 买家 Olares ID(@/. 两种拼写服务端归一)
+   * 钱包签的凭证申请(EdDSA did:key),既是鉴权也是查询条件
    *
-   * @generated from field: string buyerOlaresId = 1 [json_name = "buyer_olares_id"];
+   * @generated from field: string jws = 3;
    */
-  buyerOlaresId: string;
-
-  /**
-   * 商品 ID(catalog product_id)
-   *
-   * @generated from field: string productId = 2 [json_name = "product_id"];
-   */
-  productId: string;
+  jws: string;
 };
 
 /**
- * 已签发凭证查询(x-internal-token 鉴权 = INTERNAL_API_TOKEN;市场本地账本丢失后按买家+商品找回)
- * 示例(JSON): {"buyer_olares_id":"bob.olares.com","product_id":"olares-apps-demoapp-pro"}
+ * 已签发凭证查询(市场本地账本丢失后按买家+商品找回)。
+ * 示例(JSON): {"jws":"eyJhbGciOiJFZERTQSIs..."}
+ * 入参只有一个签好的凭证申请 JWS:买家身份和商品都从 JWS 里读,不接受调用方
+ * 另行声明(否则任何人都能拿别人的 olares_id 来查)。签名内容与后续 requestVc 用的完全一样,
+ * 所以买家只需在钱包里签一次。
  *
  * @generated from message payment.v1.GetIssuedCredentialReq
  */
 export declare type GetIssuedCredentialReqJson = {
   /**
-   * 买家 Olares ID(@/. 两种拼写服务端归一)
+   * 钱包签的凭证申请(EdDSA did:key),既是鉴权也是查询条件
    *
-   * @generated from field: string buyerOlaresId = 1 [json_name = "buyer_olares_id"];
+   * @generated from field: string jws = 3;
    */
-  buyer_olares_id?: string;
-
-  /**
-   * 商品 ID(catalog product_id)
-   *
-   * @generated from field: string productId = 2 [json_name = "product_id"];
-   */
-  product_id?: string;
+  jws?: string;
 };
 
 /**
@@ -1438,7 +1448,7 @@ export declare const GatewayService: GenService<{
     output: typeof CreatePaymentResponseSchema;
   },
   /**
-   * public paid-app VC manifest (no HMAC; issuer resolved from intent)
+   * public paid-app VC manifest (no HMAC; issuer resolved from the product's developer)
    *
    * @generated from rpc payment.v1.GatewayService.GetVcApplicationSchema
    */
@@ -1466,6 +1476,16 @@ export declare const GatewayService: GenService<{
     methodKind: "unary";
     input: typeof GetDeveloperStatusReqSchema;
     output: typeof DeveloperStatusSchema;
+  },
+  /**
+   * public credential recovery (no HMAC; the buyer's application JWS is the auth)
+   *
+   * @generated from rpc payment.v1.GatewayService.GetIssuedCredential
+   */
+  getIssuedCredential: {
+    methodKind: "unary";
+    input: typeof GetIssuedCredentialReqSchema;
+    output: typeof IssuedCredentialViewSchema;
   },
 }>;
 

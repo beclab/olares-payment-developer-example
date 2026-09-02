@@ -19,7 +19,6 @@ import { INVALID_ARGUMENT, PaymentError, SIGNATURE_MISMATCH, TIMESTAMP_EXPIRED }
 import { wireToCredential } from './mapping';
 import type { WebhookHeaderGetter, WebhookEvent, WebhookResponse } from '../types/base';
 import type { WireWebhookPayload } from './wire';
-
 const DEFAULT_MAX_SKEW_MS = 5 * 60 * 1000;
 const TS_HEADER = 'x-olares-payment-webhook-timestamp';
 const SIG_HEADER = 'x-olares-payment-webhook-signature';
@@ -57,6 +56,16 @@ export function constructEvent(
     paymentId: p.intent_id ?? '',
     merchantAccountId: p.merchant_account_id ?? '',
     buyerOlaresId: p.buyer_olares_id ?? '',
+    // Creation-time snapshots echoed verbatim (ruling 11); null when the tier carries none.
+    buyerExternal:
+      p.buyer_external != null
+        ? {
+            ref: p.buyer_external.ref ?? '',
+            displayName: p.buyer_external.display_name ?? null,
+            avatarUrl: p.buyer_external.avatar_url ?? null,
+          }
+        : null,
+    buyerDid: p.buyer_did ?? null,
     metadata: p.metadata ?? {},
   };
   switch (p.event_type) {

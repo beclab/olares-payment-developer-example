@@ -5,7 +5,7 @@
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
-import type { ChainType, ChainTypeJson } from "./payment_pb";
+import type { BuyerExternal, BuyerExternalJson, ChainType, ChainTypeJson } from "./payment_pb";
 
 /**
  * Describes the file v1/domain/webhook.proto.
@@ -16,7 +16,7 @@ export declare const file_v1_domain_webhook: GenFile;
  * Webhook 端点(notify_webhook_endpoints 表):商户注册的支付回调目标
  * 角色: 实体 | 使用: ListWebhookEndpoints / Create / Update / Delete / Test | 消费方: dashboard-front 页面
  * 示例(JSON): {"id":1,"account_id":"acct_x8y9...","url":"https://merchant.example.com/webhook","enabled_events":["payment.succeeded"],"status":"enabled","secret":"whsec_ab12cd34...","description":"main webhook","created_at":"2026-08-05T12:00:00Z"}
- * 注意:secret 只在创建时返回一次
+ * 注意:secret 在创建与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.WebhookEndpoint
  */
@@ -57,7 +57,7 @@ export declare type WebhookEndpoint = Message<"payment.v1.WebhookEndpoint"> & {
   status: string;
 
   /**
-   * 签名密钥,如 "whsec_ab12cd34..."(仅创建时返回)
+   * 签名密钥,如 "whsec_ab12cd34..."(创建与 list 均返回)
    *
    * @generated from field: optional string secret = 6;
    */
@@ -82,7 +82,7 @@ export declare type WebhookEndpoint = Message<"payment.v1.WebhookEndpoint"> & {
  * Webhook 端点(notify_webhook_endpoints 表):商户注册的支付回调目标
  * 角色: 实体 | 使用: ListWebhookEndpoints / Create / Update / Delete / Test | 消费方: dashboard-front 页面
  * 示例(JSON): {"id":1,"account_id":"acct_x8y9...","url":"https://merchant.example.com/webhook","enabled_events":["payment.succeeded"],"status":"enabled","secret":"whsec_ab12cd34...","description":"main webhook","created_at":"2026-08-05T12:00:00Z"}
- * 注意:secret 只在创建时返回一次
+ * 注意:secret 在创建与 dashboard list 均返回(session 门后,行内 reveal 用)
  *
  * @generated from message payment.v1.WebhookEndpoint
  */
@@ -123,7 +123,7 @@ export declare type WebhookEndpointJson = {
   status?: string;
 
   /**
-   * 签名密钥,如 "whsec_ab12cd34..."(仅创建时返回)
+   * 签名密钥,如 "whsec_ab12cd34..."(创建与 list 均返回)
    *
    * @generated from field: optional string secret = 6;
    */
@@ -319,11 +319,11 @@ export declare type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
   merchantAccountId: string;
 
   /**
-   * 买家 Olares 用户名快照
+   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
    */
-  buyerOlaresId: string;
+  buyerOlaresId?: string | undefined;
 
   /**
    * 支付单 metadata 快照(如 {"product_id":"app-123"})
@@ -366,6 +366,20 @@ export declare type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
    * @generated from field: google.protobuf.Timestamp paidAt = 10 [json_name = "paid_at"];
    */
   paidAt?: Timestamp | undefined;
+
+  /**
+   * 外部买家快照(external 档;商户对账标签)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyerExternal?: BuyerExternal | undefined;
+
+  /**
+   * 买家 DID 快照(olares 档;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
+   */
+  buyerDid?: string | undefined;
 };
 
 /**
@@ -399,9 +413,9 @@ export declare type PaymentCallbackJson = {
   merchant_account_id?: string;
 
   /**
-   * 买家 Olares 用户名快照
+   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
    *
-   * @generated from field: string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
+   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
    */
   buyer_olares_id?: string;
 
@@ -446,6 +460,20 @@ export declare type PaymentCallbackJson = {
    * @generated from field: google.protobuf.Timestamp paidAt = 10 [json_name = "paid_at"];
    */
   paid_at?: TimestampJson;
+
+  /**
+   * 外部买家快照(external 档;商户对账标签)
+   *
+   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   */
+  buyer_external?: BuyerExternalJson;
+
+  /**
+   * 买家 DID 快照(olares 档;事后换绑不改老单)
+   *
+   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
+   */
+  buyer_did?: string;
 };
 
 /**

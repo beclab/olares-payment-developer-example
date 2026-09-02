@@ -452,7 +452,7 @@ export type DeveloperAccountSummary = Message<"payment.v1.DeveloperAccountSummar
   activeCount: number;
 
   /**
-   * 首个 active 账户(收款派生锚点;无则缺省)
+   * 收款派生锚点 = 默认收银台账户(is_default AND active,严格不滑动;无则缺省。字段名保留历史拼写,gitbot 不消费)
    *
    * @generated from field: optional string firstActiveAccountId = 3 [json_name = "first_active_account_id"];
    */
@@ -481,7 +481,7 @@ export type DeveloperAccountSummaryJson = {
   active_count?: number;
 
   /**
-   * 首个 active 账户(收款派生锚点;无则缺省)
+   * 收款派生锚点 = 默认收银台账户(is_default AND active,严格不滑动;无则缺省。字段名保留历史拼写,gitbot 不消费)
    *
    * @generated from field: optional string firstActiveAccountId = 3 [json_name = "first_active_account_id"];
    */

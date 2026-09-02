@@ -98,6 +98,37 @@ export type ReceiveWalletTxStatus = 'success' | 'failed';
 
 export type WebhookEventType = 'payment.succeeded' | 'payment.failed' | 'payment.canceled' | 'endpoint.test';
 
+// ---------- Buyer identity (three disclosure tiers) ----------
+
+/**
+ * Buyer reference — a discriminated union over the gateway's disclosure tiers.
+ *
+ * - 'olares': verifiable Olares identity (name + did, both required). Runs the DID
+ *   gate, closes a customer account, keeps VC eligibility.
+ * - 'external': opaque caller-side label. No identity, no account, no VC — the
+ *   snapshot (ref + optional display) lands on the intent for merchant reconciliation.
+ * - omitted: fully anonymous order.
+ *
+ * The tiers are mutually exclusive at the type level AND fail-closed on the
+ * gateway (half disclosure or mixing → 1100).
+ */
+export type BuyerRef =
+  | { kind: 'olares'; olaresId: string; did: string }
+  | {
+      kind: 'external';
+      /** Caller-internal user id (reconciliation key). 1..128 chars. */
+      ref: string;
+      /** Voluntary UI disclosure for the merchant dashboard (format-checked only, never verified). */
+      display?: { name?: string; avatarUrl?: string };
+    };
+
+/** External buyer snapshot echoed on Payment.buyer / webhooks (external-tier orders). */
+export interface ExternalBuyerSnapshot {
+  ref: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+}
+
 // ---------- Resources (read) ----------
 
 /** Payment credential; the webhook fast lane and the getPayment query leg share this exact shape.
@@ -144,8 +175,13 @@ export interface ProductSnapshot {
 export interface Payment {
   paymentId: string;
   merchantAccountId: string;
-  /** Buyer identity snapshot written at creation; unaffected by later re-binding. */
-  buyerOlaresId: string;
+  /**
+   * Buyer snapshot rebuilt from the intent's creation-time columns (ruling 11 —
+   * what was sent is what comes back, never re-derived from live identity rows):
+   * name+did → { kind: 'olares' }; external snapshot → { kind: 'external' } (incl.
+   * legacy name-only orders); nothing → null (anonymous).
+   */
+  buyer: BuyerRef | null;
   amountCents: number;
   currency: Currency;
   settlementCurrency: string | null;
@@ -214,19 +250,22 @@ export interface ClientInfoResult {
 
 // ---------- Requests (write) & responses ----------
 
-/** createPayment request. merchantAccountId: required for platform; omitted for merchant (inferred from key). */
+/**
+ * createPayment request. Buyer is optional (omitted = anonymous order); when present
+ * pick one disclosure tier via the BuyerRef discriminant. merchantAccountId lives on
+ * PlatformCreatePaymentRequest only (platform keys) — merchant keys infer from the key.
+ */
 export interface CreatePaymentRequest {
-  merchantAccountId?: string;
-  /** Omit for an anonymous order: the gateway then skips the DID gate and the customer closure. */
-  buyerOlaresId?: string;
-  /** Trusted DID from the platform's scan-login session; back-fills identities.did. Requires buyerOlaresId. */
-  buyerDid?: string;
+  buyer?: BuyerRef;
   amountCents: number;
   currency?: Currency;
   metadata?: Record<string, unknown>;
   /** Post-payment redirect target; optional absolute http(s) URL (any host). Omitted = no redirect after payment. */
   returnUrl?: string;
 }
+
+/** createPayment for platform keys: the sub-account to collect on behalf of is required. */
+export type PlatformCreatePaymentRequest = CreatePaymentRequest & { merchantAccountId: string };
 
 /** createPayment one-step result (checkout URL composed by the gateway). */
 export interface CreatePaymentResult {
@@ -236,11 +275,13 @@ export interface CreatePaymentResult {
 
 /** createOrderFromCatalog request (keyless, public endpoint): no price fields, no
  *  account — the gateway resolves amount/currency from the catalog authority and
- *  derives the seller account from the catalog entry's developer. */
+ *  derives the seller account from the catalog entry's developer.
+ *  Catalog orders are olares-tier by contract: buyerDid is required (VC issuance
+ *  depends on it; the gateway rejects a missing did with 1100). */
 export interface CreateOrderFromCatalogRequest {
   productId: string;
   buyerOlaresId: string;
-  buyerDid?: string;
+  buyerDid: string;
   returnUrl?: string;
 }
 
@@ -285,13 +326,16 @@ export interface WebhookResponse {
   headers: WebhookHeaders | WebhookHeaderGetter | Record<string, string | string[] | undefined>;
 }
 
-/** Typed webhook event (discriminated by type). */
+/** Typed webhook event (discriminated by type). buyerExternal/buyerDid echo the
+ *  intent's creation-time snapshots (null when the tier carries none). */
 export type WebhookEvent =
   | {
       type: 'payment.succeeded';
       paymentId: string;
       merchantAccountId: string;
       buyerOlaresId: string;
+      buyerExternal: ExternalBuyerSnapshot | null;
+      buyerDid: string | null;
       metadata: Record<string, unknown>;
       credential: PaymentCredential;
       /** unix ms */
@@ -302,6 +346,8 @@ export type WebhookEvent =
       paymentId: string;
       merchantAccountId: string;
       buyerOlaresId: string;
+      buyerExternal: ExternalBuyerSnapshot | null;
+      buyerDid: string | null;
       metadata: Record<string, unknown>;
       txHash: string | null;
       failReason: string | null;
@@ -311,6 +357,8 @@ export type WebhookEvent =
       paymentId: string;
       merchantAccountId: string;
       buyerOlaresId: string;
+      buyerExternal: ExternalBuyerSnapshot | null;
+      buyerDid: string | null;
       metadata: Record<string, unknown>;
       cancellationReason: string;
     }

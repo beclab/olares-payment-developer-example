@@ -86,7 +86,9 @@ export class MerchantClient {
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
 
-  /** Create a payment for yourself (merchantAccountId omitted; if passed it must be yourself).
+  /** Create a payment for yourself. The type carries no merchantAccountId — the
+   *  gateway infers it from the key (a platform-style sub-account field is not
+   *  part of the merchant surface). Buyer is a BuyerRef tier; omitted = anonymous.
    *  Idempotency semantics: see PlatformClient.createPayment. */
   async createPayment(
     p: CreatePaymentRequest,

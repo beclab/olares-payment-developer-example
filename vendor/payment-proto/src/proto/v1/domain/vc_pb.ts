@@ -12,38 +12,50 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/domain/vc.proto.
  */
 export const file_v1_domain_vc: GenFile = /*@__PURE__*/
-  fileDesc("ChJ2MS9kb21haW4vdmMucHJvdG8SCnBheW1lbnQudjEiNQoWVmNBcHBsaWNhdGlvblNjaGVtYVJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkIpcBChdWY0FwcGxpY2F0aW9uU2NoZW1hUmVzcBIpCghtYW5pZmVzdBgBIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSMgoTYXBwbGljYXRpb25TY2hlbWFJZBgCIAEoCVIVYXBwbGljYXRpb25fc2NoZW1hX2lkEh0KCWlzc3VlckRpZBgDIAEoCVIKaXNzdWVyX2RpZCJ/CgxWY1JlcXVlc3RSZXESCwoDandzGAEgASgJEh0KCXByb2R1Y3RJZBgCIAEoCVIKcHJvZHVjdF9pZBImCg1idXllck9sYXJlc0lkGAMgASgJUg9idXllcl9vbGFyZXNfaWQSGwoIaW50ZW50SWQYBCABKAlSCWludGVudF9pZCKSAQoNVmNSZXF1ZXN0UmVzcBIjCgJ2YxgBIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSFQoFdmNKd3QYAiABKAlSBnZjX2p3dBIbCghpbnRlbnRJZBgDIAEoCVIJaW50ZW50X2lkEigKDnNlbGxlck9sYXJlc0lkGAQgASgJUhBzZWxsZXJfb2xhcmVzX2lkIsYCChRJc3N1ZWRDcmVkZW50aWFsVmlldxINCgVmb3VuZBgBIAEoCBIoCgJ2YxgCIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RIAIgBARIVCgV2Y0p3dBgDIAEoCVIGdmNfand0EhsKCGludGVudElkGAQgASgJUglpbnRlbnRfaWQSHQoJcHJvZHVjdElkGAUgASgJUgpwcm9kdWN0X2lkEiYKDWJ1eWVyT2xhcmVzSWQYBiABKAlSD2J1eWVyX29sYXJlc19pZBIoCg5zZWxsZXJPbGFyZXNJZBgHIAEoCVIQc2VsbGVyX29sYXJlc19pZBI8Cghpc3N1ZWRBdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAVIJaXNzdWVkX2F0iAEBQgUKA192Y0ILCglfaXNzdWVkQXRiBnByb3RvMw", [file_google_protobuf_struct, file_google_protobuf_timestamp]);
+  fileDesc("ChJ2MS9kb21haW4vdmMucHJvdG8SCnBheW1lbnQudjEiNwoWVmNBcHBsaWNhdGlvblNjaGVtYVJlcRIdCglwcm9kdWN0SWQYASABKAlSCnByb2R1Y3RfaWQilwEKF1ZjQXBwbGljYXRpb25TY2hlbWFSZXNwEikKCG1hbmlmZXN0GAEgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIyChNhcHBsaWNhdGlvblNjaGVtYUlkGAIgASgJUhVhcHBsaWNhdGlvbl9zY2hlbWFfaWQSHQoJaXNzdWVyRGlkGAMgASgJUgppc3N1ZXJfZGlkIn8KDFZjUmVxdWVzdFJlcRILCgNqd3MYASABKAkSHQoJcHJvZHVjdElkGAIgASgJUgpwcm9kdWN0X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIbCghpbnRlbnRJZBgEIAEoCVIJaW50ZW50X2lkIpIBCg1WY1JlcXVlc3RSZXNwEiMKAnZjGAEgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIVCgV2Y0p3dBgCIAEoCVIGdmNfand0EhsKCGludGVudElkGAMgASgJUglpbnRlbnRfaWQSKAoOc2VsbGVyT2xhcmVzSWQYBCABKAlSEHNlbGxlcl9vbGFyZXNfaWQixgIKFElzc3VlZENyZWRlbnRpYWxWaWV3Eg0KBWZvdW5kGAEgASgIEigKAnZjGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdEgAiAEBEhUKBXZjSnd0GAMgASgJUgZ2Y19qd3QSGwoIaW50ZW50SWQYBCABKAlSCWludGVudF9pZBIdCglwcm9kdWN0SWQYBSABKAlSCnByb2R1Y3RfaWQSJgoNYnV5ZXJPbGFyZXNJZBgGIAEoCVIPYnV5ZXJfb2xhcmVzX2lkEigKDnNlbGxlck9sYXJlc0lkGAcgASgJUhBzZWxsZXJfb2xhcmVzX2lkEjwKCGlzc3VlZEF0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBUglpc3N1ZWRfYXSIAQFCBQoDX3ZjQgsKCV9pc3N1ZWRBdGIGcHJvdG8z", [file_google_protobuf_struct, file_google_protobuf_timestamp]);
 
 /**
- * Fetch the credential manifest + application schema for the issuer that owns
- * the given intent (used by market before asking the wallet to sign).
- * Example (JSON): {"intent_id":"pi_xxx"}
+ * Fetch the credential manifest + application schema of a paid app's issuer
+ * (used by market before asking the wallet to sign).
+ *
+ * Keyed by PRODUCT, not by order: the buyer has to be able to sign before any
+ * order exists, because the signed application is what authenticates the
+ * "have I already bought this?" query (GetIssuedCredential). Product is also
+ * where the manifest naturally lives — the issuer is a property of the app's
+ * developer, not of one purchase — and matches how market has always fetched
+ * it from the developer's own server (postDeveloperJSON {productId}).
  *
  * @generated from message payment.v1.VcApplicationSchemaReq
  */
 export type VcApplicationSchemaReq = Message<"payment.v1.VcApplicationSchemaReq"> & {
   /**
-   * paid-order intent; resolves seller → hosted issuer
+   * catalog product; resolves developer → hosted issuer
    *
-   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   * @generated from field: string productId = 1 [json_name = "product_id"];
    */
-  intentId: string;
+  productId: string;
 };
 
 /**
- * Fetch the credential manifest + application schema for the issuer that owns
- * the given intent (used by market before asking the wallet to sign).
- * Example (JSON): {"intent_id":"pi_xxx"}
+ * Fetch the credential manifest + application schema of a paid app's issuer
+ * (used by market before asking the wallet to sign).
+ *
+ * Keyed by PRODUCT, not by order: the buyer has to be able to sign before any
+ * order exists, because the signed application is what authenticates the
+ * "have I already bought this?" query (GetIssuedCredential). Product is also
+ * where the manifest naturally lives — the issuer is a property of the app's
+ * developer, not of one purchase — and matches how market has always fetched
+ * it from the developer's own server (postDeveloperJSON {productId}).
  *
  * @generated from message payment.v1.VcApplicationSchemaReq
  */
 export type VcApplicationSchemaReqJson = {
   /**
-   * paid-order intent; resolves seller → hosted issuer
+   * catalog product; resolves developer → hosted issuer
    *
-   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   * @generated from field: string productId = 1 [json_name = "product_id"];
    */
-  intent_id?: string;
+  product_id?: string;
 };
 
 /**
