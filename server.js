@@ -11,15 +11,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { MerchantClient, PaymentError, webhooks } from '@olares/payment-sdk';
-
-const CONFIG = {
-  port: 32000,
-  shopPublicUrl: 'http://127.0.0.1:32000',
-  paymentEndpoint: 'https://api-svc-test.mdogs.me',
-  apiKey: 'pk_live_REPLACE_ME',
-  apiSecret: 'sk_live_REPLACE_ME',
-  webhookSecret: 'whsec_REPLACE_ME',
-};
+import { CONFIG } from './config.js';
 
 const PRODUCTS = [
   { id: 'mug', title: 'Harbor Mug', blurb: 'Stoneware cup. Holds a long pour.', priceCents: 1 },

@@ -6,22 +6,27 @@ Shop orders move **pending → paid → shipped**. A successful checkout marks t
 
 ## How to run
 
-1. Open the Olares Payment Dashboard and sign in with LarePass. The first login creates a merchant account and receive addresses on the enabled EVM chains. The receive address is the Ethereum address derived from the LarePass mnemonic, so checkout is payable without adding a wallet by hand.
-2. Go to **Checkouts → Advanced settings** to create a new API key and secret. The key is used to identify the merchant, and the secret is used to sign requests to the gateway. Register a webhook endpoint: `http://<your-host>:32000/webhook`. The secret is used to verify the webhook signature.
-4. Put the key, secret, webhook secret, and gateway `baseUrl` in `CONFIG` at the top of `server.js`.
-5. Install and start:
+**[Olares Payment Dashboard](https://www.olares.com/payment/dashboard/)** → LarePass sign-in → generated default merchant account + EVM receive address (ETH from the LarePass mnemonic)
+
+**Checkouts → Advanced settings** → API key + secret → webhook `http://<your-host>:32000/webhook` → `whsec_`
+
+> [!NOTE]
+> A hosted gateway cannot reach `127.0.0.1` — use a public webhook URL then. The return page also calls `getPayment`, so a local shop can still mark an order paid if the webhook never arrives.
+
+**`config.js`** → paste `apiKey`, `apiSecret`, `webhookSecret`
 
 ```bash
-npm install
-npm start
+npm install && npm start
 ```
 
-Buyer shop: http://127.0.0.1:32000  
-Seller admin: http://127.0.0.1:32000/admin (username `admin`, password `admin`)
+**Shop** → http://127.0.0.1:32000  
+**Admin** → http://127.0.0.1:32000/admin · `admin` / `admin`
 
-A hosted gateway cannot reach `127.0.0.1`. Use a public webhook URL in that case. The return page also calls `getPayment`, so a local shop can still mark an order paid if the webhook never arrives.
+`vendor/` is an unpublished `@olares/payment-sdk` snapshot. Orders are in memory and reset when the process exits.
 
-`vendor/` is a snapshot of `@olares/payment-sdk` before it is published to npm. Orders live in memory and are lost when the process exits.
+## SDK snippets
+
+Short, one-file scripts for the four calls this shop uses: [examples/README.md](./examples/README.md).
 
 ## What this example shows
 
