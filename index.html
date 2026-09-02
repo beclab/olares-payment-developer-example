@@ -41,6 +41,11 @@
       .dialog h3 { margin: 0 0 8px; }
       .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; word-break: break-all; }
       .hidden { display: none; }
+      .meta { margin: 16px 0 20px; }
+      .meta-row { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid #e7e5e4; font-size: 0.95rem; }
+      .meta-row .k { color: #7c6f64; }
+      .meta-row .v { text-align: right; }
+      .tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
     </style>
   </head>
   <body>
@@ -67,8 +72,8 @@
 
       <section id="store" class="hidden">
         <p class="kicker">Harbor Goods</p>
-        <h1>A small shop that collects through Olares Payment</h1>
-        <p class="lede">Confirm the order and ship-to here. Payment gets the amount, this shop user as an optional <span class="mono">external</span> buyer (omit <span class="mono">buyer</span> if you do not want customer names on the payment side), and an opaque order id. The webhook binds them back.</p>
+        <h1>Harbor goods, packed to your door</h1>
+        <p class="lede">Pick a piece, leave a ship-to, and pay on the hosted checkout. This shop keeps the order; Olares Payment collects. After you pay, the seller packs and ships.</p>
         <div id="grid" class="grid"></div>
       </section>
 
@@ -87,6 +92,18 @@
             <button type="submit">Pay with Olares Payment</button>
           </div>
         </form>
+      </section>
+
+      <section id="receipt" class="card hidden">
+        <p class="kicker">Your order</p>
+        <h1 id="receipt-title">Order</h1>
+        <p id="receipt-status" class="lede"></p>
+        <div id="receipt-meta" class="meta"></div>
+        <p id="receipt-err" class="err hidden"></p>
+        <div class="row">
+          <button type="button" class="ghost" id="receipt-back">Back to shop</button>
+          <button type="button" class="hidden" id="receipt-pay">Continue paying</button>
+        </div>
       </section>
 
       <section id="orders" class="hidden" style="margin-top: 48px">
@@ -111,12 +128,42 @@
 
     <script>
       const usd = (cents) => `$${(cents / 100).toFixed(2)}`;
+      const TOKEN_DECIMALS = { USDC: 6, USDT: 6, ETH: 18, POL: 18, BNB: 18, AVAX: 18 };
+      function formatToken(minimal, symbol) {
+        if (minimal == null || minimal === '') return '';
+        const dec = TOKEN_DECIMALS[String(symbol || '').toUpperCase()] ?? 6;
+        try {
+          const n = BigInt(String(minimal));
+          const base = 10n ** BigInt(dec);
+          const whole = n / base;
+          const frac = (n % base).toString().padStart(dec, '0').replace(/0+$/, '');
+          return frac ? `${whole}.${frac}` : `${whole}`;
+        } catch {
+          return String(minimal);
+        }
+      }
       const $ = (id) => document.getElementById(id);
       const show = (el, on) => el.classList.toggle('hidden', !on);
+      const STATUS = {
+        pending_payment: 'Awaiting payment',
+        paid: 'Paid',
+        shipped: 'Shipped',
+        failed: 'Failed',
+        canceled: 'Canceled',
+      };
+      const STATUS_COPY = {
+        pending_payment: 'Finish checkout to pay this order. If you already paid, this page will catch up in a few seconds.',
+        paid: 'Payment received. The seller will pack and ship.',
+        shipped: 'On its way.',
+        failed: 'Payment did not go through. You can try again.',
+        canceled: 'Checkout expired or was canceled. You can try again.',
+      };
       let me = null;
       let products = [];
       let pendingProduct = null;
+      let viewingOrderId = null;
       let pollTimer = null;
+      let lastShipTo = null;
 
       function setModal(kind, title, body, extra, closable, payableId) {
         show($('overlay'), !!kind);
@@ -133,10 +180,11 @@
       function paintShell() {
         $('who').textContent = me ? `Buyer · ${me.nickname}` : 'Buyer';
         show($('signout'), !!me);
-        show($('gate'), !me);
-        show($('store'), !!me && !pendingProduct);
+        show($('gate'), !me && !viewingOrderId);
+        show($('store'), !!me && !pendingProduct && !viewingOrderId);
         show($('confirm'), !!me && !!pendingProduct);
-        show($('orders'), !!me);
+        show($('receipt'), !!viewingOrderId);
+        show($('orders'), !!me && !pendingProduct);
       }
 
       function fillShip(last) {
@@ -145,6 +193,12 @@
         f.phone.value = last?.phone || '';
         f.address.value = last?.address || '';
         f.note.value = '';
+      }
+
+      function payLabel(status) {
+        if (status === 'pending_payment') return 'Continue paying';
+        if (status === 'canceled' || status === 'failed') return 'Pay again';
+        return '';
       }
 
       async function loadOrders() {
@@ -158,19 +212,57 @@
         $('order-list').innerHTML = `<table>
           <thead><tr><th>Order</th><th>Item</th><th>Ship to</th><th>Status</th><th>Payment</th></tr></thead>
           <tbody>${orders.map((o) => `<tr>
-            <td class="mono">${o.id}</td>
+            <td class="mono"><a href="?order=${encodeURIComponent(o.id)}">${o.id}</a></td>
             <td>${o.productTitle}<br><span class="muted">${usd(o.amountCents)}</span></td>
             <td>${o.recipient}<br><span class="muted">${o.address}</span></td>
-            <td>${o.status}${o.status === 'pending_payment' ? '<br><button type="button" class="pay" data-pay="' + o.id + '">Continue paying</button>' : ''}</td>
+            <td>${STATUS[o.status] || o.status}</td>
             <td class="mono">${o.txHash || o.paymentId || '—'}</td>
           </tr>`).join('')}</tbody>
         </table>`;
       }
 
+      function receiptCopy(order) {
+        if (order.status === 'shipped') return order.shipNote || STATUS_COPY.shipped;
+        return STATUS_COPY[order.status] || '';
+      }
+
+      function paintReceipt(order) {
+        viewingOrderId = order.id;
+        $('receipt-title').textContent = order.productTitle;
+        $('receipt-status').textContent = `${STATUS[order.status] || order.status}. ${receiptCopy(order)}`;
+        const rows = [
+          ['Order', order.id],
+          ['Amount', usd(order.amountCents)],
+          ['Ship to', `${order.recipient} · ${order.address}`],
+          ['Status', STATUS[order.status] || order.status],
+        ];
+        if (order.paymentId) rows.push(['Payment', order.paymentId]);
+        if (order.txHash) rows.push(['Transaction', order.txHash]);
+        if (order.chain) {
+          const amt = formatToken(order.payAmount, order.payCurrency);
+          const token = [amt, order.payCurrency].filter(Boolean).join(' ');
+          rows.push(['Paid on', [token, order.chain].filter(Boolean).join(' · ')]);
+        }
+        $('receipt-meta').innerHTML = rows
+          .map(([k, v]) => `<div class="meta-row"><span class="k">${k}</span><span class="v ${k === 'Order' || k === 'Payment' || k === 'Transaction' ? 'mono' : ''}">${v}</span></div>`)
+          .join('');
+        const retry = payLabel(order.status);
+        $('receipt-pay').textContent = retry || 'Continue paying';
+        show($('receipt-pay'), !!retry);
+        show($('receipt-err'), false);
+        paintShell();
+      }
+
       async function continuePay(id) {
         const resp = await fetch('/api/orders/' + encodeURIComponent(id) + '/pay', { method: 'POST' });
         const data = await resp.json();
-        if (!resp.ok || !data.checkoutUrl) throw new Error(data.error || 'could not resume payment');
+        if (!resp.ok) throw new Error(data.error || 'could not resume payment');
+        if (data.paid && data.order) {
+          paintReceipt(data.order);
+          if (me) loadOrders();
+          return;
+        }
+        if (!data.checkoutUrl) throw new Error(data.error || 'could not resume payment');
         window.location.href = data.checkoutUrl;
       }
 
@@ -200,8 +292,9 @@
           return;
         }
         me = data.buyer;
+        lastShipTo = data.lastShipTo;
         paintShell();
-        fillShip(data.lastShipTo);
+        fillShip(lastShipTo);
         loadOrders();
       };
 
@@ -209,12 +302,36 @@
         await fetch('/api/session/logout', { method: 'POST' });
         me = null;
         pendingProduct = null;
+        lastShipTo = null;
         paintShell();
       };
 
       $('confirm-back').onclick = () => {
         pendingProduct = null;
         paintShell();
+        if (me) loadOrders();
+      };
+
+      function leaveReceipt() {
+        stopPoll();
+        viewingOrderId = null;
+        const url = new URL(location.href);
+        url.searchParams.delete('order');
+        history.replaceState({}, '', url.pathname + url.hash);
+        paintShell();
+      }
+
+      $('receipt-back').onclick = leaveReceipt;
+      $('receipt-pay').onclick = async (ev) => {
+        if (!viewingOrderId) return;
+        ev.target.disabled = true;
+        try {
+          await continuePay(viewingOrderId);
+        } catch (e) {
+          ev.target.disabled = false;
+          $('receipt-err').textContent = e.message || 'could not resume payment';
+          show($('receipt-err'), true);
+        }
       };
 
       $('ship-form').onsubmit = async (ev) => {
@@ -242,6 +359,7 @@
           setModal(null);
           $('confirm-err').textContent = e.message || 'checkout failed';
           show($('confirm-err'), true);
+          if (me) loadOrders();
         }
       };
 
@@ -260,28 +378,12 @@
         stopPoll();
         pollTimer = setInterval(async () => {
           const order = await refreshOrder(id);
-          if (order?.status === 'shipped') {
-            stopPoll();
-            setModal('shipped', 'Paid. Shipped.', order.shipNote || order.productTitle, order.txHash ? 'tx ' + order.txHash : '', true);
-            loadOrders();
-          } else if (order?.status === 'failed') {
-            stopPoll();
-            setModal('failed', 'Could not complete', 'Payment or checkout failed.', '', true);
-          }
+          if (!order) return;
+          paintReceipt(order);
+          if (me) loadOrders();
+          if (order.status !== 'pending_payment') stopPoll();
         }, 1500);
       }
-
-      $('order-list').onclick = async (ev) => {
-        const id = ev.target.dataset?.pay;
-        if (!id) return;
-        ev.target.disabled = true;
-        try {
-          await continuePay(id);
-        } catch (e) {
-          ev.target.disabled = false;
-          setModal('failed', 'Could not resume payment', e.message || 'try again', '', true);
-        }
-      };
 
       $('modal-pay').onclick = async (ev) => {
         const id = ev.target.dataset?.pay;
@@ -296,11 +398,7 @@
       };
 
       $('modal-close').onclick = () => {
-        stopPoll();
         setModal(null);
-        const url = new URL(location.href);
-        url.searchParams.delete('order');
-        history.replaceState({}, '', url.pathname + url.hash);
       };
 
       (async () => {
@@ -308,6 +406,7 @@
         const meData = await meResp.json();
         products = (await prodResp.json()).products;
         me = meData.buyer;
+        lastShipTo = meData.lastShipTo;
         paintShell();
         $('grid').innerHTML = products.map((p) => `
           <article class="card product">
@@ -321,22 +420,25 @@
         `).join('');
         $('grid').onclick = (ev) => {
           const product = products.find((p) => p.id === ev.target.dataset?.id);
-          if (product) openConfirm(product, meData.lastShipTo);
+          if (product) openConfirm(product, lastShipTo);
         };
         if (me) loadOrders();
 
         const orderId = new URLSearchParams(location.search).get('order');
         if (!orderId) return;
-        setModal('waiting', 'Waiting for the webhook', 'The gateway will notify this shop when the payment succeeds, then we ship.', '', true, orderId);
         const order = await refreshOrder(orderId);
-        if (order?.status === 'shipped') {
-          setModal('shipped', 'Paid. Shipped.', order.shipNote || order.productTitle, order.txHash ? 'tx ' + order.txHash : '', true);
-          if (me) loadOrders();
-        } else if (order?.status === 'failed') {
-          setModal('failed', 'Could not complete', 'Payment or checkout failed.', '', true);
-        } else {
-          startPoll(orderId);
+        if (!order) {
+          viewingOrderId = orderId;
+          $('receipt-title').textContent = 'Order';
+          $('receipt-status').textContent = 'This order was not found. It may have been placed on another shop process — in-memory orders reset when the server restarts.';
+          $('receipt-meta').innerHTML = '';
+          show($('receipt-pay'), false);
+          paintShell();
+          return;
         }
+        paintReceipt(order);
+        if (me) loadOrders();
+        if (order.status === 'pending_payment') startPoll(order.id);
       })();
     </script>
   </body>

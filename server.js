@@ -1,10 +1,9 @@
 /**
  * Harbor Goods — buyer shop + seller admin, collecting through Olares Payment.
  *
- * The shop owns addresses and orders. Payment sees amountCents, an optional
- * external buyer (shop user id + nickname so the payment dashboard can label
- * Transactions → Buyer), and metadata.order_id. Omit buyer if the merchant
- * does not want customer identity on the payment side.
+ * The shop owns catalog, ship-to, and order state (pending → paid → shipped).
+ * Payment sees amountCents, an optional external buyer, and metadata.order_id.
+ * Webhook is the live path; getPayment is the return-url / continue-pay fallback.
  */
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -32,10 +31,10 @@ const COOKIE = 'shop_buyer';
 const ADMIN_COOKIE = 'shop_admin';
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin';
+const OPEN = 'pending_payment';
 const adminSessions = new Set();
 const here = dirname(fileURLToPath(import.meta.url));
-const shopHtml = readFileSync(join(here, 'index.html'), 'utf8');
-const adminHtml = readFileSync(join(here, 'admin.html'), 'utf8');
+const page = (name) => readFileSync(join(here, name), 'utf8');
 
 const buyersByNick = new Map();
 const buyers = new Map();
@@ -62,6 +61,7 @@ const cookies = (req) =>
   );
 const buyerOf = (req) => buyers.get(cookies(req)[COOKIE]) || null;
 const publicBuyer = (b) => (b ? { id: b.id, nickname: b.nickname } : null);
+const collected = (o) => o.status === 'paid' || o.status === 'shipped';
 const publicOrder = (o) => ({
   id: o.id,
   buyerId: o.buyerId,
@@ -80,9 +80,11 @@ const publicOrder = (o) => ({
   chain: o.chain,
   payCurrency: o.payCurrency,
   payAmount: o.payAmount,
+  failReason: o.failReason,
   shipNote: o.shipNote,
   createdAt: o.createdAt,
   paidAt: o.paidAt,
+  shippedAt: o.shippedAt,
 });
 
 function requireBuyer(req, res, next) {
@@ -98,39 +100,130 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-function ship(event) {
-  const order =
+function orderOfEvent(event) {
+  return (
     orders.get(event.metadata?.order_id) ??
-    [...orders.values()].find((o) => o.paymentId === event.paymentId);
-  if (!order) return console.warn(`webhook paid unknown payment=${event.paymentId}`);
-  const cred = event.credential || {};
-  Object.assign(order, {
-    status: 'shipped',
-    paymentId: event.paymentId || order.paymentId,
-    txHash: cred.txHash || null,
-    chain: cred.chain || null,
-    payCurrency: cred.payCurrency || null,
-    payAmount: cred.payAmount || null,
-    paidAt: event.paidAt || Date.now(),
-    shipNote: `Packed ${order.productTitle} for ${order.recipient}`,
-  });
-  console.log(`shipped order=${order.id} payment=${event.paymentId} buyer=${order.buyerNickname}`);
+    [...orders.values()].find((o) => o.paymentId === event.paymentId) ??
+    null
+  );
+}
+
+function applyCredential(order, cred, paymentId, paidAt) {
+  if (paymentId) order.paymentId = paymentId;
+  if (cred.txHash) order.txHash = cred.txHash;
+  if (cred.chain) order.chain = cred.chain;
+  if (cred.payCurrency) order.payCurrency = cred.payCurrency;
+  if (cred.payAmount) order.payAmount = cred.payAmount;
+  if (paidAt) order.paidAt = paidAt;
+}
+
+function markPaid(order, cred = {}, paymentId, paidAt) {
+  applyCredential(order, cred, paymentId, paidAt || order.paidAt || Date.now());
+  if (order.status !== 'shipped') order.status = 'paid';
+  order.failReason = null;
+}
+
+function markClosed(order, status, detail) {
+  if (collected(order)) return;
+  order.status = status;
+  order.failReason = detail || null;
+}
+
+function markShipped(order) {
+  if (order.status !== 'paid') return false;
+  order.status = 'shipped';
+  order.shippedAt = Date.now();
+  order.shipNote = `Packed ${order.productTitle} for ${order.recipient}`;
+  return true;
+}
+
+function msOf(ts) {
+  if (ts == null) return Date.now();
+  const n = typeof ts === 'number' ? ts : Date.parse(ts);
+  return Number.isFinite(n) ? n : Date.now();
+}
+
+async function reconcile(order) {
+  if (!order?.paymentId || order.status !== OPEN) return order;
+  try {
+    const result = await merchant.getPayment(order.paymentId);
+    if (result.paid) {
+      markPaid(order, result.credential, result.payment.paymentId, msOf(result.payment.paidAt));
+    } else if (result.payment.status === 'PAYMENT_STATUS_CANCELED') {
+      markClosed(order, 'canceled', 'payment canceled or expired');
+    }
+  } catch (err) {
+    console.warn(`reconcile failed order=${order.id} ${reason(err)}`);
+  }
+  return order;
+}
+
+async function openPayment(order) {
+  order.paySeq = (order.paySeq || 0) + 1;
+  const created = await merchant.createPayment(
+    {
+      amountCents: order.amountCents,
+      buyer: {
+        kind: 'external',
+        ref: order.buyerId,
+        display: { name: order.buyerNickname },
+      },
+      returnUrl: `${CONFIG.shopPublicUrl}/?order=${encodeURIComponent(order.id)}`,
+      metadata: { order_id: order.id },
+    },
+    { idempotencyKey: `shop:${order.id}:${order.paySeq}` },
+  );
+  order.paymentId = created.paymentId;
+  order.checkoutUrl = created.checkoutUrl;
+  order.status = OPEN;
+  order.failReason = null;
+  return created;
+}
+
+function handleWebhook(event) {
+  const order = orderOfEvent(event);
+  if (!order) {
+    console.warn(`webhook ${event.type} unknown payment=${event.paymentId}`);
+    return;
+  }
+  if (event.type === 'payment.succeeded') {
+    markPaid(order, event.credential || {}, event.paymentId, event.paidAt);
+    console.log(`paid order=${order.id} payment=${event.paymentId}`);
+    return;
+  }
+  if (event.type === 'payment.failed') {
+    markClosed(order, 'failed', event.failReason);
+    console.log(`failed order=${order.id} ${event.failReason || ''}`);
+    return;
+  }
+  if (event.type === 'payment.canceled') {
+    markClosed(order, 'canceled', event.cancellationReason);
+    console.log(`canceled order=${order.id}`);
+  }
 }
 
 function stats() {
   const list = [...orders.values()];
-  const shipped = list.filter((o) => o.status === 'shipped');
+  const paid = list.filter(collected);
   const byProduct = {};
   const byChain = {};
   const byBuyer = {};
   for (const o of list) {
-    const p = (byProduct[o.productId] ||= { productId: o.productId, title: o.productTitle, orders: 0, shipped: 0, revenueCents: 0 });
+    const p = (byProduct[o.productId] ||= {
+      productId: o.productId,
+      title: o.productTitle,
+      orders: 0,
+      paid: 0,
+      shipped: 0,
+      revenueCents: 0,
+    });
     p.orders += 1;
-    if (o.status === 'shipped') {
-      p.shipped += 1;
+    if (collected(o)) {
+      p.paid += 1;
       p.revenueCents += o.amountCents;
     }
-    if (o.status === 'shipped') {
+    if (o.status === 'shipped') p.shipped += 1;
+    if (collected(o)) {
       const key = o.chain || 'unknown';
       const c = (byChain[key] ||= { chain: key, payCurrency: o.payCurrency, orders: 0, revenueCents: 0 });
       c.orders += 1;
@@ -140,24 +233,28 @@ function stats() {
       buyerId: o.buyerId,
       nickname: o.buyerNickname,
       orders: 0,
+      paid: 0,
       shipped: 0,
       revenueCents: 0,
       lastAddress: o.address,
     });
     b.orders += 1;
     b.lastAddress = o.address;
-    if (o.status === 'shipped') {
-      b.shipped += 1;
+    if (collected(o)) {
+      b.paid += 1;
       b.revenueCents += o.amountCents;
     }
+    if (o.status === 'shipped') b.shipped += 1;
   }
   return {
     totals: {
       orders: list.length,
-      pending: list.filter((o) => o.status === 'pending_payment').length,
-      shipped: shipped.length,
+      pending: list.filter((o) => o.status === OPEN).length,
+      paid: list.filter((o) => o.status === 'paid').length,
+      shipped: list.filter((o) => o.status === 'shipped').length,
       failed: list.filter((o) => o.status === 'failed').length,
-      revenueCents: shipped.reduce((n, o) => n + o.amountCents, 0),
+      canceled: list.filter((o) => o.status === 'canceled').length,
+      revenueCents: paid.reduce((n, o) => n + o.amountCents, 0),
       buyers: buyers.size,
     },
     byProduct: Object.values(byProduct),
@@ -174,13 +271,13 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
     console.warn(`webhook rejected: ${reason(err)}`);
     return res.status(400).send('bad signature');
   }
-  if (event.type === 'payment.succeeded') ship(event);
+  handleWebhook(event);
   res.send('ok');
 });
 
 app.use(express.json());
-app.get('/', (_req, res) => res.type('html').send(shopHtml));
-app.get('/admin', (_req, res) => res.type('html').send(adminHtml));
+app.get('/', (_req, res) => res.type('html').send(page('index.html')));
+app.get('/admin', (_req, res) => res.type('html').send(page('admin.html')));
 app.get('/api/products', (_req, res) => res.json({ products: PRODUCTS }));
 
 app.get('/api/me', (req, res) => {
@@ -212,30 +309,38 @@ app.post('/api/session/logout', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/orders', requireBuyer, (req, res) => {
+app.get('/api/orders', requireBuyer, async (req, res) => {
   const mine = [...orders.values()]
     .filter((o) => o.buyerId === req.buyer.id)
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .map(publicOrder);
-  res.json({ orders: mine });
+    .sort((a, b) => b.createdAt - a.createdAt);
+  await Promise.all(mine.filter((o) => o.status === OPEN).map((o) => reconcile(o)));
+  res.json({ orders: mine.map(publicOrder) });
 });
 
-app.get('/api/orders/:id', (req, res) => {
+app.get('/api/orders/:id', async (req, res) => {
   const order = orders.get(req.params.id);
   if (!order) return res.status(404).json({ error: 'order not found' });
   const buyer = buyerOf(req);
   if (buyer && buyer.id !== order.buyerId) return res.status(404).json({ error: 'order not found' });
+  await reconcile(order);
   res.json({ order: publicOrder(order) });
 });
 
-app.post('/api/orders/:id/pay', requireBuyer, (req, res) => {
+app.post('/api/orders/:id/pay', requireBuyer, async (req, res) => {
   const order = orders.get(req.params.id);
   if (!order || order.buyerId !== req.buyer.id) return res.status(404).json({ error: 'order not found' });
-  if (order.status !== 'pending_payment') {
-    return res.status(409).json({ error: 'order is not waiting for payment' });
+  await reconcile(order);
+  if (collected(order)) return res.json({ paid: true, order: publicOrder(order) });
+  if (order.status === OPEN && order.checkoutUrl) {
+    return res.json({ checkoutUrl: order.checkoutUrl, order: publicOrder(order) });
   }
-  if (!order.checkoutUrl) return res.status(409).json({ error: 'checkout url is gone' });
-  res.json({ checkoutUrl: order.checkoutUrl, order: publicOrder(order) });
+  try {
+    const created = await openPayment(order);
+    res.json({ checkoutUrl: created.checkoutUrl, order: publicOrder(order) });
+  } catch (err) {
+    console.error(`reopen payment failed order=${order.id} ${reason(err)}`);
+    res.status(502).json({ error: err instanceof PaymentError ? err.message : 'could not resume payment' });
+  }
 });
 
 app.post('/api/checkout', requireBuyer, async (req, res) => {
@@ -260,41 +365,31 @@ app.post('/api/checkout', requireBuyer, async (req, res) => {
     phone,
     address,
     note,
-    status: 'pending_payment',
+    status: OPEN,
+    paySeq: 0,
     paymentId: null,
     checkoutUrl: null,
     txHash: null,
     chain: null,
     payCurrency: null,
     payAmount: null,
+    failReason: null,
     shipNote: null,
     createdAt: Date.now(),
     paidAt: null,
+    shippedAt: null,
   };
   orders.set(order.id, order);
   req.buyer.lastShipTo = { recipient, phone, address };
 
   try {
-    const created = await merchant.createPayment(
-      {
-        amountCents: product.priceCents,
-        buyer: {
-          kind: 'external',
-          ref: req.buyer.id,
-          display: { name: req.buyer.nickname },
-        },
-        returnUrl: `${CONFIG.shopPublicUrl}/?order=${encodeURIComponent(order.id)}`,
-        metadata: { order_id: order.id },
-      },
-      { idempotencyKey: `shop:${order.id}` },
-    );
-    order.paymentId = created.paymentId;
-    order.checkoutUrl = created.checkoutUrl;
+    const created = await openPayment(order);
     res.json({ order: publicOrder(order), checkoutUrl: created.checkoutUrl });
   } catch (err) {
     order.status = 'failed';
+    order.failReason = err instanceof PaymentError ? err.message : 'createPayment failed';
     console.error(`createPayment failed order=${order.id} ${reason(err)}`);
-    res.status(502).json({ error: err instanceof PaymentError ? err.message : 'createPayment failed' });
+    res.status(502).json({ error: order.failReason });
   }
 });
 
@@ -316,11 +411,29 @@ app.post('/api/admin/session/logout', (req, res) => {
   res.setHeader('Set-Cookie', `${ADMIN_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
   res.json({ ok: true });
 });
-app.get('/api/admin/orders', requireAdmin, (_req, res) => {
-  const list = [...orders.values()].sort((a, b) => b.createdAt - a.createdAt).map(publicOrder);
-  res.json({ orders: list });
+app.get('/api/admin/orders', requireAdmin, async (_req, res) => {
+  const list = [...orders.values()].sort((a, b) => b.createdAt - a.createdAt);
+  await Promise.all(list.filter((o) => o.status === OPEN).map((o) => reconcile(o)));
+  res.json({ orders: list.map(publicOrder) });
+});
+app.post('/api/admin/orders/:id/ship', requireAdmin, (req, res) => {
+  const order = orders.get(req.params.id);
+  if (!order) return res.status(404).json({ error: 'order not found' });
+  if (!markShipped(order)) {
+    return res.status(409).json({ error: 'only a paid order can be shipped' });
+  }
+  console.log(`shipped order=${order.id} buyer=${order.buyerNickname}`);
+  res.json({ order: publicOrder(order) });
 });
 app.get('/api/admin/stats', requireAdmin, (_req, res) => res.json(stats()));
+app.get('/api/admin/gateway-payments', requireAdmin, async (_req, res) => {
+  try {
+    const page = await merchant.listPayments({ limit: 50 });
+    res.json({ items: page.items, error: null });
+  } catch (err) {
+    res.json({ items: [], error: reason(err) });
+  }
+});
 
 app.listen(CONFIG.port, '0.0.0.0', () => {
   console.log(`           shop    ${CONFIG.shopPublicUrl}`);
