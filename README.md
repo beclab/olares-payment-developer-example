@@ -47,4 +47,4 @@ Start with [examples/README.md](./examples/README.md). The gateway address is bu
 
 ## Demo video
 
-<video src="./video-demo.mp4" controls playsinline title="Harbor Goods shop demo"></video>
+[![Harbor Goods shop demo](./demo-poster.png)](./video-demo.mp4)
