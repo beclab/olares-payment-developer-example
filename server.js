@@ -35,7 +35,6 @@ const orders = new Map();
 const merchant = new MerchantClient({
   apiKey: CONFIG.apiKey,
   apiSecret: CONFIG.apiSecret,
-  baseUrl: CONFIG.paymentEndpoint,
 });
 const app = express();
 
@@ -430,5 +429,5 @@ app.get('/api/admin/gateway-payments', requireAdmin, async (_req, res) => {
 app.listen(CONFIG.port, '0.0.0.0', () => {
   console.log(`           shop    ${CONFIG.shopPublicUrl}`);
   console.log(`          admin    ${CONFIG.shopPublicUrl}/admin`);
-  console.log(`payment gateway    ${CONFIG.paymentEndpoint}`);
+  console.log('payment gateway    https://www.olares.com/payment (SDK default)');
 });

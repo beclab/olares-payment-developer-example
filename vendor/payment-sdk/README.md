@@ -10,7 +10,8 @@ Olares Payment 是面向商户的收款网关。商户在 Dashboard 配置收款
 
 - Node.js 18 或更高版本
 - 商户 API Key（`pk_`）与 Secret（`sk_`）
-- 网关 `baseUrl`（测试环境或自建部署地址）
+
+SDK 默认指向生产网关 `https://www.olares.com/payment`，无需配置地址。测试环境或自建部署时，通过 `baseUrl` 覆盖。
 
 Webhook 验签另需 Dashboard 登记端点时下发的 `whsec_`。该值只展示一次。
 
@@ -30,7 +31,6 @@ import { MerchantClient } from '@olares/payment-sdk';
 const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY!,
   apiSecret: process.env.PAYMENT_API_SECRET!,
-  baseUrl: process.env.PAYMENT_ENDPOINT!,
 });
 ```
 

@@ -14,7 +14,6 @@ import { MerchantClient } from '@olares/payment-sdk';
 const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY!,
   apiSecret: process.env.PAYMENT_API_SECRET!,
-  baseUrl: process.env.PAYMENT_ENDPOINT!,
 });
 ```
 
@@ -24,7 +23,7 @@ const client = new MerchantClient({
 |---|---|---|---|
 | `apiKey` | `string` | — | 商户公钥，形如 `pk_live_…`。HMAC 方法必填。 |
 | `apiSecret` | `string` | — | 商户密钥，形如 `sk_live_…`。仅用于签名，不得下发客户端。 |
-| `baseUrl` | `string` | `http://localhost:31000` | 网关根地址，不含 `/api`。 |
+| `baseUrl` | `string` | `https://www.olares.com/payment` | 网关根地址，不含 `/api`。默认生产网关；测试环境或自建部署时覆盖（本地开发 `http://localhost:31000`）。 |
 | `timeoutMs` | `number` | `30000` | 单次 HTTP 超时（毫秒），亦用于直连 RPC 核验。 |
 | `logger` | `SdkLogger` | `console` | `(level, msg, ctx?) => void`。传入 `() => {}` 可关闭日志。 |
 | `rpcUrl` | `string` | — | 配置后，`verifyTransaction` 直连该 EVM RPC 的 `eth_getTransactionReceipt`，不再走网关。 |
@@ -36,14 +35,15 @@ const client = new MerchantClient({
 可为不同环境或用途构造多个 client，彼此独立。
 
 ```ts
+// 生产:无需 baseUrl,默认即生产网关
 const live = new MerchantClient({
   apiKey: process.env.PAYMENT_LIVE_KEY!,
   apiSecret: process.env.PAYMENT_LIVE_SECRET!,
-  baseUrl: 'https://api.example.com',
   timeoutMs: 15_000,
   logger: () => {},
 });
 
+// 测试/自建部署:显式覆盖 baseUrl
 const staging = new MerchantClient({
   apiKey: process.env.PAYMENT_TEST_KEY!,
   apiSecret: process.env.PAYMENT_TEST_SECRET!,
@@ -53,7 +53,6 @@ const staging = new MerchantClient({
 const withRpc = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY!,
   apiSecret: process.env.PAYMENT_API_SECRET!,
-  baseUrl: process.env.PAYMENT_ENDPOINT!,
   rpcUrl: process.env.EVM_RPC_URL,
 });
 ```

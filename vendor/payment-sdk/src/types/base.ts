@@ -30,8 +30,9 @@ export const defaultLogger: SdkLogger = (level, msg, ctx) => {
   else console.log('[PaymentSDK]', line);
 };
 
-/** Local dev gateway address. TODO: replace with the production domain once live. */
-export const DEFAULT_BASE_URL = 'http://localhost:31000';
+/** Production gateway (hardcoded default). Override via ClientOptions.baseUrl for
+ *  test environments or self-hosted deployments (local dev: http://localhost:31000). */
+export const DEFAULT_BASE_URL = 'https://www.olares.com/payment';
 
 /** Default request timeout (ms) for gateway calls and RPC verification. */
 export const DEFAULT_TIMEOUT_MS = 30_000;

@@ -1,6 +1,6 @@
 # SDK snippets
 
-One file per call. Each script builds its own `MerchantClient` and prints the result to the terminal. Keys come from `config.js` (same file as the shop), or from `PAYMENT_API_KEY` / `PAYMENT_API_SECRET` / `PAYMENT_ENDPOINT` / `PAYMENT_WEBHOOK_SECRET`.
+One file per call. Each script builds its own `MerchantClient` and prints the result to the terminal. Keys come from `config.js` (same file as the shop), or from `PAYMENT_API_KEY` / `PAYMENT_API_SECRET` / `PAYMENT_WEBHOOK_SECRET`. The gateway address defaults to the production endpoint (`https://www.olares.com/payment`) baked into the SDK; no configuration needed.
 
 ```bash
 npm run ex:create    # createPayment  → checkout URL

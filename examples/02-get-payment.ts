@@ -16,7 +16,6 @@ import { formatToken } from '../format.js';
 const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY || CONFIG.apiKey,
   apiSecret: process.env.PAYMENT_API_SECRET || CONFIG.apiSecret,
-  baseUrl: process.env.PAYMENT_ENDPOINT || CONFIG.paymentEndpoint,
 });
 
 const stamp = join(dirname(fileURLToPath(import.meta.url)), '.last-payment-id');
