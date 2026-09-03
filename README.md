@@ -47,4 +47,6 @@ Start with [examples/README.md](./examples/README.md). The gateway address is bu
 
 ## Demo video
 
-[![Harbor Goods shop demo](./demo-poster.png)](./video-demo.mp4)
+https://github.com/user-attachments/assets/0227c55f-f742-406e-9381-5245dfb8cac9
+
+
