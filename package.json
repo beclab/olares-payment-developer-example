@@ -7,10 +7,10 @@
   "scripts": {
     "start": "tsx server.js",
     "dev": "tsx watch server.js",
-    "ex:create": "tsx examples/01-create-payment.ts",
-    "ex:get": "tsx examples/02-get-payment.ts",
-    "ex:list": "tsx examples/03-list-payments.ts",
-    "ex:webhook": "tsx examples/04-webhook.ts"
+    "ex:create": "tsx examples/01-create-payment.js",
+    "ex:get": "tsx examples/02-get-payment.js",
+    "ex:list": "tsx examples/03-list-payments.js",
+    "ex:webhook": "tsx examples/04-webhook.js"
   },
   "dependencies": {
     "@olares/payment-sdk": "file:./vendor/payment-sdk",

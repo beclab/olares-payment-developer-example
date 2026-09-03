@@ -38,10 +38,10 @@ A minimal shop demo: sign-in, orders, payment — nothing more.
 
 | Script | What it does | In your business |
 |---|---|---|
-| `01-create-payment.ts` | Create a payment and get the checkout link | Redirect the buyer to pay after checkout |
-| `02-get-payment.ts` | Check whether that payment has settled | Confirm the order when the buyer returns |
-| `03-list-payments.ts` | List payments | Reconciliation |
-| `04-webhook.ts` | Receive and verify gateway notifications | Update orders even if the buyer never returns |
+| `01-create-payment.js` | Create a payment and get the checkout link | Redirect the buyer to pay after checkout |
+| `02-get-payment.js` | Check whether that payment has settled | Confirm the order when the buyer returns |
+| `03-list-payments.js` | List payments | Reconciliation |
+| `04-webhook.js` | Receive and verify gateway notifications | Update orders even if the buyer never returns |
 
 Start with [examples/README.md](./examples/README.md). The gateway address is built into the SDK — no configuration needed; the webhook script additionally needs `webhookSecret` from `config.js`. For API details see [vendor/payment-sdk/sdk.md](./vendor/payment-sdk/sdk.md) (bundled with this demo).
 

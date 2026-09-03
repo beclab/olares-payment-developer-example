@@ -1,10 +1,10 @@
 /**
  * Look up one payment. paid: true is the only safe signal to fulfill.
  *
- *   npx tsx examples/02-get-payment.ts
- *   PAYMENT_ID=pi_xxx npx tsx examples/02-get-payment.ts
+ *   npx tsx examples/02-get-payment.js
+ *   PAYMENT_ID=pi_xxx npx tsx examples/02-get-payment.js
  *
- * Default id is examples/.last-payment-id from 01-create-payment.ts.
+ * Default id is examples/.last-payment-id from 01-create-payment.js.
  */
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

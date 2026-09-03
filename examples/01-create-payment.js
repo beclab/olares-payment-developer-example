@@ -1,9 +1,9 @@
 /**
  * Create a payment and print the hosted checkout URL.
  *
- *   npx tsx examples/01-create-payment.ts
+ *   npx tsx examples/01-create-payment.js
  *
- * Writes paymentId to examples/.last-payment-id for 02-get-payment.ts.
+ * Writes paymentId to examples/.last-payment-id for 02-get-payment.js.
  */
 import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

@@ -9,7 +9,7 @@ npm run ex:list      # listPayments   → recent rows
 npm run ex:webhook   # constructEvent → print events on :32001
 ```
 
-Or `npx tsx examples/01-create-payment.ts` (and the same for `02` / `03` / `04`).
+Or `npx tsx examples/01-create-payment.js` (and the same for `02` / `03` / `04`).
 
 **01 → 02.** `ex:create` writes `examples/.last-payment-id`. `ex:get` reads it. Override with `PAYMENT_ID=pi_xxx npm run ex:get`. Open the printed `checkoutUrl` in a browser to pay, then run `ex:get` again.
 

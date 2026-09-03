@@ -1,7 +1,7 @@
 /**
  * Verify inbound webhook signatures and print each event.
  *
- *   npx tsx examples/04-webhook.ts
+ *   npx tsx examples/04-webhook.js
  *
  * Point the Dashboard webhook at http://<your-host>:32001/webhook
  * (port 32001 so it does not clash with the shop on 32000).

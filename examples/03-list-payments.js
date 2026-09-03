@@ -1,7 +1,7 @@
 /**
  * List recent payments (newest first).
  *
- *   npx tsx examples/03-list-payments.ts
+ *   npx tsx examples/03-list-payments.js
  */
 import { MerchantClient } from '@olares/payment-sdk';
 import { CONFIG } from '../config.js';
