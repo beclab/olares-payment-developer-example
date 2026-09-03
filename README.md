@@ -11,8 +11,8 @@ A minimal shop demo: sign-in, orders, payment — nothing more.
 ## Run
 
 1. Open the [Olares Payment Dashboard](https://www.olares.com/payment/dashboard/), sign in with your olaresId, go to **Checkouts → Advanced settings**, and copy the API key and secret.
-   On first use, follow the dashboard guide to set up your receiving wallet.
-2. Paste the key and secret into `config.js` — change only these two lines:
+
+2. Paste the key and secret into `config.js` — minimal changes needed:
 
    ```js
    export const CONFIG = {
@@ -43,7 +43,7 @@ A minimal shop demo: sign-in, orders, payment — nothing more.
 | `03-list-payments.js` | List payments | Reconciliation |
 | `04-webhook.js` | Receive and verify gateway notifications | Update orders even if the buyer never returns |
 
-Start with [examples/README.md](./examples/README.md). The gateway address is built into the SDK — no configuration needed; the webhook script additionally needs `webhookSecret` from `config.js`. For API details see [vendor/payment-sdk/sdk.md](./vendor/payment-sdk/sdk.md) (bundled with this demo).
+Start with [examples/README.md](./examples/README.md). The gateway address is built into the SDK — no configuration needed; the webhook script additionally needs `webhookSecret` from `config.js`. 
 
 ## Demo video
 
