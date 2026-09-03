@@ -47,5 +47,4 @@ Start with [examples/README.md](./examples/README.md). The gateway address is bu
 
 ## Demo video
 
-<!-- TODO: 3-minute screen recording — dashboard key setup → start the demo → place an order → pay → order turns paid -->
-Coming soon.
+<video src="./video-demo.mp4" controls playsinline title="Harbor Goods shop demo"></video>
