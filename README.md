@@ -47,6 +47,8 @@ Start with [examples/README.md](./examples/README.md). The gateway address is bu
 
 ## Demo video
 
-https://github.com/user-attachments/assets/0227c55f-f742-406e-9381-5245dfb8cac9
+https://github.com/user-attachments/assets/55dc5745-832c-48ba-b5af-b09f9b0c57fc
+
+
 
 
