@@ -6,7 +6,7 @@ import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2"
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { BuyerExternal, BuyerExternalJson, ChainType, ChainTypeJson } from "./payment_pb";
+import type { ChainType, ChainTypeJson, Party, PartyJson } from "./payment_pb";
 import { file_v1_domain_payment } from "./payment_pb";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
 
@@ -14,7 +14,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/domain/webhook.proto.
  */
 export const file_v1_domain_webhook: GenFile = /*@__PURE__*/
-  fileDesc("Chd2MS9kb21haW4vd2ViaG9vay5wcm90bxIKcGF5bWVudC52MSKFAgoPV2ViaG9va0VuZHBvaW50EgoKAmlkGAEgASgNEh0KCWFjY291bnRJZBgCIAEoCVIKYWNjb3VudF9pZBILCgN1cmwYAyABKAkSJQoNZW5hYmxlZEV2ZW50cxgEIAMoCVIOZW5hYmxlZF9ldmVudHMSDgoGc3RhdHVzGAUgASgJEhMKBnNlY3JldBgGIAEoCUgAiAEBEhgKC2Rlc2NyaXB0aW9uGAcgASgJSAGIAQESOQoJY3JlYXRlZEF0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdEIJCgdfc2VjcmV0Qg4KDF9kZXNjcmlwdGlvbiLXAgoUQ2FsbGJhY2tFdmVudFN1bW1hcnkSCgoCaWQYASABKA0SGwoIaW50ZW50SWQYAiABKAlSCWludGVudF9pZBIqCgZzdGF0dXMYAyABKA4yGi5wYXltZW50LnYxLkNhbGxiYWNrU3RhdHVzEiwKCGRlbGl2ZXJ5GAQgASgOMhoucGF5bWVudC52MS5EZWxpdmVyeVN0YXR1cxIQCghhdHRlbXB0cxgFIAEoDRI9CgtkZWxpdmVyZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSDGRlbGl2ZXJlZF9hdBIiCglsYXN0RXJyb3IYByABKAlIAFIKbGFzdF9lcnJvcogBARI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0QgwKCl9sYXN0RXJyb3IiigUKD1BheW1lbnRDYWxsYmFjaxIdCglldmVudFR5cGUYASABKAlSCmV2ZW50X3R5cGUSGwoIaW50ZW50SWQYAiABKAlSCWludGVudF9pZBIuChFtZXJjaGFudEFjY291bnRJZBgDIAEoCVITbWVyY2hhbnRfYWNjb3VudF9pZBIrCg1idXllck9sYXJlc0lkGAQgASgJSABSD2J1eWVyX29sYXJlc19pZIgBARIpCghtZXRhZGF0YRgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSOQoKY3JlZGVudGlhbBgGIAEoCzIlLnBheW1lbnQudjEuUGF5bWVudENhbGxiYWNrQ3JlZGVudGlhbBIcCgZ0eEhhc2gYByABKAlIAVIHdHhfaGFzaIgBARIkCgpmYWlsUmVhc29uGAggASgJSAJSC2ZhaWxfcmVhc29uiAEBEjQKEmNhbmNlbGxhdGlvblJlYXNvbhgJIAEoCUgDUhNjYW5jZWxsYXRpb25fcmVhc29uiAEBEjMKBnBhaWRBdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB3BhaWRfYXQSRQoNYnV5ZXJFeHRlcm5hbBgLIAEoCzIZLnBheW1lbnQudjEuQnV5ZXJFeHRlcm5hbEgEUg5idXllcl9leHRlcm5hbIgBARIgCghidXllckRpZBgMIAEoCUgFUglidXllcl9kaWSIAQFCEAoOX2J1eWVyT2xhcmVzSWRCCQoHX3R4SGFzaEINCgtfZmFpbFJlYXNvbkIVChNfY2FuY2VsbGF0aW9uUmVhc29uQhAKDl9idXllckV4dGVybmFsQgsKCV9idXllckRpZCLHAgoZUGF5bWVudENhbGxiYWNrQ3JlZGVudGlhbBIcCgZ0eEhhc2gYASABKAlIAFIHdHhfaGFzaIgBARIiCglwYXlBbW91bnQYAiABKAlIAVIKcGF5X2Ftb3VudIgBARImCgtwYXlDdXJyZW5jeRgDIAEoCUgCUgxwYXlfY3VycmVuY3mIAQESEgoFY2hhaW4YBCABKAlIA4gBARI5CgljaGFpblR5cGUYBSABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZUgEUgpjaGFpbl90eXBliAEBEiIKCW5ldHdvcmtJZBgGIAEoBUgFUgpuZXR3b3JrX2lkiAEBQgkKB190eEhhc2hCDAoKX3BheUFtb3VudEIOCgxfcGF5Q3VycmVuY3lCCAoGX2NoYWluQgwKCl9jaGFpblR5cGVCDAoKX25ldHdvcmtJZCqFAQoOQ2FsbGJhY2tTdGF0dXMSHwobQ0FMTEJBQ0tfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGAoUQ0FMTEJBQ0tfU1RBVFVTX1BBSUQQARIaChZDQUxMQkFDS19TVEFUVVNfRkFJTEVEEAISHAoYQ0FMTEJBQ0tfU1RBVFVTX0NBTkNFTEVEEAMqqQEKDkRlbGl2ZXJ5U3RhdHVzEh8KG0RFTElWRVJZX1NUQVRVU19VTlNQRUNJRklFRBAAEhsKF0RFTElWRVJZX1NUQVRVU19QRU5ESU5HEAESHgoaREVMSVZFUllfU1RBVFVTX1BST0NFU1NJTkcQAhIdChlERUxJVkVSWV9TVEFUVVNfREVMSVZFUkVEEAMSGgoWREVMSVZFUllfU1RBVFVTX0ZBSUxFRBAEYgZwcm90bzM", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment]);
+  fileDesc("Chd2MS9kb21haW4vd2ViaG9vay5wcm90bxIKcGF5bWVudC52MSKFAgoPV2ViaG9va0VuZHBvaW50EgoKAmlkGAEgASgNEh0KCWFjY291bnRJZBgCIAEoCVIKYWNjb3VudF9pZBILCgN1cmwYAyABKAkSJQoNZW5hYmxlZEV2ZW50cxgEIAMoCVIOZW5hYmxlZF9ldmVudHMSDgoGc3RhdHVzGAUgASgJEhMKBnNlY3JldBgGIAEoCUgAiAEBEhgKC2Rlc2NyaXB0aW9uGAcgASgJSAGIAQESOQoJY3JlYXRlZEF0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcFIKY3JlYXRlZF9hdEIJCgdfc2VjcmV0Qg4KDF9kZXNjcmlwdGlvbiLXAgoUQ2FsbGJhY2tFdmVudFN1bW1hcnkSCgoCaWQYASABKA0SGwoIaW50ZW50SWQYAiABKAlSCWludGVudF9pZBIqCgZzdGF0dXMYAyABKA4yGi5wYXltZW50LnYxLkNhbGxiYWNrU3RhdHVzEiwKCGRlbGl2ZXJ5GAQgASgOMhoucGF5bWVudC52MS5EZWxpdmVyeVN0YXR1cxIQCghhdHRlbXB0cxgFIAEoDRI9CgtkZWxpdmVyZWRBdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSDGRlbGl2ZXJlZF9hdBIiCglsYXN0RXJyb3IYByABKAlIAFIKbGFzdF9lcnJvcogBARI5CgljcmVhdGVkQXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUgpjcmVhdGVkX2F0QgwKCl9sYXN0RXJyb3Ii9AMKD1BheW1lbnRDYWxsYmFjaxIdCglldmVudFR5cGUYASABKAlSCmV2ZW50X3R5cGUSGwoIaW50ZW50SWQYAiABKAlSCWludGVudF9pZBIuChFtZXJjaGFudEFjY291bnRJZBgDIAEoCVITbWVyY2hhbnRfYWNjb3VudF9pZBIpCghtZXRhZGF0YRgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSOQoKY3JlZGVudGlhbBgGIAEoCzIlLnBheW1lbnQudjEuUGF5bWVudENhbGxiYWNrQ3JlZGVudGlhbBIcCgZ0eEhhc2gYByABKAlIAFIHdHhfaGFzaIgBARIkCgpmYWlsUmVhc29uGAggASgJSAFSC2ZhaWxfcmVhc29uiAEBEjQKEmNhbmNlbGxhdGlvblJlYXNvbhgJIAEoCUgCUhNjYW5jZWxsYXRpb25fcmVhc29uiAEBEjMKBnBhaWRBdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBSB3BhaWRfYXQSJQoFYnV5ZXIYDSABKAsyES5wYXltZW50LnYxLlBhcnR5SAOIAQFCCQoHX3R4SGFzaEINCgtfZmFpbFJlYXNvbkIVChNfY2FuY2VsbGF0aW9uUmVhc29uQggKBl9idXllciLHAgoZUGF5bWVudENhbGxiYWNrQ3JlZGVudGlhbBIcCgZ0eEhhc2gYASABKAlIAFIHdHhfaGFzaIgBARIiCglwYXlBbW91bnQYAiABKAlIAVIKcGF5X2Ftb3VudIgBARImCgtwYXlDdXJyZW5jeRgDIAEoCUgCUgxwYXlfY3VycmVuY3mIAQESEgoFY2hhaW4YBCABKAlIA4gBARI5CgljaGFpblR5cGUYBSABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZUgEUgpjaGFpbl90eXBliAEBEiIKCW5ldHdvcmtJZBgGIAEoBUgFUgpuZXR3b3JrX2lkiAEBQgkKB190eEhhc2hCDAoKX3BheUFtb3VudEIOCgxfcGF5Q3VycmVuY3lCCAoGX2NoYWluQgwKCl9jaGFpblR5cGVCDAoKX25ldHdvcmtJZCqFAQoOQ2FsbGJhY2tTdGF0dXMSHwobQ0FMTEJBQ0tfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGAoUQ0FMTEJBQ0tfU1RBVFVTX1BBSUQQARIaChZDQUxMQkFDS19TVEFUVVNfRkFJTEVEEAISHAoYQ0FMTEJBQ0tfU1RBVFVTX0NBTkNFTEVEEAMqqQEKDkRlbGl2ZXJ5U3RhdHVzEh8KG0RFTElWRVJZX1NUQVRVU19VTlNQRUNJRklFRBAAEhsKF0RFTElWRVJZX1NUQVRVU19QRU5ESU5HEAESHgoaREVMSVZFUllfU1RBVFVTX1BST0NFU1NJTkcQAhIdChlERUxJVkVSWV9TVEFUVVNfREVMSVZFUkVEEAMSGgoWREVMSVZFUllfU1RBVFVTX0ZBSUxFRBAEYgZwcm90bzM", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment]);
 
 /**
  * Webhook 端点(notify_webhook_endpoints 表):商户注册的支付回调目标
@@ -298,7 +298,7 @@ export const CallbackEventSummarySchema: GenMessage<CallbackEventSummary, {jsonT
  * 投递到商户 webhook 端点的回调 payload(投递协议,严格 SSOT:网关组装与 SDK/商户解析共用)
  * 角色: 协议(出站投递) | 使用: worker deliver.service → 商户 webhook | 消费方: SDK/商户
  * 字段名保持既有 snake_case wire;paid_at 用字符串承载 unix 毫秒(红线禁 int64)
- * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentCallback
  */
@@ -323,13 +323,6 @@ export type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
    * @generated from field: string merchantAccountId = 3 [json_name = "merchant_account_id"];
    */
   merchantAccountId: string;
-
-  /**
-   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
 
   /**
    * 支付单 metadata 快照(如 {"product_id":"app-123"})
@@ -374,25 +367,18 @@ export type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
   paidAt?: Timestamp | undefined;
 
   /**
-   * 外部买家快照(external 档;商户对账标签)
+   * 买家快照(建单冻结,三档;匿名缺省;商户对账用)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 13;
    */
-  buyerExternal?: BuyerExternal | undefined;
-
-  /**
-   * 买家 DID 快照(olares 档;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
-   */
-  buyerDid?: string | undefined;
+  buyer?: Party | undefined;
 };
 
 /**
  * 投递到商户 webhook 端点的回调 payload(投递协议,严格 SSOT:网关组装与 SDK/商户解析共用)
  * 角色: 协议(出站投递) | 使用: worker deliver.service → 商户 webhook | 消费方: SDK/商户
  * 字段名保持既有 snake_case wire;paid_at 用字符串承载 unix 毫秒(红线禁 int64)
- * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentCallback
  */
@@ -417,13 +403,6 @@ export type PaymentCallbackJson = {
    * @generated from field: string merchantAccountId = 3 [json_name = "merchant_account_id"];
    */
   merchant_account_id?: string;
-
-  /**
-   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
 
   /**
    * 支付单 metadata 快照(如 {"product_id":"app-123"})
@@ -468,18 +447,11 @@ export type PaymentCallbackJson = {
   paid_at?: TimestampJson;
 
   /**
-   * 外部买家快照(external 档;商户对账标签)
+   * 买家快照(建单冻结,三档;匿名缺省;商户对账用)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 13;
    */
-  buyer_external?: BuyerExternalJson;
-
-  /**
-   * 买家 DID 快照(olares 档;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
-   */
-  buyer_did?: string;
+  buyer?: PartyJson;
 };
 
 /**

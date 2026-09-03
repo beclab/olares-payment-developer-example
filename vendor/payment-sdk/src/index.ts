@@ -20,8 +20,9 @@ export * from './types/merchant';
 
 // ---------- Clients ----------
 export { PaymentSDK } from './core/client';
-// PlatformClient is not part of the public surface yet.
-// export { PlatformClient } from './platform-client';
+// PlatformClient: keyless catalog orders + client_secret reads (market uses it
+// without an API key; HMAC surface methods throw without credentials).
+export { PlatformClient } from './platform-client';
 export { MerchantClient } from './merchant-client';
 
 // ---------- Errors ----------

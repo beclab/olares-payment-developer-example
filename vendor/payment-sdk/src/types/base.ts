@@ -123,13 +123,6 @@ export type BuyerRef =
       display?: { name?: string; avatarUrl?: string };
     };
 
-/** External buyer snapshot echoed on Payment.buyer / webhooks (external-tier orders). */
-export interface ExternalBuyerSnapshot {
-  ref: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-}
-
 // ---------- Resources (read) ----------
 
 /** Payment credential; the webhook fast lane and the getPayment query leg share this exact shape.
@@ -177,10 +170,10 @@ export interface Payment {
   paymentId: string;
   merchantAccountId: string;
   /**
-   * Buyer snapshot rebuilt from the intent's creation-time columns (ruling 11 —
+   * Buyer snapshot from the intent's creation-time Party object (ruling 11 —
    * what was sent is what comes back, never re-derived from live identity rows):
-   * name+did → { kind: 'olares' }; external snapshot → { kind: 'external' } (incl.
-   * legacy name-only orders); nothing → null (anonymous).
+   * olares tier → { kind: 'olares', olaresId, did }; external tier → { kind: 'external' }
+   * (incl. legacy name-only orders, folded by the gateway); nothing → null (anonymous).
    */
   buyer: BuyerRef | null;
   amountCents: number;
@@ -274,18 +267,6 @@ export interface CreatePaymentResult {
   checkoutUrl: string;
 }
 
-/** createOrderFromCatalog request (keyless, public endpoint): no price fields, no
- *  account — the gateway resolves amount/currency from the catalog authority and
- *  derives the seller account from the catalog entry's developer.
- *  Catalog orders are olares-tier by contract: buyerDid is required (VC issuance
- *  depends on it; the gateway rejects a missing did with 1100). */
-export interface CreateOrderFromCatalogRequest {
-  productId: string;
-  buyerOlaresId: string;
-  buyerDid: string;
-  returnUrl?: string;
-}
-
 /** listPayments request (all optional; keyset pagination, fixed created_at DESC). */
 export interface ListPaymentsRequest {
   status?: PaymentStatus;
@@ -327,16 +308,14 @@ export interface WebhookResponse {
   headers: WebhookHeaders | WebhookHeaderGetter | Record<string, string | string[] | undefined>;
 }
 
-/** Typed webhook event (discriminated by type). buyerExternal/buyerDid echo the
- *  intent's creation-time snapshots (null when the tier carries none). */
+/** Typed webhook event (discriminated by type). buyer echoes the intent's
+ *  creation-time snapshot as the unified BuyerRef (null = anonymous order). */
 export type WebhookEvent =
   | {
       type: 'payment.succeeded';
       paymentId: string;
       merchantAccountId: string;
-      buyerOlaresId: string;
-      buyerExternal: ExternalBuyerSnapshot | null;
-      buyerDid: string | null;
+      buyer: BuyerRef | null;
       metadata: Record<string, unknown>;
       credential: PaymentCredential;
       /** unix ms */
@@ -346,9 +325,7 @@ export type WebhookEvent =
       type: 'payment.failed';
       paymentId: string;
       merchantAccountId: string;
-      buyerOlaresId: string;
-      buyerExternal: ExternalBuyerSnapshot | null;
-      buyerDid: string | null;
+      buyer: BuyerRef | null;
       metadata: Record<string, unknown>;
       txHash: string | null;
       failReason: string | null;
@@ -357,9 +334,7 @@ export type WebhookEvent =
       type: 'payment.canceled';
       paymentId: string;
       merchantAccountId: string;
-      buyerOlaresId: string;
-      buyerExternal: ExternalBuyerSnapshot | null;
-      buyerDid: string | null;
+      buyer: BuyerRef | null;
       metadata: Record<string, unknown>;
       cancellationReason: string;
     }

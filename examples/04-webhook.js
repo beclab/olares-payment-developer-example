@@ -9,7 +9,7 @@
 import express from 'express';
 import { webhooks } from '@olares/payment-sdk';
 import { CONFIG } from '../config.js';
-import { formatToken } from '../format.js';
+import { formatBuyer, formatToken } from '../format.js';
 
 const port = Number(process.env.WEBHOOK_PORT || 32001);
 const secret = process.env.PAYMENT_WEBHOOK_SECRET || CONFIG.webhookSecret;
@@ -19,6 +19,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   try {
     const event = webhooks.constructEvent(req, secret);
     console.log(event.type, event.paymentId ?? '');
+    if (event.buyer !== undefined) console.log('  buyer        ', formatBuyer(event.buyer));
     if (event.type === 'payment.succeeded') {
       console.log('  txHash       ', event.credential.txHash);
       console.log(

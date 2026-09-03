@@ -22,10 +22,8 @@ import type {
   ChainSlug,
   ChainType,
   ClientInfoResult,
-  CreateOrderFromCatalogRequest,
   CreatePaymentRequest,
   CreatePaymentResult,
-  ExternalBuyerSnapshot,
   LatestAttempt,
   ListPaymentsRequest,
   ListPaymentsResponse,
@@ -63,6 +61,7 @@ import type {
   WireListSupportedChainsResponse,
   WireListPaymentMethodConfigsResponse,
   WireUpsertOnchainPmcRequest,
+  WireParty,
   WirePayment,
   WirePingResult,
   WireReceiveWallet,
@@ -83,36 +82,36 @@ function toLatestAttempt(w: WireLatestAttempt): LatestAttempt {
   };
 }
 
-/** Wire buyer_external snapshot → public ExternalBuyerSnapshot (null when absent). */
-export function wireToExternalBuyer(w: WirePayment['buyer_external']): ExternalBuyerSnapshot | null {
-  if (w == null) return null;
-  return { ref: w.ref ?? '', displayName: w.display_name ?? null, avatarUrl: w.avatar_url ?? null };
-}
-
 /**
- * Rebuilds the public BuyerRef from the intent's creation-time snapshot columns
- * (ruling 11 — never re-derived from live identity rows):
- * name + did → 'olares'; external snapshot → 'external' (display included);
- * legacy name-only orders → { kind: 'external', ref: name }; all absent → null.
+ * Wire Party (the unified identity object) → public BuyerRef. Snapshot semantics
+ * (ruling 11 — what was sent at creation is what comes back):
+ * kind=olares (id + did) → 'olares'; kind=external → 'external' (display included;
+ * legacy name-only orders arrive already folded into this tier by the gateway);
+ * absent/unknown → null.
  */
-function wireToBuyer(w: WirePayment): BuyerRef | null {
-  if (w.buyer_did != null && w.buyer_olares_id != null) {
-    return { kind: 'olares', olaresId: w.buyer_olares_id, did: w.buyer_did };
+export function wireToBuyer(p: WireParty | null | undefined): BuyerRef | null {
+  if (p == null) return null;
+  if (p.kind === 'olares' && p.olares_id != null && p.did != null) {
+    return { kind: 'olares', olaresId: p.olares_id, did: p.did };
   }
-  const ext = w.buyer_external;
-  if (ext != null && ext.ref != null && ext.ref !== '') {
-    const name = ext.display_name;
-    const avatarUrl = ext.avatar_url;
+  if (p.kind === 'external' && p.ref != null && p.ref !== '') {
+    const name = p.display_name;
+    const avatarUrl = p.avatar_url;
     const display =
       name != null || avatarUrl != null
         ? { name: name ?? undefined, avatarUrl: avatarUrl ?? undefined }
         : undefined;
-    return display != null ? { kind: 'external', ref: ext.ref, display } : { kind: 'external', ref: ext.ref };
-  }
-  if (w.buyer_olares_id != null && w.buyer_olares_id !== '') {
-    return { kind: 'external', ref: w.buyer_olares_id }; // legacy name-only order: an unverifiable label
+    return display != null ? { kind: 'external', ref: p.ref, display } : { kind: 'external', ref: p.ref };
   }
   return null;
+}
+
+/** Public BuyerRef → wire Party (request direction; one tier, one object). */
+export function buyerRefToWire(b: BuyerRef): WireParty {
+  if (b.kind === 'olares') {
+    return { kind: 'olares', olares_id: b.olaresId, did: b.did };
+  }
+  return { kind: 'external', ref: b.ref, display_name: b.display?.name, avatar_url: b.display?.avatarUrl };
 }
 
 function wireToProductSnapshot(w: NonNullable<WirePayment['product']>): Payment['product'] {
@@ -133,7 +132,7 @@ export function wireToPayment(w: WirePayment): Payment {
   return {
     paymentId: w.id ?? '',
     merchantAccountId: w.merchant_account_id ?? '',
-    buyer: wireToBuyer(w),
+    buyer: wireToBuyer(w.buyer),
     amountCents: w.amount_cents ?? 0,
     currency: (w.currency ?? 'usd') as Payment['currency'],
     settlementCurrency: w.settlement_currency ?? null,
@@ -185,8 +184,8 @@ export function wireToCredential(c: WireWebhookCredential): PaymentCredential {
 }
 
 /** createPayment request: public camelCase → gateway snake_case body.
- *  The buyer discriminant maps to exactly one wire tier (olares: name+did;
- *  external: buyer_external); merchantAccountId only rides the platform variant. */
+ *  The buyer discriminant maps onto the single wire Party object; merchantAccountId
+ *  only rides the platform variant. */
 export function createPaymentRequestToWire(
   p: CreatePaymentRequest | (CreatePaymentRequest & { merchantAccountId?: string }),
 ): CreatePaymentReqJson {
@@ -198,18 +197,7 @@ export function createPaymentRequestToWire(
   };
   const merchantAccountId = (p as { merchantAccountId?: string }).merchantAccountId;
   if (merchantAccountId != null) w.merchant_account_id = merchantAccountId;
-  if (p.buyer != null) {
-    if (p.buyer.kind === 'olares') {
-      w.buyer_olares_id = p.buyer.olaresId;
-      w.buyer_did = p.buyer.did;
-    } else {
-      w.buyer_external = {
-        ref: p.buyer.ref,
-        display_name: p.buyer.display?.name,
-        avatar_url: p.buyer.display?.avatarUrl,
-      };
-    }
-  }
+  if (p.buyer != null) w.buyer = buyerRefToWire(p.buyer);
   return w;
 }
 
@@ -218,13 +206,18 @@ export function paymentIdToWire(paymentId: string, clientSecret?: string): GetPa
   return { intent_id: paymentId, client_secret: clientSecret };
 }
 
-/** createOrderFromCatalog request: public camelCase → gateway snake_case body (unsigned). */
-export function createOrderFromCatalogRequestToWire(p: CreateOrderFromCatalogRequest): CreateOrderFromCatalogReqJson {
+/** createOrderFromCatalog request: positional args → gateway snake_case body (unsigned).
+ *  Catalog orders are olares-tier by contract; the client rejects other tiers
+ *  before the call and the gateway enforces it again (1100). */
+export function createOrderFromCatalogRequestToWire(
+  productId: string,
+  buyer: BuyerRef,
+  returnUrl?: string,
+): CreateOrderFromCatalogReqJson {
   return {
-    product_id: p.productId,
-    buyer_olares_id: p.buyerOlaresId,
-    buyer_did: p.buyerDid,
-    return_url: p.returnUrl,
+    product_id: productId,
+    buyer: buyerRefToWire(buyer),
+    return_url: returnUrl,
   };
 }
 
@@ -295,7 +288,7 @@ function wireToReceiveWalletTransactionItem(w: WireReceiveWalletTransactionItem)
     status: (w.status ?? 'failed') as ReceiveWalletTransactionItem['status'],
     receiveWalletAddress: w.receive_wallet_address ?? '',
     decimals: w.decimals ?? null,
-    payerOlaresId: w.payer_olares_id ?? null,
+    buyer: wireToBuyer(w.buyer),
     paymentId: w.intent_id ?? null,
     paymentStatus: w.intent_status ?? null,
     paymentMetadata: w.intent_metadata ?? null,

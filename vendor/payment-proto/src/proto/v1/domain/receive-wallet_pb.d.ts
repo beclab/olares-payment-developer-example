@@ -4,7 +4,7 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
-import type { ChainType, ChainTypeJson, Channel, ChannelJson } from "./payment_pb";
+import type { ChainType, ChainTypeJson, Channel, ChannelJson, Party, PartyJson } from "./payment_pb";
 import type { StructJson } from "@bufbuild/protobuf/wkt";
 
 /**
@@ -164,7 +164,7 @@ export declare const ChannelInfoSchema: GenMessage<ChannelInfo, {jsonType: Chann
 
 /**
  * 收款钱包链上流水(receive_wallet_transactions 表,worker 同步索引)
- * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"payer_olares_id":"bob.olares.com","intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
+ * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
  *
  * @generated from message payment.v1.ReceiveWalletTransactionItem
  */
@@ -297,13 +297,6 @@ export declare type ReceiveWalletTransactionItem = Message<"payment.v1.ReceiveWa
   decimals?: number | undefined;
 
   /**
-   * 付款方用户名(按 tx_hash 命中回填)
-   *
-   * @generated from field: optional string payerOlaresId = 17 [json_name = "payer_olares_id"];
-   */
-  payerOlaresId?: string | undefined;
-
-  /**
    * 关联支付单 ID(命中时)
    *
    * @generated from field: optional string intentId = 18 [json_name = "intent_id"];
@@ -339,11 +332,18 @@ export declare type ReceiveWalletTransactionItem = Message<"payment.v1.ReceiveWa
    * @generated from field: optional google.protobuf.Struct rawData = 23 [json_name = "raw_data"];
    */
   rawData?: JsonObject | undefined;
+
+  /**
+   * 买家快照(按 intent 命中回填,三档;匿名/未命中缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
  * 收款钱包链上流水(receive_wallet_transactions 表,worker 同步索引)
- * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"payer_olares_id":"bob.olares.com","intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
+ * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
  *
  * @generated from message payment.v1.ReceiveWalletTransactionItem
  */
@@ -476,13 +476,6 @@ export declare type ReceiveWalletTransactionItemJson = {
   decimals?: number;
 
   /**
-   * 付款方用户名(按 tx_hash 命中回填)
-   *
-   * @generated from field: optional string payerOlaresId = 17 [json_name = "payer_olares_id"];
-   */
-  payer_olares_id?: string;
-
-  /**
    * 关联支付单 ID(命中时)
    *
    * @generated from field: optional string intentId = 18 [json_name = "intent_id"];
@@ -518,6 +511,13 @@ export declare type ReceiveWalletTransactionItemJson = {
    * @generated from field: optional google.protobuf.Struct rawData = 23 [json_name = "raw_data"];
    */
   raw_data?: StructJson;
+
+  /**
+   * 买家快照(按 intent 命中回填,三档;匿名/未命中缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: PartyJson;
 };
 
 /**

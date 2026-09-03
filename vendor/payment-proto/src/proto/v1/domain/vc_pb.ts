@@ -6,13 +6,15 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
+import type { Party, PartyJson } from "./payment_pb";
+import { file_v1_domain_payment } from "./payment_pb";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file v1/domain/vc.proto.
  */
 export const file_v1_domain_vc: GenFile = /*@__PURE__*/
-  fileDesc("ChJ2MS9kb21haW4vdmMucHJvdG8SCnBheW1lbnQudjEiNwoWVmNBcHBsaWNhdGlvblNjaGVtYVJlcRIdCglwcm9kdWN0SWQYASABKAlSCnByb2R1Y3RfaWQilwEKF1ZjQXBwbGljYXRpb25TY2hlbWFSZXNwEikKCG1hbmlmZXN0GAEgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIyChNhcHBsaWNhdGlvblNjaGVtYUlkGAIgASgJUhVhcHBsaWNhdGlvbl9zY2hlbWFfaWQSHQoJaXNzdWVyRGlkGAMgASgJUgppc3N1ZXJfZGlkIn8KDFZjUmVxdWVzdFJlcRILCgNqd3MYASABKAkSHQoJcHJvZHVjdElkGAIgASgJUgpwcm9kdWN0X2lkEiYKDWJ1eWVyT2xhcmVzSWQYAyABKAlSD2J1eWVyX29sYXJlc19pZBIbCghpbnRlbnRJZBgEIAEoCVIJaW50ZW50X2lkIpIBCg1WY1JlcXVlc3RSZXNwEiMKAnZjGAEgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIVCgV2Y0p3dBgCIAEoCVIGdmNfand0EhsKCGludGVudElkGAMgASgJUglpbnRlbnRfaWQSKAoOc2VsbGVyT2xhcmVzSWQYBCABKAlSEHNlbGxlcl9vbGFyZXNfaWQixgIKFElzc3VlZENyZWRlbnRpYWxWaWV3Eg0KBWZvdW5kGAEgASgIEigKAnZjGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdEgAiAEBEhUKBXZjSnd0GAMgASgJUgZ2Y19qd3QSGwoIaW50ZW50SWQYBCABKAlSCWludGVudF9pZBIdCglwcm9kdWN0SWQYBSABKAlSCnByb2R1Y3RfaWQSJgoNYnV5ZXJPbGFyZXNJZBgGIAEoCVIPYnV5ZXJfb2xhcmVzX2lkEigKDnNlbGxlck9sYXJlc0lkGAcgASgJUhBzZWxsZXJfb2xhcmVzX2lkEjwKCGlzc3VlZEF0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBUglpc3N1ZWRfYXSIAQFCBQoDX3ZjQgsKCV9pc3N1ZWRBdGIGcHJvdG8z", [file_google_protobuf_struct, file_google_protobuf_timestamp]);
+  fileDesc("ChJ2MS9kb21haW4vdmMucHJvdG8SCnBheW1lbnQudjEiNwoWVmNBcHBsaWNhdGlvblNjaGVtYVJlcRIdCglwcm9kdWN0SWQYASABKAlSCnByb2R1Y3RfaWQilwEKF1ZjQXBwbGljYXRpb25TY2hlbWFSZXNwEikKCG1hbmlmZXN0GAEgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIyChNhcHBsaWNhdGlvblNjaGVtYUlkGAIgASgJUhVhcHBsaWNhdGlvbl9zY2hlbWFfaWQSHQoJaXNzdWVyRGlkGAMgASgJUgppc3N1ZXJfZGlkIogBCgxWY1JlcXVlc3RSZXESCwoDandzGAEgASgJEh0KCXByb2R1Y3RJZBgCIAEoCVIKcHJvZHVjdF9pZBIbCghpbnRlbnRJZBgEIAEoCVIJaW50ZW50X2lkEiUKBWJ1eWVyGAUgASgLMhEucGF5bWVudC52MS5QYXJ0eUgAiAEBQggKBl9idXllciKbAQoNVmNSZXF1ZXN0UmVzcBIjCgJ2YxgBIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSFQoFdmNKd3QYAiABKAlSBnZjX2p3dBIbCghpbnRlbnRJZBgDIAEoCVIJaW50ZW50X2lkEiYKBnNlbGxlchgFIAEoCzIRLnBheW1lbnQudjEuUGFydHlIAIgBAUIJCgdfc2VsbGVyItgCChRJc3N1ZWRDcmVkZW50aWFsVmlldxINCgVmb3VuZBgBIAEoCBIoCgJ2YxgCIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RIAIgBARIVCgV2Y0p3dBgDIAEoCVIGdmNfand0EhsKCGludGVudElkGAQgASgJUglpbnRlbnRfaWQSHQoJcHJvZHVjdElkGAUgASgJUgpwcm9kdWN0X2lkEjwKCGlzc3VlZEF0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBUglpc3N1ZWRfYXSIAQESJQoFYnV5ZXIYCSABKAsyES5wYXltZW50LnYxLlBhcnR5SAKIAQESJgoGc2VsbGVyGAogASgLMhEucGF5bWVudC52MS5QYXJ0eUgDiAEBQgUKA192Y0ILCglfaXNzdWVkQXRCCAoGX2J1eWVyQgkKB19zZWxsZXJiBnByb3RvMw", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_v1_domain_payment]);
 
 /**
  * Fetch the credential manifest + application schema of a paid app's issuer
@@ -130,7 +132,7 @@ export const VcApplicationSchemaRespSchema: GenMessage<VcApplicationSchemaResp, 
 
 /**
  * Exchange a buyer-signed VC application JWS for an issued credential.
- * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer_olares_id":"bob.olares.com","intent_id":"pi_xxx"}
+ * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_xxx"}
  *
  * @generated from message payment.v1.VcRequestReq
  */
@@ -150,23 +152,23 @@ export type VcRequestReq = Message<"payment.v1.VcRequestReq"> & {
   productId: string;
 
   /**
-   * must pair with the intent snapshot
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId: string;
-
-  /**
    * paid intent (idempotency key)
    *
    * @generated from field: string intentId = 4 [json_name = "intent_id"];
    */
   intentId: string;
+
+  /**
+   * must pair with the intent snapshot (olares tier: id + did)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 5;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
  * Exchange a buyer-signed VC application JWS for an issued credential.
- * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer_olares_id":"bob.olares.com","intent_id":"pi_xxx"}
+ * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_xxx"}
  *
  * @generated from message payment.v1.VcRequestReq
  */
@@ -186,18 +188,18 @@ export type VcRequestReqJson = {
   product_id?: string;
 
   /**
-   * must pair with the intent snapshot
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
    * paid intent (idempotency key)
    *
    * @generated from field: string intentId = 4 [json_name = "intent_id"];
    */
   intent_id?: string;
+
+  /**
+   * must pair with the intent snapshot (olares tier: id + did)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 5;
+   */
+  buyer?: PartyJson;
 };
 
 /**
@@ -208,7 +210,7 @@ export const VcRequestReqSchema: GenMessage<VcRequestReq, {jsonType: VcRequestRe
   messageDesc(file_v1_domain_vc, 2);
 
 /**
- * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com"}
+ * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller":{"kind":"olares","olares_id":"alice.olares.com","did":"did:olares:0x4d5e..."}}
  *
  * @generated from message payment.v1.VcRequestResp
  */
@@ -235,15 +237,15 @@ export type VcRequestResp = Message<"payment.v1.VcRequestResp"> & {
   intentId: string;
 
   /**
-   * seller Olares handle (issuer owner)
+   * seller snapshot (frozen at order creation, issuer owner)
    *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
+   * @generated from field: optional payment.v1.Party seller = 5;
    */
-  sellerOlaresId: string;
+  seller?: Party | undefined;
 };
 
 /**
- * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com"}
+ * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller":{"kind":"olares","olares_id":"alice.olares.com","did":"did:olares:0x4d5e..."}}
  *
  * @generated from message payment.v1.VcRequestResp
  */
@@ -270,11 +272,11 @@ export type VcRequestRespJson = {
   intent_id?: string;
 
   /**
-   * seller Olares handle (issuer owner)
+   * seller snapshot (frozen at order creation, issuer owner)
    *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
+   * @generated from field: optional payment.v1.Party seller = 5;
    */
-  seller_olares_id?: string;
+  seller?: PartyJson;
 };
 
 /**
@@ -288,7 +290,7 @@ export const VcRequestRespSchema: GenMessage<VcRequestResp, {jsonType: VcRequest
  * Recovery lookup by (buyer, product) — the one thing a market can still name
  * after losing its local ledger (the intent id lived in the lost record).
  * Facts only, never a verdict: an unknown pair returns found=false, not an error.
- * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com","issued_at":"2026-08-22T03:00:00Z"}
+ * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","buyer":{"kind":"olares","olares_id":"bob.olares.com"},"seller":{"kind":"olares","olares_id":"alice.olares.com"},"issued_at":"2026-08-22T03:00:00Z"}
  *
  * @generated from message payment.v1.IssuedCredentialView
  */
@@ -329,32 +331,32 @@ export type IssuedCredentialView = Message<"payment.v1.IssuedCredentialView"> & 
   productId: string;
 
   /**
-   * echoed buyer (normalized dot spelling)
-   *
-   * @generated from field: string buyerOlaresId = 6 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId: string;
-
-  /**
-   * seller Olares handle (issuer owner)
-   *
-   * @generated from field: string sellerOlaresId = 7 [json_name = "seller_olares_id"];
-   */
-  sellerOlaresId: string;
-
-  /**
    * issuance time (absent when not found)
    *
    * @generated from field: optional google.protobuf.Timestamp issuedAt = 8 [json_name = "issued_at"];
    */
   issuedAt?: Timestamp | undefined;
+
+  /**
+   * echoed buyer (normalized dot spelling, olares tier)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 9;
+   */
+  buyer?: Party | undefined;
+
+  /**
+   * seller snapshot via row.intentId → intent.seller (issuer owner)
+   *
+   * @generated from field: optional payment.v1.Party seller = 10;
+   */
+  seller?: Party | undefined;
 };
 
 /**
  * Recovery lookup by (buyer, product) — the one thing a market can still name
  * after losing its local ledger (the intent id lived in the lost record).
  * Facts only, never a verdict: an unknown pair returns found=false, not an error.
- * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com","issued_at":"2026-08-22T03:00:00Z"}
+ * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","buyer":{"kind":"olares","olares_id":"bob.olares.com"},"seller":{"kind":"olares","olares_id":"alice.olares.com"},"issued_at":"2026-08-22T03:00:00Z"}
  *
  * @generated from message payment.v1.IssuedCredentialView
  */
@@ -395,25 +397,25 @@ export type IssuedCredentialViewJson = {
   product_id?: string;
 
   /**
-   * echoed buyer (normalized dot spelling)
-   *
-   * @generated from field: string buyerOlaresId = 6 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
-   * seller Olares handle (issuer owner)
-   *
-   * @generated from field: string sellerOlaresId = 7 [json_name = "seller_olares_id"];
-   */
-  seller_olares_id?: string;
-
-  /**
    * issuance time (absent when not found)
    *
    * @generated from field: optional google.protobuf.Timestamp issuedAt = 8 [json_name = "issued_at"];
    */
   issued_at?: TimestampJson;
+
+  /**
+   * echoed buyer (normalized dot spelling, olares tier)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 9;
+   */
+  buyer?: PartyJson;
+
+  /**
+   * seller snapshot via row.intentId → intent.seller (issuer owner)
+   *
+   * @generated from field: optional payment.v1.Party seller = 10;
+   */
+  seller?: PartyJson;
 };
 
 /**

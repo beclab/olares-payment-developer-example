@@ -4,7 +4,7 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
-import type { BuyerExternal, BuyerExternalJson, CheckoutIntentSchema, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
+import type { CheckoutIntentSchema, Party, PartyJson, PaymentIntent, PaymentIntentJson, PaymentIntentSchema } from "../domain/payment_pb";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
 import type { ChannelInfo, ChannelInfoJson, ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson } from "../domain/receive-wallet_pb";
 import type { AccountInfoSchema, ApiClientType, ApiClientTypeJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
@@ -20,7 +20,7 @@ export declare const file_v1_service_gateway: GenFile;
  * Public catalog-order create (no HMAC): price, currency and the seller account
  * are all resolved by the gateway — price from the catalog authority, account
  * derived from the catalog entry's developer (one developer = one account).
- * Example (JSON): {"product_id":"appstore-notes-pro-notes-pro-paid","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","return_url":"https://shop.example.com/order/123"}
+ * Example (JSON): {"product_id":"appstore-notes-pro-notes-pro-paid","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"return_url":"https://shop.example.com/order/123"}
  *
  * @generated from message payment.v1.CreateOrderFromCatalogReq
  */
@@ -33,32 +33,25 @@ export declare type CreateOrderFromCatalogReq = Message<"payment.v1.CreateOrderF
   productId: string;
 
   /**
-   * buyer Olares handle
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId: string;
-
-  /**
-   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
-   *
-   * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
-   */
-  buyerDid?: string | undefined;
-
-  /**
    * post-payment redirect (optional)
    *
    * @generated from field: optional string returnUrl = 5 [json_name = "return_url"];
    */
   returnUrl?: string | undefined;
+
+  /**
+   * buyer Party; domain enforces the olares tier (id + did, VC chain depends on it)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 6;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
  * Public catalog-order create (no HMAC): price, currency and the seller account
  * are all resolved by the gateway — price from the catalog authority, account
  * derived from the catalog entry's developer (one developer = one account).
- * Example (JSON): {"product_id":"appstore-notes-pro-notes-pro-paid","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","return_url":"https://shop.example.com/order/123"}
+ * Example (JSON): {"product_id":"appstore-notes-pro-notes-pro-paid","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"return_url":"https://shop.example.com/order/123"}
  *
  * @generated from message payment.v1.CreateOrderFromCatalogReq
  */
@@ -71,25 +64,18 @@ export declare type CreateOrderFromCatalogReqJson = {
   product_id?: string;
 
   /**
-   * buyer Olares handle
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
-   * buyer DID (required in practice — domain rejects 1100 when absent; VC issuance depends on it)
-   *
-   * @generated from field: optional string buyerDid = 4 [json_name = "buyer_did"];
-   */
-  buyer_did?: string;
-
-  /**
    * post-payment redirect (optional)
    *
    * @generated from field: optional string returnUrl = 5 [json_name = "return_url"];
    */
   return_url?: string;
+
+  /**
+   * buyer Party; domain enforces the olares tier (id + did, VC chain depends on it)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 6;
+   */
+  buyer?: PartyJson;
 };
 
 /**
@@ -100,9 +86,9 @@ export declare const CreateOrderFromCatalogReqSchema: GenMessage<CreateOrderFrom
 
 /**
  * 创建支付单请求
- * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
- * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
- * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
+ * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露:olares 档 = Party{kind:"olares", olares_id + did 双全}(缺一 1100);
+ * external 档 = Party{kind:"external", ref}(不建身份/账户);档位混字段 1100;buyer 缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -115,20 +101,6 @@ export declare type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & 
    * @generated from field: optional string merchantAccountId = 1 [json_name = "merchant_account_id"];
    */
   merchantAccountId?: string | undefined;
-
-  /**
-   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
-   *
-   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
-
-  /**
-   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
-   *
-   * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
-   */
-  buyerDid?: string | undefined;
 
   /**
    * Go contract is int64; int32 keeps the wire a JSON number (decision 1).
@@ -161,18 +133,18 @@ export declare type CreatePaymentReq = Message<"payment.v1.CreatePaymentReq"> & 
   returnUrl?: string | undefined;
 
   /**
-   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   * 买家 Party(三档判别见上;匿名缺省)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 9;
    */
-  buyerExternal?: BuyerExternal | undefined;
+  buyer?: Party | undefined;
 };
 
 /**
  * 创建支付单请求
- * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","buyer_did":"did:olares:0x1a2b...","amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
- * buyer 三档披露(裁决 2/4):olares 档 = buyer_olares_id + buyer_did 双全(缺一 1100);
- * external 档 = buyer_external(不建身份/账户);两者同现 1100;全缺省 = 匿名单。
+ * 示例(JSON): {"merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"amount_cents":1000,"currency":"usd","metadata":{"product_id":"app-123"},"return_url":"https://shop.example.com/order/123"}
+ * buyer 三档披露:olares 档 = Party{kind:"olares", olares_id + did 双全}(缺一 1100);
+ * external 档 = Party{kind:"external", ref}(不建身份/账户);档位混字段 1100;buyer 缺省 = 匿名单。
  *
  * @generated from message payment.v1.CreatePaymentReq
  */
@@ -185,20 +157,6 @@ export declare type CreatePaymentReqJson = {
    * @generated from field: optional string merchantAccountId = 1 [json_name = "merchant_account_id"];
    */
   merchant_account_id?: string;
-
-  /**
-   * 买家 Olares 用户名(olares 档必填,须与 buyer_did 同现)
-   *
-   * @generated from field: optional string buyerOlaresId = 2 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
-   * 买家 DID(olares 档必填,须与 buyer_olares_id 同现)
-   *
-   * @generated from field: optional string buyerDid = 3 [json_name = "buyer_did"];
-   */
-  buyer_did?: string;
 
   /**
    * Go contract is int64; int32 keeps the wire a JSON number (decision 1).
@@ -231,11 +189,11 @@ export declare type CreatePaymentReqJson = {
   return_url?: string;
 
   /**
-   * 外部买家(ref + 可选 display;与 olares 字段互斥)
+   * 买家 Party(三档判别见上;匿名缺省)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 8 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 9;
    */
-  buyer_external?: BuyerExternalJson;
+  buyer?: PartyJson;
 };
 
 /**

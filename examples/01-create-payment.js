@@ -19,6 +19,7 @@ const client = new MerchantClient({
 const { paymentId, checkoutUrl } = await client.createPayment(
   {
     amountCents: 1,
+    buyer: { kind: 'external', ref: 'example-user', display: { name: 'Ada' } },
     metadata: { example: '01-create-payment' },
   },
   { idempotencyKey: `example:${Date.now()}` },

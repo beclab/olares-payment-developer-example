@@ -5,7 +5,7 @@
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
-import type { BuyerExternal, BuyerExternalJson, ChainType, ChainTypeJson } from "./payment_pb";
+import type { ChainType, ChainTypeJson, Party, PartyJson } from "./payment_pb";
 
 /**
  * Describes the file v1/domain/webhook.proto.
@@ -292,7 +292,7 @@ export declare const CallbackEventSummarySchema: GenMessage<CallbackEventSummary
  * 投递到商户 webhook 端点的回调 payload(投递协议,严格 SSOT:网关组装与 SDK/商户解析共用)
  * 角色: 协议(出站投递) | 使用: worker deliver.service → 商户 webhook | 消费方: SDK/商户
  * 字段名保持既有 snake_case wire;paid_at 用字符串承载 unix 毫秒(红线禁 int64)
- * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentCallback
  */
@@ -317,13 +317,6 @@ export declare type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
    * @generated from field: string merchantAccountId = 3 [json_name = "merchant_account_id"];
    */
   merchantAccountId: string;
-
-  /**
-   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
 
   /**
    * 支付单 metadata 快照(如 {"product_id":"app-123"})
@@ -368,25 +361,18 @@ export declare type PaymentCallback = Message<"payment.v1.PaymentCallback"> & {
   paidAt?: Timestamp | undefined;
 
   /**
-   * 外部买家快照(external 档;商户对账标签)
+   * 买家快照(建单冻结,三档;匿名缺省;商户对账用)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 13;
    */
-  buyerExternal?: BuyerExternal | undefined;
-
-  /**
-   * 买家 DID 快照(olares 档;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
-   */
-  buyerDid?: string | undefined;
+  buyer?: Party | undefined;
 };
 
 /**
  * 投递到商户 webhook 端点的回调 payload(投递协议,严格 SSOT:网关组装与 SDK/商户解析共用)
  * 角色: 协议(出站投递) | 使用: worker deliver.service → 商户 webhook | 消费方: SDK/商户
  * 字段名保持既有 snake_case wire;paid_at 用字符串承载 unix 毫秒(红线禁 int64)
- * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"event_type":"payment.succeeded","intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"metadata":{"product_id":"app-123"},"credential":{"tx_hash":"0x9f3c...","pay_amount":"10000000","pay_currency":"USDC","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10},"paid_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentCallback
  */
@@ -411,13 +397,6 @@ export declare type PaymentCallbackJson = {
    * @generated from field: string merchantAccountId = 3 [json_name = "merchant_account_id"];
    */
   merchant_account_id?: string;
-
-  /**
-   * 买家 Olares 用户名快照(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 4 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
 
   /**
    * 支付单 metadata 快照(如 {"product_id":"app-123"})
@@ -462,18 +441,11 @@ export declare type PaymentCallbackJson = {
   paid_at?: TimestampJson;
 
   /**
-   * 外部买家快照(external 档;商户对账标签)
+   * 买家快照(建单冻结,三档;匿名缺省;商户对账用)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 13;
    */
-  buyer_external?: BuyerExternalJson;
-
-  /**
-   * 买家 DID 快照(olares 档;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 12 [json_name = "buyer_did"];
-   */
-  buyer_did?: string;
+  buyer?: PartyJson;
 };
 
 /**

@@ -14,3 +14,11 @@ export function formatToken(minimal, symbol) {
     return String(minimal);
   }
 }
+
+/** BuyerRef snapshot: omitted = anonymous; olares / external otherwise. */
+export function formatBuyer(buyer) {
+  if (buyer == null) return 'anonymous';
+  if (buyer.kind === 'olares') return `olares ${buyer.olaresId}`;
+  const name = buyer.display?.name;
+  return name ? `external ${buyer.ref} (${name})` : `external ${buyer.ref}`;
+}

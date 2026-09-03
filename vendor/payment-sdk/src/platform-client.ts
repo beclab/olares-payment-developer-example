@@ -20,6 +20,7 @@
  */
 import { PaymentSDK } from './core/client';
 import { verifyViaRpc } from './core/verify';
+import { INVALID_ARGUMENT, PaymentError } from './core/errors';
 import {
   createOrderFromCatalogRequestToWire,
   createPaymentRequestToWire,
@@ -34,10 +35,10 @@ import {
 } from './core/mapping';
 import type { WireClientInfoResult, WireCreateResponse, WirePayment, WirePingResult, WireVerifyTxResponse } from './core/wire';
 import type {
+  BuyerRef,
   ChainSlug,
   ClientInfoResult,
   ClientOptions,
-  CreateOrderFromCatalogRequest,
   CreatePaymentResult,
   Network,
   PaymentResult,
@@ -74,12 +75,23 @@ export class PlatformClient {
   /** Create an order from the catalog authority (KEYLESS, public endpoint): no price
    *  fields, no account — the gateway resolves amount/currency centrally and derives
    *  the seller account from the catalog entry's developer.
-   *  opts.idempotencyKey: same semantics as createPayment. */
+   *  buyer must be the olares tier ({ kind: 'olares', olaresId, did }) — catalog
+   *  orders keep VC eligibility, other tiers are rejected here and by the gateway.
+   *  opts.returnUrl: post-payment redirect; opts.idempotencyKey: same semantics as createPayment. */
   async createOrderFromCatalog(
-    p: CreateOrderFromCatalogRequest,
-    opts?: { idempotencyKey?: string },
+    productId: string,
+    buyer: BuyerRef,
+    opts?: { returnUrl?: string; idempotencyKey?: string },
   ): Promise<CreatePaymentResult> {
-    const w = await this.sdk.callUnsigned<WireCreateResponse>('createOrderFromCatalog', createOrderFromCatalogRequestToWire(p), opts);
+    if (buyer.kind !== 'olares') {
+      throw new PaymentError(INVALID_ARGUMENT, 0, 'catalog orders require an olares-tier buyer (kind=olares, olaresId + did)');
+    }
+    const { returnUrl, idempotencyKey } = opts ?? {};
+    const w = await this.sdk.callUnsigned<WireCreateResponse>(
+      'createOrderFromCatalog',
+      createOrderFromCatalogRequestToWire(productId, buyer, returnUrl),
+      { idempotencyKey },
+    );
     return wireToCreateResult(w);
   }
 

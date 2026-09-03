@@ -482,8 +482,122 @@ export declare type PaymentAttemptJson = {
 export declare const PaymentAttemptSchema: GenMessage<PaymentAttempt, {jsonType: PaymentAttemptJson}>;
 
 /**
+ * 统一交易身份对象(wire 一级字段永不出现 olares_id;olares_id 只存在于 Party 内部)
+ * buyer/seller 复用;与 DB 快照 JSONB(payment_intents.buyer / seller,migration 019/020)逐字段同构:
+ *   olares 档    {"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."}
+ *   external 档  {"kind":"external","ref":"user-8817","display_name":"Alice","avatar_url":"https://..."}
+ *   匿名         键缺失(NULL 快照)
+ * kind 为显式判别字段,新档位零 proto 改动
+ *
+ * @generated from message payment.v1.Party
+ */
+export declare type Party = Message<"payment.v1.Party"> & {
+  /**
+   * "olares" | "external"(档位判别,镜像 DB 快照)
+   *
+   * @generated from field: string kind = 1;
+   */
+  kind: string;
+
+  /**
+   * olares 档:用户名
+   *
+   * @generated from field: optional string olaresId = 2 [json_name = "olares_id"];
+   */
+  olaresId?: string | undefined;
+
+  /**
+   * olares 档:DID 快照
+   *
+   * @generated from field: optional string did = 3;
+   */
+  did?: string | undefined;
+
+  /**
+   * external 档:调用方不透明标签(1..128)
+   *
+   * @generated from field: optional string ref = 4;
+   */
+  ref?: string | undefined;
+
+  /**
+   * external 档:展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 5 [json_name = "display_name"];
+   */
+  displayName?: string | undefined;
+
+  /**
+   * external 档:头像(绝对 https ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 6 [json_name = "avatar_url"];
+   */
+  avatarUrl?: string | undefined;
+};
+
+/**
+ * 统一交易身份对象(wire 一级字段永不出现 olares_id;olares_id 只存在于 Party 内部)
+ * buyer/seller 复用;与 DB 快照 JSONB(payment_intents.buyer / seller,migration 019/020)逐字段同构:
+ *   olares 档    {"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."}
+ *   external 档  {"kind":"external","ref":"user-8817","display_name":"Alice","avatar_url":"https://..."}
+ *   匿名         键缺失(NULL 快照)
+ * kind 为显式判别字段,新档位零 proto 改动
+ *
+ * @generated from message payment.v1.Party
+ */
+export declare type PartyJson = {
+  /**
+   * "olares" | "external"(档位判别,镜像 DB 快照)
+   *
+   * @generated from field: string kind = 1;
+   */
+  kind?: string;
+
+  /**
+   * olares 档:用户名
+   *
+   * @generated from field: optional string olaresId = 2 [json_name = "olares_id"];
+   */
+  olares_id?: string;
+
+  /**
+   * olares 档:DID 快照
+   *
+   * @generated from field: optional string did = 3;
+   */
+  did?: string;
+
+  /**
+   * external 档:调用方不透明标签(1..128)
+   *
+   * @generated from field: optional string ref = 4;
+   */
+  ref?: string;
+
+  /**
+   * external 档:展示名(≤64)
+   *
+   * @generated from field: optional string displayName = 5 [json_name = "display_name"];
+   */
+  display_name?: string;
+
+  /**
+   * external 档:头像(绝对 https ≤256)
+   *
+   * @generated from field: optional string avatarUrl = 6 [json_name = "avatar_url"];
+   */
+  avatar_url?: string;
+};
+
+/**
+ * Describes the message payment.v1.Party.
+ * Use `create(PartySchema)` to create a new message.
+ */
+export declare const PartySchema: GenMessage<Party, {jsonType: PartyJson}>;
+
+/**
  * 支付单(payment_intents 表):一次收款的完整状态机载体(对齐 Stripe PaymentIntent)
- * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","amount_cents":1000,"currency":"usd","settlement_currency":"usdc","settlement_amount":10000000,"status":"PAYMENT_STATUS_SUCCEEDED","metadata":{"product_id":"app-123"},"client_secret":"pi_18f3ab12cd34_secret_ab12...","latest_attempt":{...},"expires_at":"2026-08-06T12:00:00Z","canceled_at":null,"paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","updated_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"amount_cents":1000,"currency":"usd","settlement_currency":"usdc","settlement_amount":10000000,"status":"PAYMENT_STATUS_SUCCEEDED","metadata":{"product_id":"app-123"},"client_secret":"pi_18f3ab12cd34_secret_ab12...","latest_attempt":{...},"expires_at":"2026-08-06T12:00:00Z","canceled_at":null,"paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","updated_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentIntent
  */
@@ -501,13 +615,6 @@ export declare type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
    * @generated from field: string merchantAccountId = 2 [json_name = "merchant_account_id"];
    */
   merchantAccountId: string;
-
-  /**
-   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分),如 1000 = $10.00
@@ -608,23 +715,16 @@ export declare type PaymentIntent = Message<"payment.v1.PaymentIntent"> & {
   product?: ProductSnapshot | undefined;
 
   /**
-   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   * 买家快照(三档:olares/external/缺省=匿名;事后换绑不改老单)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 20;
    */
-  buyerExternal?: BuyerExternal | undefined;
-
-  /**
-   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
-   */
-  buyerDid?: string | undefined;
+  buyer?: Party | undefined;
 };
 
 /**
  * 支付单(payment_intents 表):一次收款的完整状态机载体(对齐 Stripe PaymentIntent)
- * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","amount_cents":1000,"currency":"usd","settlement_currency":"usdc","settlement_amount":10000000,"status":"PAYMENT_STATUS_SUCCEEDED","metadata":{"product_id":"app-123"},"client_secret":"pi_18f3ab12cd34_secret_ab12...","latest_attempt":{...},"expires_at":"2026-08-06T12:00:00Z","canceled_at":null,"paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","updated_at":"2026-08-05T12:30:00Z"}
+ * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"amount_cents":1000,"currency":"usd","settlement_currency":"usdc","settlement_amount":10000000,"status":"PAYMENT_STATUS_SUCCEEDED","metadata":{"product_id":"app-123"},"client_secret":"pi_18f3ab12cd34_secret_ab12...","latest_attempt":{...},"expires_at":"2026-08-06T12:00:00Z","canceled_at":null,"paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","updated_at":"2026-08-05T12:30:00Z"}
  *
  * @generated from message payment.v1.PaymentIntent
  */
@@ -642,13 +742,6 @@ export declare type PaymentIntentJson = {
    * @generated from field: string merchantAccountId = 2 [json_name = "merchant_account_id"];
    */
   merchant_account_id?: string;
-
-  /**
-   * 买家 Olares 用户名快照(创建时落库;可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
 
   /**
    * 金额(美分),如 1000 = $10.00
@@ -749,18 +842,11 @@ export declare type PaymentIntentJson = {
   product?: ProductSnapshotJson;
 
   /**
-   * 外部买家快照(external 档建单;与 buyer_olares_id 互斥)
+   * 买家快照(三档:olares/external/缺省=匿名;事后换绑不改老单)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 18 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 20;
    */
-  buyer_external?: BuyerExternalJson;
-
-  /**
-   * 买家 DID 快照(olares 档建单落库;事后换绑不改老单)
-   *
-   * @generated from field: optional string buyerDid = 19 [json_name = "buyer_did"];
-   */
-  buyer_did?: string;
+  buyer?: PartyJson;
 };
 
 /**
@@ -768,72 +854,6 @@ export declare type PaymentIntentJson = {
  * Use `create(PaymentIntentSchema)` to create a new message.
  */
 export declare const PaymentIntentSchema: GenMessage<PaymentIntent, {jsonType: PaymentIntentJson}>;
-
-/**
- * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
- * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
- * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
- *
- * @generated from message payment.v1.BuyerExternal
- */
-export declare type BuyerExternal = Message<"payment.v1.BuyerExternal"> & {
-  /**
-   * 调用方内部 userId(对账键,非空 ≤128)
-   *
-   * @generated from field: string ref = 1;
-   */
-  ref: string;
-
-  /**
-   * 调用方自愿披露的展示名(≤64)
-   *
-   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
-   */
-  displayName?: string | undefined;
-
-  /**
-   * 调用方自愿披露的头像(绝对 https URL ≤256)
-   *
-   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
-   */
-  avatarUrl?: string | undefined;
-};
-
-/**
- * 外部买家快照(payment_intents.buyer_external,external 档建单固化;裁决 3)
- * 不透明标签:网关不验证、不建身份/账户,仅供商户对账与 dashboard 展示
- * 示例(JSON): {"ref":"user-8817","display_name":"Alice Zhang","avatar_url":"https://cdn.example.com/a.png"}
- *
- * @generated from message payment.v1.BuyerExternal
- */
-export declare type BuyerExternalJson = {
-  /**
-   * 调用方内部 userId(对账键,非空 ≤128)
-   *
-   * @generated from field: string ref = 1;
-   */
-  ref?: string;
-
-  /**
-   * 调用方自愿披露的展示名(≤64)
-   *
-   * @generated from field: optional string displayName = 2 [json_name = "display_name"];
-   */
-  display_name?: string;
-
-  /**
-   * 调用方自愿披露的头像(绝对 https URL ≤256)
-   *
-   * @generated from field: optional string avatarUrl = 3 [json_name = "avatar_url"];
-   */
-  avatar_url?: string;
-};
-
-/**
- * Describes the message payment.v1.BuyerExternal.
- * Use `create(BuyerExternalSchema)` to create a new message.
- */
-export declare const BuyerExternalSchema: GenMessage<BuyerExternal, {jsonType: BuyerExternalJson}>;
 
 /**
  * 收银台可选的代币(onchain_tokens 派生 + 收款钱包)
@@ -984,8 +1004,8 @@ export declare type CheckoutTokenJson = {
 export declare const CheckoutTokenSchema: GenMessage<CheckoutToken, {jsonType: CheckoutTokenJson}>;
 
 /**
- * 收银台支付单视图(公开接口,不泄露敏感字段)
- * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","merchant_name":"My Store","seller_olares_id":"seller.olares.com","amount_cents":1000,"status":"PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD","tokens":[...],"latest_attempt":{...},"capabilities":[...]}
+ * 收银台支付单视图(公开接口,不泄露敏感字段;完整 buyer Party 下发——收银台是买家面向页面)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","merchant_name":"My Store","seller":{"kind":"olares","olares_id":"seller.olares.com","did":"did:olares:0x4d5e..."},"amount_cents":1000,"status":"PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD","tokens":[...],"latest_attempt":{...},"capabilities":[...]}
  *
  * @generated from message payment.v1.CheckoutIntent
  */
@@ -1005,18 +1025,11 @@ export declare type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
   merchantAccountId: string;
 
   /**
-   * 商户展示名
+   * 商户展示名(由 seller 名回退 accountId 派生)
    *
    * @generated from field: string merchantName = 3 [json_name = "merchant_name"];
    */
   merchantName: string;
-
-  /**
-   * 卖家 Olares 用户名
-   *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
-   */
-  sellerOlaresId: string;
 
   /**
    * 金额(美分)
@@ -1061,13 +1074,6 @@ export declare type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
   returnUrl?: string | undefined;
 
   /**
-   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
-   *
-   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
-
-  /**
    * 商品 ID(从 metadata 提取)
    *
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
@@ -1087,11 +1093,25 @@ export declare type CheckoutIntent = Message<"payment.v1.CheckoutIntent"> & {
    * @generated from field: optional string memo = 14;
    */
   memo?: string | undefined;
+
+  /**
+   * 买家快照(完整对象,三档;匿名缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 15;
+   */
+  buyer?: Party | undefined;
+
+  /**
+   * 卖家快照(建单冻结,olares 档;identity 缺失时缺省)
+   *
+   * @generated from field: optional payment.v1.Party seller = 16;
+   */
+  seller?: Party | undefined;
 };
 
 /**
- * 收银台支付单视图(公开接口,不泄露敏感字段)
- * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","merchant_name":"My Store","seller_olares_id":"seller.olares.com","amount_cents":1000,"status":"PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD","tokens":[...],"latest_attempt":{...},"capabilities":[...]}
+ * 收银台支付单视图(公开接口,不泄露敏感字段;完整 buyer Party 下发——收银台是买家面向页面)
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","merchant_name":"My Store","seller":{"kind":"olares","olares_id":"seller.olares.com","did":"did:olares:0x4d5e..."},"amount_cents":1000,"status":"PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD","tokens":[...],"latest_attempt":{...},"capabilities":[...]}
  *
  * @generated from message payment.v1.CheckoutIntent
  */
@@ -1111,18 +1131,11 @@ export declare type CheckoutIntentJson = {
   merchant_account_id?: string;
 
   /**
-   * 商户展示名
+   * 商户展示名(由 seller 名回退 accountId 派生)
    *
    * @generated from field: string merchantName = 3 [json_name = "merchant_name"];
    */
   merchant_name?: string;
-
-  /**
-   * 卖家 Olares 用户名
-   *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
-   */
-  seller_olares_id?: string;
 
   /**
    * 金额(美分)
@@ -1167,13 +1180,6 @@ export declare type CheckoutIntentJson = {
   return_url?: string;
 
   /**
-   * 买家 Olares 用户名(可空 = 匿名买家,13.7;有值时前端查 did-gate 解析 DID)
-   *
-   * @generated from field: optional string buyerOlaresId = 11 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
    * 商品 ID(从 metadata 提取)
    *
    * @generated from field: optional string productId = 12 [json_name = "product_id"];
@@ -1193,6 +1199,20 @@ export declare type CheckoutIntentJson = {
    * @generated from field: optional string memo = 14;
    */
   memo?: string;
+
+  /**
+   * 买家快照(完整对象,三档;匿名缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 15;
+   */
+  buyer?: PartyJson;
+
+  /**
+   * 卖家快照(建单冻结,olares 档;identity 缺失时缺省)
+   *
+   * @generated from field: optional payment.v1.Party seller = 16;
+   */
+  seller?: PartyJson;
 };
 
 /**
@@ -1351,7 +1371,7 @@ export declare const ProductSnapshotSchema: GenMessage<ProductSnapshot, {jsonTyp
 
 /**
  * 支付单摘要(商户后台交易列表条目)
- * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","amount_cents":1000,"currency":"usd","status":"PAYMENT_STATUS_SUCCEEDED","paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","product":{...ProductSnapshot...},"tx_hash":"0x9f3c..."}
+ * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"external","ref":"user-8817"},"amount_cents":1000,"currency":"usd","status":"PAYMENT_STATUS_SUCCEEDED","paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","product":{...ProductSnapshot...},"tx_hash":"0x9f3c..."}
  *
  * @generated from message payment.v1.PaymentIntentSummary
  */
@@ -1369,13 +1389,6 @@ export declare type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSumm
    * @generated from field: string merchantAccountId = 2 [json_name = "merchant_account_id"];
    */
   merchantAccountId: string;
-
-  /**
-   * 买家用户名(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
 
   /**
    * 金额(美分)
@@ -1427,16 +1440,16 @@ export declare type PaymentIntentSummary = Message<"payment.v1.PaymentIntentSumm
   txHash?: string | undefined;
 
   /**
-   * 外部买家快照(external 档建单;列表无需 did)
+   * 买家快照(三档;匿名缺省)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 12;
    */
-  buyerExternal?: BuyerExternal | undefined;
+  buyer?: Party | undefined;
 };
 
 /**
  * 支付单摘要(商户后台交易列表条目)
- * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer_olares_id":"bob.olares.com","amount_cents":1000,"currency":"usd","status":"PAYMENT_STATUS_SUCCEEDED","paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","product":{...ProductSnapshot...},"tx_hash":"0x9f3c..."}
+ * 示例(JSON): {"id":"pi_18f3ab12cd34","merchant_account_id":"acct_x8y9...","buyer":{"kind":"external","ref":"user-8817"},"amount_cents":1000,"currency":"usd","status":"PAYMENT_STATUS_SUCCEEDED","paid_at":"2026-08-05T12:30:00Z","created_at":"2026-08-05T12:00:00Z","product":{...ProductSnapshot...},"tx_hash":"0x9f3c..."}
  *
  * @generated from message payment.v1.PaymentIntentSummary
  */
@@ -1454,13 +1467,6 @@ export declare type PaymentIntentSummaryJson = {
    * @generated from field: string merchantAccountId = 2 [json_name = "merchant_account_id"];
    */
   merchant_account_id?: string;
-
-  /**
-   * 买家用户名(可空 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
 
   /**
    * 金额(美分)
@@ -1512,11 +1518,11 @@ export declare type PaymentIntentSummaryJson = {
   tx_hash?: string;
 
   /**
-   * 外部买家快照(external 档建单;列表无需 did)
+   * 买家快照(三档;匿名缺省)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 11 [json_name = "buyer_external"];
+   * @generated from field: optional payment.v1.Party buyer = 12;
    */
-  buyer_external?: BuyerExternalJson;
+  buyer?: PartyJson;
 };
 
 /**

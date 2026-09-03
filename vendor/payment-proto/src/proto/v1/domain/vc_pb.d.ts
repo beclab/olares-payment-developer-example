@@ -5,6 +5,7 @@
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
 import type { StructJson, Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
+import type { Party, PartyJson } from "./payment_pb";
 
 /**
  * Describes the file v1/domain/vc.proto.
@@ -125,7 +126,7 @@ export declare const VcApplicationSchemaRespSchema: GenMessage<VcApplicationSche
 
 /**
  * Exchange a buyer-signed VC application JWS for an issued credential.
- * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer_olares_id":"bob.olares.com","intent_id":"pi_xxx"}
+ * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_xxx"}
  *
  * @generated from message payment.v1.VcRequestReq
  */
@@ -145,23 +146,23 @@ export declare type VcRequestReq = Message<"payment.v1.VcRequestReq"> & {
   productId: string;
 
   /**
-   * must pair with the intent snapshot
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId: string;
-
-  /**
    * paid intent (idempotency key)
    *
    * @generated from field: string intentId = 4 [json_name = "intent_id"];
    */
   intentId: string;
+
+  /**
+   * must pair with the intent snapshot (olares tier: id + did)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 5;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
  * Exchange a buyer-signed VC application JWS for an issued credential.
- * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer_olares_id":"bob.olares.com","intent_id":"pi_xxx"}
+ * Example (JSON): {"jws":"eyJ...","product_id":"notes-pro","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_xxx"}
  *
  * @generated from message payment.v1.VcRequestReq
  */
@@ -181,18 +182,18 @@ export declare type VcRequestReqJson = {
   product_id?: string;
 
   /**
-   * must pair with the intent snapshot
-   *
-   * @generated from field: string buyerOlaresId = 3 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
    * paid intent (idempotency key)
    *
    * @generated from field: string intentId = 4 [json_name = "intent_id"];
    */
   intent_id?: string;
+
+  /**
+   * must pair with the intent snapshot (olares tier: id + did)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 5;
+   */
+  buyer?: PartyJson;
 };
 
 /**
@@ -202,7 +203,7 @@ export declare type VcRequestReqJson = {
 export declare const VcRequestReqSchema: GenMessage<VcRequestReq, {jsonType: VcRequestReqJson}>;
 
 /**
- * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com"}
+ * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller":{"kind":"olares","olares_id":"alice.olares.com","did":"did:olares:0x4d5e..."}}
  *
  * @generated from message payment.v1.VcRequestResp
  */
@@ -229,15 +230,15 @@ export declare type VcRequestResp = Message<"payment.v1.VcRequestResp"> & {
   intentId: string;
 
   /**
-   * seller Olares handle (issuer owner)
+   * seller snapshot (frozen at order creation, issuer owner)
    *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
+   * @generated from field: optional payment.v1.Party seller = 5;
    */
-  sellerOlaresId: string;
+  seller?: Party | undefined;
 };
 
 /**
- * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com"}
+ * Example (JSON): {"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller":{"kind":"olares","olares_id":"alice.olares.com","did":"did:olares:0x4d5e..."}}
  *
  * @generated from message payment.v1.VcRequestResp
  */
@@ -264,11 +265,11 @@ export declare type VcRequestRespJson = {
   intent_id?: string;
 
   /**
-   * seller Olares handle (issuer owner)
+   * seller snapshot (frozen at order creation, issuer owner)
    *
-   * @generated from field: string sellerOlaresId = 4 [json_name = "seller_olares_id"];
+   * @generated from field: optional payment.v1.Party seller = 5;
    */
-  seller_olares_id?: string;
+  seller?: PartyJson;
 };
 
 /**
@@ -281,7 +282,7 @@ export declare const VcRequestRespSchema: GenMessage<VcRequestResp, {jsonType: V
  * Recovery lookup by (buyer, product) — the one thing a market can still name
  * after losing its local ledger (the intent id lived in the lost record).
  * Facts only, never a verdict: an unknown pair returns found=false, not an error.
- * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com","issued_at":"2026-08-22T03:00:00Z"}
+ * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","buyer":{"kind":"olares","olares_id":"bob.olares.com"},"seller":{"kind":"olares","olares_id":"alice.olares.com"},"issued_at":"2026-08-22T03:00:00Z"}
  *
  * @generated from message payment.v1.IssuedCredentialView
  */
@@ -322,32 +323,32 @@ export declare type IssuedCredentialView = Message<"payment.v1.IssuedCredentialV
   productId: string;
 
   /**
-   * echoed buyer (normalized dot spelling)
-   *
-   * @generated from field: string buyerOlaresId = 6 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId: string;
-
-  /**
-   * seller Olares handle (issuer owner)
-   *
-   * @generated from field: string sellerOlaresId = 7 [json_name = "seller_olares_id"];
-   */
-  sellerOlaresId: string;
-
-  /**
    * issuance time (absent when not found)
    *
    * @generated from field: optional google.protobuf.Timestamp issuedAt = 8 [json_name = "issued_at"];
    */
   issuedAt?: Timestamp | undefined;
+
+  /**
+   * echoed buyer (normalized dot spelling, olares tier)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 9;
+   */
+  buyer?: Party | undefined;
+
+  /**
+   * seller snapshot via row.intentId → intent.seller (issuer owner)
+   *
+   * @generated from field: optional payment.v1.Party seller = 10;
+   */
+  seller?: Party | undefined;
 };
 
 /**
  * Recovery lookup by (buyer, product) — the one thing a market can still name
  * after losing its local ledger (the intent id lived in the lost record).
  * Facts only, never a verdict: an unknown pair returns found=false, not an error.
- * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","seller_olares_id":"alice.olares.com","issued_at":"2026-08-22T03:00:00Z"}
+ * Example (JSON): {"found":true,"vc":{...},"vc_jwt":"eyJ...","intent_id":"pi_xxx","buyer":{"kind":"olares","olares_id":"bob.olares.com"},"seller":{"kind":"olares","olares_id":"alice.olares.com"},"issued_at":"2026-08-22T03:00:00Z"}
  *
  * @generated from message payment.v1.IssuedCredentialView
  */
@@ -388,25 +389,25 @@ export declare type IssuedCredentialViewJson = {
   product_id?: string;
 
   /**
-   * echoed buyer (normalized dot spelling)
-   *
-   * @generated from field: string buyerOlaresId = 6 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
-   * seller Olares handle (issuer owner)
-   *
-   * @generated from field: string sellerOlaresId = 7 [json_name = "seller_olares_id"];
-   */
-  seller_olares_id?: string;
-
-  /**
    * issuance time (absent when not found)
    *
    * @generated from field: optional google.protobuf.Timestamp issuedAt = 8 [json_name = "issued_at"];
    */
   issued_at?: TimestampJson;
+
+  /**
+   * echoed buyer (normalized dot spelling, olares tier)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 9;
+   */
+  buyer?: PartyJson;
+
+  /**
+   * seller snapshot via row.intentId → intent.seller (issuer owner)
+   *
+   * @generated from field: optional payment.v1.Party seller = 10;
+   */
+  seller?: PartyJson;
 };
 
 /**

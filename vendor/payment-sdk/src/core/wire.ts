@@ -20,6 +20,7 @@ import type {
   ListChannelsResponseJson,
   ListPaymentsResponseJson,
   ListReceiveWalletTransactionsResponseJson,
+  PartyJson,
   PaymentCallbackCredentialJson,
   PaymentCallbackJson,
   PaymentIntentJson,
@@ -31,6 +32,7 @@ import type {
 } from '@olares/payment-proto';
 
 export type WireLatestAttempt = LatestAttemptJson;
+export type WireParty = PartyJson;
 export type WirePayment = PaymentIntentJson;
 export type WireCreateResponse = CreatePaymentResponseJson;
 export type WireListPaymentsResponse = ListPaymentsResponseJson;

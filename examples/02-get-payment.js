@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MerchantClient } from '@olares/payment-sdk';
 import { CONFIG } from '../config.js';
-import { formatToken } from '../format.js';
+import { formatBuyer, formatToken } from '../format.js';
 
 const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY || CONFIG.apiKey,
@@ -26,6 +26,7 @@ const result = await client.getPayment(paymentId);
 console.log('getPayment');
 console.log('  paymentId    ', result.payment.paymentId);
 console.log('  status       ', result.payment.status);
+console.log('  buyer        ', formatBuyer(result.payment.buyer));
 console.log('  paid         ', result.paid);
 if (result.paid) {
   console.log('  txHash       ', result.credential.txHash);

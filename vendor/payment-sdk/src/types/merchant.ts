@@ -5,7 +5,7 @@
  * The platform key is rejected by the gateway on these endpoints, so these types
  * do not belong to the shared layer (./base).
  */
-import type { ChainSlug, ChainType, Direction, ReceiveWalletTxStatus, Timestamp } from './base';
+import type { BuyerRef, ChainSlug, ChainType, Direction, ReceiveWalletTxStatus, Timestamp } from './base';
 
 // ---------- Resources (read) ----------
 
@@ -85,8 +85,8 @@ export interface ReceiveWalletTransactionItem {
   receiveWalletAddress: string;
   /** Required for human-readable amounts; null for unregistered tokens. */
   decimals: number | null;
-  /** Who paid (backfilled via payment snapshot); null when unmatched. */
-  payerOlaresId: string | null;
+  /** Who paid (backfilled via the intent's buyer snapshot, three tiers); null when unmatched/anonymous. */
+  buyer: BuyerRef | null;
   paymentId: string | null;
   paymentStatus: string | null;
   /** Linked payment's metadata (order/product identity); null when unmatched or meta absent. */

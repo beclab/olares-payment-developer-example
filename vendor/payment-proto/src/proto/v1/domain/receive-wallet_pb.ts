@@ -4,7 +4,7 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { ChainType, ChainTypeJson, Channel, ChannelJson } from "./payment_pb";
+import type { ChainType, ChainTypeJson, Channel, ChannelJson, Party, PartyJson } from "./payment_pb";
 import { file_v1_domain_payment } from "./payment_pb";
 import type { StructJson } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct } from "@bufbuild/protobuf/wkt";
@@ -14,7 +14,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file v1/domain/receive-wallet.proto.
  */
 export const file_v1_domain_receive_wallet: GenFile = /*@__PURE__*/
-  fileDesc("Ch52MS9kb21haW4vcmVjZWl2ZS13YWxsZXQucHJvdG8SCnBheW1lbnQudjEilwEKDVJlY2VpdmVXYWxsZXQSDQoFY2hhaW4YASABKAkSNAoJY2hhaW5UeXBlGAIgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSIgoJbmV0d29ya0lkGAMgASgFSABSCm5ldHdvcmtfaWSIAQESDwoHYWRkcmVzcxgEIAEoCUIMCgpfbmV0d29ya0lkIogBCgtDaGFubmVsSW5mbxIkCgdjaGFubmVsGAEgASgOMhMucGF5bWVudC52MS5DaGFubmVsEg8KB2VuYWJsZWQYAiABKAgSQgoOcmVjZWl2ZVdhbGxldHMYAyADKAsyGS5wYXltZW50LnYxLlJlY2VpdmVXYWxsZXRSD3JlY2VpdmVfd2FsbGV0cyK0CAocUmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uSXRlbRIXCgZ0eEhhc2gYASABKAlSB3R4X2hhc2gSDQoFY2hhaW4YAiABKAkSNAoJY2hhaW5UeXBlGAMgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSIgoJbmV0d29ya0lkGAQgASgFSABSCm5ldHdvcmtfaWSIAQESEQoJZGlyZWN0aW9uGAUgASgJEiYKC2Zyb21BZGRyZXNzGAYgASgJSAFSDGZyb21fYWRkcmVzc4gBARIiCgl0b0FkZHJlc3MYByABKAlIAlIKdG9fYWRkcmVzc4gBARITCgZhbW91bnQYCCABKAlIA4gBARITCgZzeW1ib2wYCSABKAlIBIgBARIuCg9jb250cmFjdEFkZHJlc3MYCiABKAlIBVIQY29udHJhY3RfYWRkcmVzc4gBARIaCgV0eEZlZRgLIAEoCUgGUgZ0eF9mZWWIAQESLAoOYmxvY2tUaW1lc3RhbXAYDCABKAVIB1IPYmxvY2tfdGltZXN0YW1wiAEBEiIKCWJsb2NrVGltZRgUIAEoCUgIUgpibG9ja190aW1liAEBEiEKC2Jsb2NrTnVtYmVyGA0gASgFUgxibG9ja19udW1iZXISDgoGc3RhdHVzGA4gASgJEjQKFHJlY2VpdmVXYWxsZXRBZGRyZXNzGA8gASgJUhZyZWNlaXZlX3dhbGxldF9hZGRyZXNzEhUKCGRlY2ltYWxzGBAgASgFSAmIAQESKwoNcGF5ZXJPbGFyZXNJZBgRIAEoCUgKUg9wYXllcl9vbGFyZXNfaWSIAQESIAoIaW50ZW50SWQYEiABKAlIC1IJaW50ZW50X2lkiAEBEigKDGludGVudFN0YXR1cxgTIAEoCUgMUg1pbnRlbnRfc3RhdHVziAEBEkAKDmludGVudE1ldGFkYXRhGBUgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdFIPaW50ZW50X21ldGFkYXRhEiAKCGxvZ0luZGV4GBYgASgFSA1SCWxvZ19pbmRleIgBARI3CgdyYXdEYXRhGBcgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdEgOUghyYXdfZGF0YYgBAUIMCgpfbmV0d29ya0lkQg4KDF9mcm9tQWRkcmVzc0IMCgpfdG9BZGRyZXNzQgkKB19hbW91bnRCCQoHX3N5bWJvbEISChBfY29udHJhY3RBZGRyZXNzQggKBl90eEZlZUIRCg9fYmxvY2tUaW1lc3RhbXBCDAoKX2Jsb2NrVGltZUILCglfZGVjaW1hbHNCEAoOX3BheWVyT2xhcmVzSWRCCwoJX2ludGVudElkQg8KDV9pbnRlbnRTdGF0dXNCCwoJX2xvZ0luZGV4QgoKCF9yYXdEYXRhIqkECg5XYWxsZXRBc3NldFJvdxIlCg13YWxsZXRBZGRyZXNzGAEgASgJUg53YWxsZXRfYWRkcmVzcxINCgVjaGFpbhgCIAEoCRI0CgljaGFpblR5cGUYAyABKA4yFS5wYXltZW50LnYxLkNoYWluVHlwZVIKY2hhaW5fdHlwZRIiCgluZXR3b3JrSWQYBCABKAVIAFIKbmV0d29ya19pZIgBARIOCgZzeW1ib2wYBSABKAkSIgoJdG9rZW5OYW1lGAYgASgJSAFSCnRva2VuX25hbWWIAQESFQoIZGVjaW1hbHMYByABKAVIAogBARIuCg9jb250cmFjdEFkZHJlc3MYCCABKAlIA1IQY29udHJhY3RfYWRkcmVzc4gBARIPCgdiYWxhbmNlGAkgASgJEiAKCHByaWNlVXNkGAogASgBSARSCXByaWNlX3VzZIgBARIpCgxjaGFuZ2UyNGhQY3QYCyABKAFIBVIOY2hhbmdlXzI0aF9wY3SIAQESIAoIdXNkVmFsdWUYDCABKAFIBlIJdXNkX3ZhbHVliAEBEhYKCXRodW1ibmFpbBgNIAEoCUgHiAEBQgwKCl9uZXR3b3JrSWRCDAoKX3Rva2VuTmFtZUILCglfZGVjaW1hbHNCEgoQX2NvbnRyYWN0QWRkcmVzc0ILCglfcHJpY2VVc2RCDwoNX2NoYW5nZTI0aFBjdEILCglfdXNkVmFsdWVCDAoKX3RodW1ibmFpbGIGcHJvdG8z", [file_v1_domain_payment, file_google_protobuf_struct]);
+  fileDesc("Ch52MS9kb21haW4vcmVjZWl2ZS13YWxsZXQucHJvdG8SCnBheW1lbnQudjEilwEKDVJlY2VpdmVXYWxsZXQSDQoFY2hhaW4YASABKAkSNAoJY2hhaW5UeXBlGAIgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSIgoJbmV0d29ya0lkGAMgASgFSABSCm5ldHdvcmtfaWSIAQESDwoHYWRkcmVzcxgEIAEoCUIMCgpfbmV0d29ya0lkIogBCgtDaGFubmVsSW5mbxIkCgdjaGFubmVsGAEgASgOMhMucGF5bWVudC52MS5DaGFubmVsEg8KB2VuYWJsZWQYAiABKAgSQgoOcmVjZWl2ZVdhbGxldHMYAyADKAsyGS5wYXltZW50LnYxLlJlY2VpdmVXYWxsZXRSD3JlY2VpdmVfd2FsbGV0cyKmCAocUmVjZWl2ZVdhbGxldFRyYW5zYWN0aW9uSXRlbRIXCgZ0eEhhc2gYASABKAlSB3R4X2hhc2gSDQoFY2hhaW4YAiABKAkSNAoJY2hhaW5UeXBlGAMgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSIgoJbmV0d29ya0lkGAQgASgFSABSCm5ldHdvcmtfaWSIAQESEQoJZGlyZWN0aW9uGAUgASgJEiYKC2Zyb21BZGRyZXNzGAYgASgJSAFSDGZyb21fYWRkcmVzc4gBARIiCgl0b0FkZHJlc3MYByABKAlIAlIKdG9fYWRkcmVzc4gBARITCgZhbW91bnQYCCABKAlIA4gBARITCgZzeW1ib2wYCSABKAlIBIgBARIuCg9jb250cmFjdEFkZHJlc3MYCiABKAlIBVIQY29udHJhY3RfYWRkcmVzc4gBARIaCgV0eEZlZRgLIAEoCUgGUgZ0eF9mZWWIAQESLAoOYmxvY2tUaW1lc3RhbXAYDCABKAVIB1IPYmxvY2tfdGltZXN0YW1wiAEBEiIKCWJsb2NrVGltZRgUIAEoCUgIUgpibG9ja190aW1liAEBEiEKC2Jsb2NrTnVtYmVyGA0gASgFUgxibG9ja19udW1iZXISDgoGc3RhdHVzGA4gASgJEjQKFHJlY2VpdmVXYWxsZXRBZGRyZXNzGA8gASgJUhZyZWNlaXZlX3dhbGxldF9hZGRyZXNzEhUKCGRlY2ltYWxzGBAgASgFSAmIAQESIAoIaW50ZW50SWQYEiABKAlIClIJaW50ZW50X2lkiAEBEigKDGludGVudFN0YXR1cxgTIAEoCUgLUg1pbnRlbnRfc3RhdHVziAEBEkAKDmludGVudE1ldGFkYXRhGBUgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdFIPaW50ZW50X21ldGFkYXRhEiAKCGxvZ0luZGV4GBYgASgFSAxSCWxvZ19pbmRleIgBARI3CgdyYXdEYXRhGBcgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdEgNUghyYXdfZGF0YYgBARIlCgVidXllchgYIAEoCzIRLnBheW1lbnQudjEuUGFydHlIDogBAUIMCgpfbmV0d29ya0lkQg4KDF9mcm9tQWRkcmVzc0IMCgpfdG9BZGRyZXNzQgkKB19hbW91bnRCCQoHX3N5bWJvbEISChBfY29udHJhY3RBZGRyZXNzQggKBl90eEZlZUIRCg9fYmxvY2tUaW1lc3RhbXBCDAoKX2Jsb2NrVGltZUILCglfZGVjaW1hbHNCCwoJX2ludGVudElkQg8KDV9pbnRlbnRTdGF0dXNCCwoJX2xvZ0luZGV4QgoKCF9yYXdEYXRhQggKBl9idXllciKpBAoOV2FsbGV0QXNzZXRSb3cSJQoNd2FsbGV0QWRkcmVzcxgBIAEoCVIOd2FsbGV0X2FkZHJlc3MSDQoFY2hhaW4YAiABKAkSNAoJY2hhaW5UeXBlGAMgASgOMhUucGF5bWVudC52MS5DaGFpblR5cGVSCmNoYWluX3R5cGUSIgoJbmV0d29ya0lkGAQgASgFSABSCm5ldHdvcmtfaWSIAQESDgoGc3ltYm9sGAUgASgJEiIKCXRva2VuTmFtZRgGIAEoCUgBUgp0b2tlbl9uYW1liAEBEhUKCGRlY2ltYWxzGAcgASgFSAKIAQESLgoPY29udHJhY3RBZGRyZXNzGAggASgJSANSEGNvbnRyYWN0X2FkZHJlc3OIAQESDwoHYmFsYW5jZRgJIAEoCRIgCghwcmljZVVzZBgKIAEoAUgEUglwcmljZV91c2SIAQESKQoMY2hhbmdlMjRoUGN0GAsgASgBSAVSDmNoYW5nZV8yNGhfcGN0iAEBEiAKCHVzZFZhbHVlGAwgASgBSAZSCXVzZF92YWx1ZYgBARIWCgl0aHVtYm5haWwYDSABKAlIB4gBAUIMCgpfbmV0d29ya0lkQgwKCl90b2tlbk5hbWVCCwoJX2RlY2ltYWxzQhIKEF9jb250cmFjdEFkZHJlc3NCCwoJX3ByaWNlVXNkQg8KDV9jaGFuZ2UyNGhQY3RCCwoJX3VzZFZhbHVlQgwKCl90aHVtYm5haWxiBnByb3RvMw", [file_v1_domain_payment, file_google_protobuf_struct]);
 
 /**
  * 收款渠道上的一个收款钱包(链上地址)
@@ -170,7 +170,7 @@ export const ChannelInfoSchema: GenMessage<ChannelInfo, {jsonType: ChannelInfoJs
 
 /**
  * 收款钱包链上流水(receive_wallet_transactions 表,worker 同步索引)
- * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"payer_olares_id":"bob.olares.com","intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
+ * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
  *
  * @generated from message payment.v1.ReceiveWalletTransactionItem
  */
@@ -303,13 +303,6 @@ export type ReceiveWalletTransactionItem = Message<"payment.v1.ReceiveWalletTran
   decimals?: number | undefined;
 
   /**
-   * 付款方用户名(按 tx_hash 命中回填)
-   *
-   * @generated from field: optional string payerOlaresId = 17 [json_name = "payer_olares_id"];
-   */
-  payerOlaresId?: string | undefined;
-
-  /**
    * 关联支付单 ID(命中时)
    *
    * @generated from field: optional string intentId = 18 [json_name = "intent_id"];
@@ -345,11 +338,18 @@ export type ReceiveWalletTransactionItem = Message<"payment.v1.ReceiveWalletTran
    * @generated from field: optional google.protobuf.Struct rawData = 23 [json_name = "raw_data"];
    */
   rawData?: JsonObject | undefined;
+
+  /**
+   * 买家快照(按 intent 命中回填,三档;匿名/未命中缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
  * 收款钱包链上流水(receive_wallet_transactions 表,worker 同步索引)
- * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"payer_olares_id":"bob.olares.com","intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
+ * 示例(JSON): {"tx_hash":"0x9f3c...","chain":"optimism","chain_type":"CHAIN_TYPE_EVM","network_id":10,"direction":"in","from_address":"0x1111...","to_address":"0xAbCd...","amount":"10000000","symbol":"USDC","contract_address":"0xA0b8...","tx_fee":"150000","block_timestamp":1754464800,"block_number":126543210,"status":"success","receive_wallet_address":"0xAbCd...","decimals":6,"buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"intent_id":"pi_18f3ab12cd34","intent_metadata":{"product_id":"app-123"},"intent_status":"PAYMENT_STATUS_SUCCEEDED"}
  *
  * @generated from message payment.v1.ReceiveWalletTransactionItem
  */
@@ -482,13 +482,6 @@ export type ReceiveWalletTransactionItemJson = {
   decimals?: number;
 
   /**
-   * 付款方用户名(按 tx_hash 命中回填)
-   *
-   * @generated from field: optional string payerOlaresId = 17 [json_name = "payer_olares_id"];
-   */
-  payer_olares_id?: string;
-
-  /**
    * 关联支付单 ID(命中时)
    *
    * @generated from field: optional string intentId = 18 [json_name = "intent_id"];
@@ -524,6 +517,13 @@ export type ReceiveWalletTransactionItemJson = {
    * @generated from field: optional google.protobuf.Struct rawData = 23 [json_name = "raw_data"];
    */
   raw_data?: StructJson;
+
+  /**
+   * 买家快照(按 intent 命中回填,三档;匿名/未命中缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: PartyJson;
 };
 
 /**

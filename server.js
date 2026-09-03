@@ -33,7 +33,8 @@ const merchant = new MerchantClient({
 const gatewayError = (err) =>
   err instanceof PaymentError ? `${err.code} ${err.message}` : String(err);
 
-/** createPayment — open a hosted checkout for this order. */
+/** createPayment — open a hosted checkout for this order.
+ *  buyer is the unified Party: { kind: 'external', ref, display } for shop nicknames. */
 async function createPayment(order) {
   order.paySeq = (order.paySeq || 0) + 1;
   const created = await merchant.createPayment(

@@ -154,11 +154,18 @@
         $('gateway-err').textContent = gate.error
           ? `Gateway list failed: ${gate.error}`
           : 'Same merchant key. Shop order id lives in payment metadata.';
+        const buyerLabel = (b) => {
+          if (!b) return '—';
+          if (b.kind === 'olares') return `${b.olaresId}<br><span class="muted mono">${b.did || ''}</span>`;
+          const name = b.display?.name;
+          return `${name || b.ref}<br><span class="muted mono">${b.ref}</span>`;
+        };
         $('gateway').innerHTML = table(
-          ['Payment', 'Shop order', 'Status', 'Amount', 'Paid at'],
+          ['Payment', 'Shop order', 'Buyer', 'Status', 'Amount', 'Paid at'],
           (gate.items || []).map((p) => [
             `<span class="mono">${p.paymentId}</span>`,
             `<span class="mono">${p.metadata?.order_id || '—'}</span>`,
+            buyerLabel(p.buyer),
             GATE[p.status] || p.status || '—',
             usd(p.amountCents || 0),
             p.paidAt || '—',

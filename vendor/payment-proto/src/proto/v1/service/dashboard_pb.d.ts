@@ -6,7 +6,7 @@ import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobu
 import type { Message } from "@bufbuild/protobuf";
 import type { Account, AccountJson, AccountSchema, AccountSummary, AccountSummaryJson, ApiKey, ApiKeyJson, ApiKeySchema, CheckoutSummary, CheckoutSummaryJson, CheckoutSummarySchema, Identity, IdentityJson, PaymentMethodConfig, PaymentMethodConfigJson, PaymentMethodConfigSchema, SupportedChain, SupportedChainJson } from "../domain/account_pb";
 import type { AppProductRow, AppProductRowJson, GithubBindingRow, GithubBindingRowJson, RsaEligibility, RsaEligibilityJson, RsaKeyRow, RsaKeyRowJson, RsaKeyRowSchema } from "../domain/developer-key_pb";
-import type { BuyerExternal, BuyerExternalJson, PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, PaymentStatus, PaymentStatusJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
+import type { Party, PartyJson, PaymentAttempt, PaymentAttemptJson, PaymentIntentSummary, PaymentIntentSummaryJson, PaymentStatus, PaymentStatusJson, ProductSnapshot, ProductSnapshotJson } from "../domain/payment_pb";
 import type { AuthCallbackResponseSchema, AuthPollResponseSchema, AuthRefreshResponseSchema, CreateSessionReqSchema, DeleteResponseSchema, SessionRespSchema, Token, TokenJson } from "../domain/common_pb";
 import type { ReceiveWalletTransactionItem, ReceiveWalletTransactionItemJson, WalletAssetRow, WalletAssetRowJson } from "../domain/receive-wallet_pb";
 import type { Timestamp, TimestampJson } from "@bufbuild/protobuf/wkt";
@@ -1532,8 +1532,9 @@ export declare const ListTransactionsReqSchema: GenMessage<ListTransactionsReq, 
  * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
  * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
  * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
- * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
- * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
+ * 直转行 from/to = 链上原始收付双方(buyer 列显示 from:out=自己钱包,in=对方付款人);订单行 payer_address = 结算流水付款地址
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","from_address":"0xAbCd...","to_address":"0x2805..."}
  *
  * @generated from message payment.v1.TransactionItem
  */
@@ -1595,13 +1596,6 @@ export declare type TransactionItem = Message<"payment.v1.TransactionItem"> & {
   currency?: string | undefined;
 
   /**
-   * 买家用户名(缺省 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
-   */
-  buyerOlaresId?: string | undefined;
-
-  /**
    * 有值 = 市场徽章
    *
    * @generated from field: optional payment.v1.ProductSnapshot product = 10;
@@ -1637,13 +1631,6 @@ export declare type TransactionItem = Message<"payment.v1.TransactionItem"> & {
   symbol?: string | undefined;
 
   /**
-   * 直转行对方地址(in=from/out=to)
-   *
-   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
-   */
-  counterpartyAddress?: string | undefined;
-
-  /**
    * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
    *
    * @generated from field: optional string payer = 16;
@@ -1665,18 +1652,39 @@ export declare type TransactionItem = Message<"payment.v1.TransactionItem"> & {
   assetKind?: TransactionAssetKind | undefined;
 
   /**
-   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   * 直转行 OLRP 载荷检测;订单行 = 结算流水标记(Olares Pay 徽章)
    *
    * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
    */
   isOlaresPay?: boolean | undefined;
 
   /**
-   * 外部买家快照(external 档订单;直转行缺省)
+   * 直转行付款地址(out=自己钱包,in=对方;buyer 显示 SSOT)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   * @generated from field: optional string fromAddress = 21 [json_name = "from_address"];
    */
-  buyerExternal?: BuyerExternal | undefined;
+  fromAddress?: string | undefined;
+
+  /**
+   * 直转行收款地址(out=对方)
+   *
+   * @generated from field: optional string toAddress = 22 [json_name = "to_address"];
+   */
+  toAddress?: string | undefined;
+
+  /**
+   * 订单行结算流水付款地址(匿名买家的链上线索);直转行缺省
+   *
+   * @generated from field: optional string payerAddress = 23 [json_name = "payer_address"];
+   */
+  payerAddress?: string | undefined;
+
+  /**
+   * 买家快照(订单行,三档;匿名/直转行缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: Party | undefined;
 };
 
 /**
@@ -1684,8 +1692,9 @@ export declare type TransactionItem = Message<"payment.v1.TransactionItem"> & {
  * 排序键 occurred_at DESC, id DESC;订单腿已支付时经 intent_id 关联带出结算流水字段
  * (tx_hash/chain/amount/symbol),未支付订单这些字段缺省、UI 回退法币计价显示;
  * 订单行类型 = origin(创建时打标),直转行类型 = 兜底(关联不上),细分 asset_kind + is_olares_pay
- * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer_olares_id":"bob.olares.com","product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
- * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","counterparty_address":"0xAbCd..."}
+ * 直转行 from/to = 链上原始收付双方(buyer 列显示 from:out=自己钱包,in=对方付款人);订单行 payer_address = 结算流水付款地址
+ * 示例(JSON 订单): {"id":"pi_18f3ab12cd34","source":"TRANSACTION_SOURCE_ORDER","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","status":"PAYMENT_STATUS_SUCCEEDED","amount_cents":1000,"currency":"usd","buyer":{"kind":"olares","olares_id":"bob.olares.com","did":"did:olares:0x1a2b..."},"product":{...},"tx_hash":"0x9f3c...","chain":"optimism","amount":"10","symbol":"USDC"}
+ * 示例(JSON 直转): {"id":"123","source":"TRANSACTION_SOURCE_DIRECT","direction":"TRANSACTION_DIRECTION_IN","occurred_at":"2026-08-05T12:00:00Z","account_id":"acct_x8y9...","tx_hash":"0x9f3c...","chain":"optimism","amount":"10000000","symbol":"USDC","from_address":"0xAbCd...","to_address":"0x2805..."}
  *
  * @generated from message payment.v1.TransactionItem
  */
@@ -1747,13 +1756,6 @@ export declare type TransactionItemJson = {
   currency?: string;
 
   /**
-   * 买家用户名(缺省 = 匿名买家,13.7)
-   *
-   * @generated from field: optional string buyerOlaresId = 9 [json_name = "buyer_olares_id"];
-   */
-  buyer_olares_id?: string;
-
-  /**
    * 有值 = 市场徽章
    *
    * @generated from field: optional payment.v1.ProductSnapshot product = 10;
@@ -1789,13 +1791,6 @@ export declare type TransactionItemJson = {
   symbol?: string;
 
   /**
-   * 直转行对方地址(in=from/out=to)
-   *
-   * @generated from field: optional string counterpartyAddress = 15 [json_name = "counterparty_address"];
-   */
-  counterparty_address?: string;
-
-  /**
    * 付款人标注(订单行,商户建 invoice 时写;直转行缺省)
    *
    * @generated from field: optional string payer = 16;
@@ -1817,18 +1812,39 @@ export declare type TransactionItemJson = {
   asset_kind?: TransactionAssetKindJson;
 
   /**
-   * 直转行 OLRP 载荷标记(Olares Pay 徽章)
+   * 直转行 OLRP 载荷检测;订单行 = 结算流水标记(Olares Pay 徽章)
    *
    * @generated from field: optional bool isOlaresPay = 19 [json_name = "is_olares_pay"];
    */
   is_olares_pay?: boolean;
 
   /**
-   * 外部买家快照(external 档订单;直转行缺省)
+   * 直转行付款地址(out=自己钱包,in=对方;buyer 显示 SSOT)
    *
-   * @generated from field: optional payment.v1.BuyerExternal buyerExternal = 20 [json_name = "buyer_external"];
+   * @generated from field: optional string fromAddress = 21 [json_name = "from_address"];
    */
-  buyer_external?: BuyerExternalJson;
+  from_address?: string;
+
+  /**
+   * 直转行收款地址(out=对方)
+   *
+   * @generated from field: optional string toAddress = 22 [json_name = "to_address"];
+   */
+  to_address?: string;
+
+  /**
+   * 订单行结算流水付款地址(匿名买家的链上线索);直转行缺省
+   *
+   * @generated from field: optional string payerAddress = 23 [json_name = "payer_address"];
+   */
+  payer_address?: string;
+
+  /**
+   * 买家快照(订单行,三档;匿名/直转行缺省)
+   *
+   * @generated from field: optional payment.v1.Party buyer = 24;
+   */
+  buyer?: PartyJson;
 };
 
 /**

@@ -220,6 +220,114 @@ export declare type SubmitTxResponseJson = {
 export declare const SubmitTxResponseSchema: GenMessage<SubmitTxResponse, {jsonType: SubmitTxResponseJson}>;
 
 /**
+ * 单链余额:client_secret 鉴权后,用该链 rpc_url 做一次 eth_call balanceOf。一条请求 = 一条链,
+ * 不聚合、不回传 RPC URL。前端并发与按行重试保持原样。
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","client_secret":"...","address":"0xabc...","chain_network_id":"10","contract_address":"0x0b2c6..."}
+ *
+ * @generated from message payment.v1.BalanceReq
+ */
+export declare type BalanceReq = Message<"payment.v1.BalanceReq"> & {
+  /**
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intentId: string;
+
+  /**
+   * @generated from field: string clientSecret = 2 [json_name = "client_secret"];
+   */
+  clientSecret: string;
+
+  /**
+   * 买家钱包
+   *
+   * @generated from field: string address = 3;
+   */
+  address: string;
+
+  /**
+   * @generated from field: string chainNetworkId = 4 [json_name = "chain_network_id"];
+   */
+  chainNetworkId: string;
+
+  /**
+   * @generated from field: string contractAddress = 5 [json_name = "contract_address"];
+   */
+  contractAddress: string;
+};
+
+/**
+ * 单链余额:client_secret 鉴权后,用该链 rpc_url 做一次 eth_call balanceOf。一条请求 = 一条链,
+ * 不聚合、不回传 RPC URL。前端并发与按行重试保持原样。
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","client_secret":"...","address":"0xabc...","chain_network_id":"10","contract_address":"0x0b2c6..."}
+ *
+ * @generated from message payment.v1.BalanceReq
+ */
+export declare type BalanceReqJson = {
+  /**
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intent_id?: string;
+
+  /**
+   * @generated from field: string clientSecret = 2 [json_name = "client_secret"];
+   */
+  client_secret?: string;
+
+  /**
+   * 买家钱包
+   *
+   * @generated from field: string address = 3;
+   */
+  address?: string;
+
+  /**
+   * @generated from field: string chainNetworkId = 4 [json_name = "chain_network_id"];
+   */
+  chain_network_id?: string;
+
+  /**
+   * @generated from field: string contractAddress = 5 [json_name = "contract_address"];
+   */
+  contract_address?: string;
+};
+
+/**
+ * Describes the message payment.v1.BalanceReq.
+ * Use `create(BalanceReqSchema)` to create a new message.
+ */
+export declare const BalanceReqSchema: GenMessage<BalanceReq, {jsonType: BalanceReqJson}>;
+
+/**
+ * @generated from message payment.v1.BalanceResponse
+ */
+export declare type BalanceResponse = Message<"payment.v1.BalanceResponse"> & {
+  /**
+   * 最小单位十进制字符串
+   *
+   * @generated from field: string balance = 1;
+   */
+  balance: string;
+};
+
+/**
+ * @generated from message payment.v1.BalanceResponse
+ */
+export declare type BalanceResponseJson = {
+  /**
+   * 最小单位十进制字符串
+   *
+   * @generated from field: string balance = 1;
+   */
+  balance?: string;
+};
+
+/**
+ * Describes the message payment.v1.BalanceResponse.
+ * Use `create(BalanceResponseSchema)` to create a new message.
+ */
+export declare const BalanceResponseSchema: GenMessage<BalanceResponse, {jsonType: BalanceResponseJson}>;
+
+/**
  * 公开店页元信息请求(path store_slug;按 slug 定位 checkout,不暴露 account_id)
  * 示例(JSON): {"store_slug":"bob.olares.com"}
  *
@@ -434,8 +542,8 @@ export declare type PayStoreResponseJson = {
 export declare const PayStoreResponseSchema: GenMessage<PayStoreResponse, {jsonType: PayStoreResponseJson}>;
 
 /**
- * CheckoutService is the checkout process (/checkout/* public cashier), 4 rpc.
- * 收银台公开接口(无 HMAC;GetIntent/Confirm 凭 intent_id + client_secret,
+ * CheckoutService is the checkout process (/checkout/* public cashier), 5 rpc.
+ * 收银台公开接口(无 HMAC;GetIntent/Confirm/GetBalance 凭 intent_id + client_secret,
  * GetCheckout/PayCheckout 为 P1b 公开店页 @Public 骨架,实现在 B5)
  *
  * @generated from service payment.v1.CheckoutService
@@ -460,6 +568,16 @@ export declare const CheckoutService: GenService<{
     methodKind: "unary";
     input: typeof ConfirmReqSchema;
     output: typeof SubmitTxResponseSchema;
+  },
+  /**
+   * 单链 ERC-20 余额(鉴权后转发 eth_call,不聚合)
+   *
+   * @generated from rpc payment.v1.CheckoutService.GetBalance
+   */
+  getBalance: {
+    methodKind: "unary";
+    input: typeof BalanceReqSchema;
+    output: typeof BalanceResponseSchema;
   },
   /**
    * 公开店页元信息(GET /checkout/c/:store_slug)

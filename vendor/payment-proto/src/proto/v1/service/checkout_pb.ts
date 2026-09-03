@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file v1/service/checkout.proto.
  */
 export const file_v1_service_checkout: GenFile = /*@__PURE__*/
-  fileDesc("Chl2MS9zZXJ2aWNlL2NoZWNrb3V0LnByb3RvEgpwYXltZW50LnYxIk0KCUludGVudFJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldCLFAQoKQ29uZmlybVJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldBIXCgZ0eEhhc2gYAyABKAlSB3R4X2hhc2gSKAoOY2hhaW5OZXR3b3JrSWQYBCABKAlSEGNoYWluX25ldHdvcmtfaWQSIQoLdG9rZW5TeW1ib2wYBSABKAlSDHRva2VuX3N5bWJvbBIPCgdjaGFubmVsGAYgASgJImoKEFN1Ym1pdFR4UmVzcG9uc2USKwoHYXR0ZW1wdBgBIAEoCzIaLnBheW1lbnQudjEuUGF5bWVudEF0dGVtcHQSKQoGaW50ZW50GAIgASgLMhkucGF5bWVudC52MS5QYXltZW50SW50ZW50IikKCFN0b3JlUmVxEh0KCXN0b3JlU2x1ZxgBIAEoCVIKc3RvcmVfc2x1ZyIrCgtQdWJsaWNTdG9yZRIMCgRuYW1lGAEgASgJEg4KBmFjdGl2ZRgCIAEoCCKbAQoLUGF5U3RvcmVSZXESHQoJc3RvcmVTbHVnGAEgASgJUgpzdG9yZV9zbHVnEiEKC2Ftb3VudENlbnRzGAIgASgFUgxhbW91bnRfY2VudHMSEAoDcmVmGAMgASgJSACIAQESIgoJcmV0dXJuVXJsGAQgASgJSAFSCnJldHVybl91cmyIAQFCBgoEX3JlZkIMCgpfcmV0dXJuVXJsIlIKEFBheVN0b3JlUmVzcG9uc2USGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIhCgtjaGVja291dFVybBgCIAEoCVIMY2hlY2tvdXRfdXJsMpYCCg9DaGVja291dFNlcnZpY2USPgoJR2V0SW50ZW50EhUucGF5bWVudC52MS5JbnRlbnRSZXEaGi5wYXltZW50LnYxLkNoZWNrb3V0SW50ZW50Ej8KB0NvbmZpcm0SFi5wYXltZW50LnYxLkNvbmZpcm1SZXEaHC5wYXltZW50LnYxLlN1Ym1pdFR4UmVzcG9uc2USPAoLR2V0Q2hlY2tvdXQSFC5wYXltZW50LnYxLlN0b3JlUmVxGhcucGF5bWVudC52MS5QdWJsaWNTdG9yZRJECgtQYXlDaGVja291dBIXLnBheW1lbnQudjEuUGF5U3RvcmVSZXEaHC5wYXltZW50LnYxLlBheVN0b3JlUmVzcG9uc2ViBnByb3RvMw", [file_v1_domain_payment]);
+  fileDesc("Chl2MS9zZXJ2aWNlL2NoZWNrb3V0LnByb3RvEgpwYXltZW50LnYxIk0KCUludGVudFJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldCLFAQoKQ29uZmlybVJlcRIbCghpbnRlbnRJZBgBIAEoCVIJaW50ZW50X2lkEiMKDGNsaWVudFNlY3JldBgCIAEoCVINY2xpZW50X3NlY3JldBIXCgZ0eEhhc2gYAyABKAlSB3R4X2hhc2gSKAoOY2hhaW5OZXR3b3JrSWQYBCABKAlSEGNoYWluX25ldHdvcmtfaWQSIQoLdG9rZW5TeW1ib2wYBSABKAlSDHRva2VuX3N5bWJvbBIPCgdjaGFubmVsGAYgASgJImoKEFN1Ym1pdFR4UmVzcG9uc2USKwoHYXR0ZW1wdBgBIAEoCzIaLnBheW1lbnQudjEuUGF5bWVudEF0dGVtcHQSKQoGaW50ZW50GAIgASgLMhkucGF5bWVudC52MS5QYXltZW50SW50ZW50IrQBCgpCYWxhbmNlUmVxEhsKCGludGVudElkGAEgASgJUglpbnRlbnRfaWQSIwoMY2xpZW50U2VjcmV0GAIgASgJUg1jbGllbnRfc2VjcmV0Eg8KB2FkZHJlc3MYAyABKAkSKAoOY2hhaW5OZXR3b3JrSWQYBCABKAlSEGNoYWluX25ldHdvcmtfaWQSKQoPY29udHJhY3RBZGRyZXNzGAUgASgJUhBjb250cmFjdF9hZGRyZXNzIiIKD0JhbGFuY2VSZXNwb25zZRIPCgdiYWxhbmNlGAEgASgJIikKCFN0b3JlUmVxEh0KCXN0b3JlU2x1ZxgBIAEoCVIKc3RvcmVfc2x1ZyIrCgtQdWJsaWNTdG9yZRIMCgRuYW1lGAEgASgJEg4KBmFjdGl2ZRgCIAEoCCKbAQoLUGF5U3RvcmVSZXESHQoJc3RvcmVTbHVnGAEgASgJUgpzdG9yZV9zbHVnEiEKC2Ftb3VudENlbnRzGAIgASgFUgxhbW91bnRfY2VudHMSEAoDcmVmGAMgASgJSACIAQESIgoJcmV0dXJuVXJsGAQgASgJSAFSCnJldHVybl91cmyIAQFCBgoEX3JlZkIMCgpfcmV0dXJuVXJsIlIKEFBheVN0b3JlUmVzcG9uc2USGwoIaW50ZW50SWQYASABKAlSCWludGVudF9pZBIhCgtjaGVja291dFVybBgCIAEoCVIMY2hlY2tvdXRfdXJsMtkCCg9DaGVja291dFNlcnZpY2USPgoJR2V0SW50ZW50EhUucGF5bWVudC52MS5JbnRlbnRSZXEaGi5wYXltZW50LnYxLkNoZWNrb3V0SW50ZW50Ej8KB0NvbmZpcm0SFi5wYXltZW50LnYxLkNvbmZpcm1SZXEaHC5wYXltZW50LnYxLlN1Ym1pdFR4UmVzcG9uc2USQQoKR2V0QmFsYW5jZRIWLnBheW1lbnQudjEuQmFsYW5jZVJlcRobLnBheW1lbnQudjEuQmFsYW5jZVJlc3BvbnNlEjwKC0dldENoZWNrb3V0EhQucGF5bWVudC52MS5TdG9yZVJlcRoXLnBheW1lbnQudjEuUHVibGljU3RvcmUSRAoLUGF5Q2hlY2tvdXQSFy5wYXltZW50LnYxLlBheVN0b3JlUmVxGhwucGF5bWVudC52MS5QYXlTdG9yZVJlc3BvbnNlYgZwcm90bzM", [file_v1_domain_payment]);
 
 /**
  * 收银台取单请求
@@ -226,6 +226,116 @@ export const SubmitTxResponseSchema: GenMessage<SubmitTxResponse, {jsonType: Sub
   messageDesc(file_v1_service_checkout, 2);
 
 /**
+ * 单链余额:client_secret 鉴权后,用该链 rpc_url 做一次 eth_call balanceOf。一条请求 = 一条链,
+ * 不聚合、不回传 RPC URL。前端并发与按行重试保持原样。
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","client_secret":"...","address":"0xabc...","chain_network_id":"10","contract_address":"0x0b2c6..."}
+ *
+ * @generated from message payment.v1.BalanceReq
+ */
+export type BalanceReq = Message<"payment.v1.BalanceReq"> & {
+  /**
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intentId: string;
+
+  /**
+   * @generated from field: string clientSecret = 2 [json_name = "client_secret"];
+   */
+  clientSecret: string;
+
+  /**
+   * 买家钱包
+   *
+   * @generated from field: string address = 3;
+   */
+  address: string;
+
+  /**
+   * @generated from field: string chainNetworkId = 4 [json_name = "chain_network_id"];
+   */
+  chainNetworkId: string;
+
+  /**
+   * @generated from field: string contractAddress = 5 [json_name = "contract_address"];
+   */
+  contractAddress: string;
+};
+
+/**
+ * 单链余额:client_secret 鉴权后,用该链 rpc_url 做一次 eth_call balanceOf。一条请求 = 一条链,
+ * 不聚合、不回传 RPC URL。前端并发与按行重试保持原样。
+ * 示例(JSON): {"intent_id":"pi_18f3ab12cd34","client_secret":"...","address":"0xabc...","chain_network_id":"10","contract_address":"0x0b2c6..."}
+ *
+ * @generated from message payment.v1.BalanceReq
+ */
+export type BalanceReqJson = {
+  /**
+   * @generated from field: string intentId = 1 [json_name = "intent_id"];
+   */
+  intent_id?: string;
+
+  /**
+   * @generated from field: string clientSecret = 2 [json_name = "client_secret"];
+   */
+  client_secret?: string;
+
+  /**
+   * 买家钱包
+   *
+   * @generated from field: string address = 3;
+   */
+  address?: string;
+
+  /**
+   * @generated from field: string chainNetworkId = 4 [json_name = "chain_network_id"];
+   */
+  chain_network_id?: string;
+
+  /**
+   * @generated from field: string contractAddress = 5 [json_name = "contract_address"];
+   */
+  contract_address?: string;
+};
+
+/**
+ * Describes the message payment.v1.BalanceReq.
+ * Use `create(BalanceReqSchema)` to create a new message.
+ */
+export const BalanceReqSchema: GenMessage<BalanceReq, {jsonType: BalanceReqJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 3);
+
+/**
+ * @generated from message payment.v1.BalanceResponse
+ */
+export type BalanceResponse = Message<"payment.v1.BalanceResponse"> & {
+  /**
+   * 最小单位十进制字符串
+   *
+   * @generated from field: string balance = 1;
+   */
+  balance: string;
+};
+
+/**
+ * @generated from message payment.v1.BalanceResponse
+ */
+export type BalanceResponseJson = {
+  /**
+   * 最小单位十进制字符串
+   *
+   * @generated from field: string balance = 1;
+   */
+  balance?: string;
+};
+
+/**
+ * Describes the message payment.v1.BalanceResponse.
+ * Use `create(BalanceResponseSchema)` to create a new message.
+ */
+export const BalanceResponseSchema: GenMessage<BalanceResponse, {jsonType: BalanceResponseJson}> = /*@__PURE__*/
+  messageDesc(file_v1_service_checkout, 4);
+
+/**
  * 公开店页元信息请求(path store_slug;按 slug 定位 checkout,不暴露 account_id)
  * 示例(JSON): {"store_slug":"bob.olares.com"}
  *
@@ -260,7 +370,7 @@ export type StoreReqJson = {
  * Use `create(StoreReqSchema)` to create a new message.
  */
 export const StoreReqSchema: GenMessage<StoreReq, {jsonType: StoreReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_checkout, 3);
+  messageDesc(file_v1_service_checkout, 5);
 
 /**
  * 公开店页元信息(仅店名与营业状态,无商品、无 account_id)
@@ -311,7 +421,7 @@ export type PublicStoreJson = {
  * Use `create(PublicStoreSchema)` to create a new message.
  */
 export const PublicStoreSchema: GenMessage<PublicStore, {jsonType: PublicStoreJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_checkout, 4);
+  messageDesc(file_v1_service_checkout, 6);
 
 /**
  * 任意金额建单请求(买家永久匿名、无 buyer 字段,13.7 裁决;落在本店账户)
@@ -390,7 +500,7 @@ export type PayStoreReqJson = {
  * Use `create(PayStoreReqSchema)` to create a new message.
  */
 export const PayStoreReqSchema: GenMessage<PayStoreReq, {jsonType: PayStoreReqJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_checkout, 5);
+  messageDesc(file_v1_service_checkout, 7);
 
 /**
  * 任意金额建单响应(一步返回收银台 URL)
@@ -441,11 +551,11 @@ export type PayStoreResponseJson = {
  * Use `create(PayStoreResponseSchema)` to create a new message.
  */
 export const PayStoreResponseSchema: GenMessage<PayStoreResponse, {jsonType: PayStoreResponseJson}> = /*@__PURE__*/
-  messageDesc(file_v1_service_checkout, 6);
+  messageDesc(file_v1_service_checkout, 8);
 
 /**
- * CheckoutService is the checkout process (/checkout/* public cashier), 4 rpc.
- * 收银台公开接口(无 HMAC;GetIntent/Confirm 凭 intent_id + client_secret,
+ * CheckoutService is the checkout process (/checkout/* public cashier), 5 rpc.
+ * 收银台公开接口(无 HMAC;GetIntent/Confirm/GetBalance 凭 intent_id + client_secret,
  * GetCheckout/PayCheckout 为 P1b 公开店页 @Public 骨架,实现在 B5)
  *
  * @generated from service payment.v1.CheckoutService
@@ -470,6 +580,16 @@ export const CheckoutService: GenService<{
     methodKind: "unary";
     input: typeof ConfirmReqSchema;
     output: typeof SubmitTxResponseSchema;
+  },
+  /**
+   * 单链 ERC-20 余额(鉴权后转发 eth_call,不聚合)
+   *
+   * @generated from rpc payment.v1.CheckoutService.GetBalance
+   */
+  getBalance: {
+    methodKind: "unary";
+    input: typeof BalanceReqSchema;
+    output: typeof BalanceResponseSchema;
   },
   /**
    * 公开店页元信息(GET /checkout/c/:store_slug)
