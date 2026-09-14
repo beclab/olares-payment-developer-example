@@ -97,7 +97,13 @@ export type Direction = 'in' | 'out';
 /** On-chain outcome; guards against treating a reverted tx as paid. */
 export type ReceiveWalletTxStatus = 'success' | 'failed';
 
-export type WebhookEventType = 'payment.succeeded' | 'payment.failed' | 'payment.canceled' | 'endpoint.test';
+export type WebhookEventType =
+  | 'payment.succeeded'
+  | 'payment.failed'
+  | 'payment.canceled'
+  | 'refund.succeeded'
+  | 'refund.failed'
+  | 'endpoint.test';
 
 // ---------- Buyer identity (three disclosure tiers) ----------
 
@@ -165,6 +171,89 @@ export interface ProductSnapshot {
   resolvedAt: Timestamp | null;
 }
 
+/** Refund state machine (proto enum RefundStatus; ToJsonInterceptor serializes the name). */
+export type RefundStatus =
+  | 'REFUND_STATUS_UNSPECIFIED'
+  | 'REFUND_STATUS_PREPARED'
+  | 'REFUND_STATUS_SUBMITTED'
+  | 'REFUND_STATUS_SUCCEEDED'
+  | 'REFUND_STATUS_FAILED'
+  | 'REFUND_STATUS_CANCELED';
+
+/** One refund. Quota is held from PREPARED onward and released only by CANCELED;
+ *  FAILED keeps holding it so the refund can be re-signed and retried. */
+export interface Refund {
+  /** re_xxx; also the OLRP-RFD marker payload carried by the on-chain transfer. */
+  refundId: string;
+  paymentId: string;
+  status: RefundStatus;
+  /** Token minor units (the payment's original chain and token). */
+  amount: string;
+  txHash: string | null;
+  failReason: string | null;
+  /** Merchant-internal note. Non-null only on getRefund / createRefund responses;
+   *  PaymentRefundSummary entries are the buyer-safe audience and always null here. */
+  reason: string | null;
+  /** Read-only hint: the draft has been holding quota for too long. */
+  preparedStale: boolean;
+  /** Read-only hint: submitted but still without on-chain evidence. */
+  stuck: boolean;
+  createdAt: Timestamp | null;
+  submittedAt: Timestamp | null;
+  succeededAt: Timestamp | null;
+  failedAt: Timestamp | null;
+  canceledAt: Timestamp | null;
+}
+
+/** The money route frozen at the original payment; every refund on an order shares it. */
+export interface RefundRoute {
+  chain: ChainSlug;
+  /** EVM only. */
+  networkId: number | null;
+  tokenSymbol: string;
+  /** Required to format the minor-unit amounts; null for unregistered tokens. */
+  tokenDecimals: number | null;
+  contractAddress: string | null;
+  /** The original receive wallet the refund is sent from. */
+  fromWallet: string;
+  /** The original payer address the refund is sent to. */
+  toPayer: string;
+  /** Frozen route self-consistency (payer == tx_from); not a live EOA check. */
+  payerRouteVerified: boolean;
+}
+
+/** Why the order cannot be refunded right now (closed set).
+ *  payer_contract is a create-time block only (surfaces as 1905), never a read view. */
+export type NonRefundableReason =
+  | 'payment_not_succeeded'
+  | 'channel_unsupported'
+  | 'route_unavailable'
+  | 'route_inconsistent'
+  | 'nothing_left'
+  | 'refund_already_open';
+
+/**
+ * Order refund ledger. Non-null only on getPayment and only for succeeded orders;
+ * listPayments items always carry null.
+ *
+ * refunds[] is the buyer-safe audience: succeeded entries only, with reason /
+ * preparedStale / stuck withheld. Use MerchantClient.getRefund for the full row.
+ */
+export interface PaymentRefundSummary {
+  /** Amount actually received on-chain (minor units). */
+  receivedAmount: string;
+  /** Sum of succeeded refunds (minor units). */
+  refundedAmount: string;
+  /** receivedAmount − refundedAmount (minor units). */
+  remainingRefundable: string;
+  /** Whether a new refund can be created right now. */
+  refundable: boolean;
+  nonRefundableReason: NonRefundableReason | null;
+  /** Null for legacy or non-refundable orders. */
+  route: RefundRoute | null;
+  refunds: Refund[];
+}
+
 /** A payment. The SDK's central object — no "intent" terminology leaks here. */
 export interface Payment {
   paymentId: string;
@@ -187,6 +276,8 @@ export interface Payment {
   /** Plaintext (Stripe-style client_secret); not backfilled in listPayments items. */
   clientSecret: string | null;
   latestAttempt: LatestAttempt | null;
+  /** Refund ledger; getPayment on a succeeded order only, null everywhere else. */
+  refundSummary: PaymentRefundSummary | null;
   expiresAt: Timestamp | null;
   canceledAt: Timestamp | null;
   paidAt: Timestamp | null;
@@ -308,8 +399,13 @@ export interface WebhookResponse {
   headers: WebhookHeaders | WebhookHeaderGetter | Record<string, string | string[] | undefined>;
 }
 
-/** Typed webhook event (discriminated by type). buyer echoes the intent's
- *  creation-time snapshot as the unified BuyerRef (null = anonymous order). */
+/**
+ * Typed webhook event (discriminated by type). buyer echoes the intent's
+ * creation-time snapshot as the unified BuyerRef (null = anonymous order).
+ *
+ * The refund variants carry no metadata — the gateway's refund callback protocol
+ * has no such field. Correlate a refund event to your own records via paymentId.
+ */
 export type WebhookEvent =
   | {
       type: 'payment.succeeded';
@@ -337,5 +433,38 @@ export type WebhookEvent =
       buyer: BuyerRef | null;
       metadata: Record<string, unknown>;
       cancellationReason: string;
+    }
+  | {
+      type: 'refund.succeeded';
+      refundId: string;
+      paymentId: string;
+      merchantAccountId: string;
+      buyer: BuyerRef | null;
+      /** Token minor units, on the payment's original chain and token. */
+      amount: string;
+      tokenSymbol: string | null;
+      chain: ChainSlug | null;
+      networkId: number | null;
+      txHash: string | null;
+      /** Merchant-internal note; never disclosed to the buyer. */
+      reason: string | null;
+      /** unix ms */
+      succeededAt: number;
+    }
+  | {
+      type: 'refund.failed';
+      refundId: string;
+      paymentId: string;
+      merchantAccountId: string;
+      buyer: BuyerRef | null;
+      amount: string;
+      tokenSymbol: string | null;
+      chain: ChainSlug | null;
+      networkId: number | null;
+      txHash: string | null;
+      reason: string | null;
+      failReason: string | null;
+      /** unix ms */
+      failedAt: number;
     }
   | { type: 'endpoint.test'; [key: string]: unknown };

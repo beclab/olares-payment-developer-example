@@ -1,14 +1,14 @@
 /**
- * Error codes — unified table mirroring the gateway (packages/payment/internal/core/error_codes.go)
+ * Error codes — unified table mirroring the gateway (packages/payment/src/core/error-codes.ts)
  * plus SDK-local transport codes.
  *
  * Ranges:
- *   1000-1699  Gateway business codes (SDK mirrors; never invents new codes here)
- *   1900-1999  SDK transport codes (never collide with gateway)
+ *   1000-1949  Gateway business codes (SDK mirrors; never invents new codes here)
+ *   1950-1999  SDK transport codes (never collide with gateway)
  *
  * Callers can distinguish:
- *   code < 1900  → gateway business error (request reached the gateway)
- *   code >= 1900 → SDK-local error (transport failure; gateway never saw the request)
+ *   code < 1950  → gateway business error (request reached the gateway)
+ *   code >= 1950 → SDK-local error (transport failure; gateway never saw the request)
  */
 
 // ===== Gateway business codes (mirror error_codes.go) =====
@@ -54,10 +54,20 @@ export const TIMESTAMP_EXPIRED = 1502;
 export const MISSING_HEADERS = 1503;
 export const PAYMENT_NOTIFICATION_FAILED = 1504;
 
-// ===== SDK transport codes (1900-1999; never collide with gateway) =====
-export const SDK_TIMEOUT = 1901;
-export const SDK_NETWORK_ERROR = 1902;
-export const SDK_RPC_ERROR = 1903;
+// Refund (1900-1949)
+// Thrown by createRefund / getRefund / cancelRefund / reissueRefundLink.
+export const REFUND_PRECONDITION_FAILED = 1901;
+export const REFUND_AMOUNT_EXCEEDED = 1902;
+export const REFUND_STATE_CONFLICT = 1903;
+export const REFUND_EXECUTION_INVALID = 1904;
+export const REFUND_ROUTE_UNSUPPORTED = 1905;
+export const REFUND_ALREADY_OPEN = 1906;
+export const REFUND_CANCEL_UNAVAILABLE = 1907;
+
+// ===== SDK transport codes (1950-1999; never collide with gateway) =====
+export const SDK_TIMEOUT = 1951;
+export const SDK_NETWORK_ERROR = 1952;
+export const SDK_RPC_ERROR = 1953;
 
 // ===== PaymentError =====
 

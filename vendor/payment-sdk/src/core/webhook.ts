@@ -17,8 +17,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { INVALID_ARGUMENT, PaymentError, SIGNATURE_MISMATCH, TIMESTAMP_EXPIRED } from './errors';
 import { wireToBuyer, wireToCredential } from './mapping';
-import type { WebhookHeaderGetter, WebhookEvent, WebhookResponse } from '../types/base';
-import type { WireWebhookPayload } from './wire';
+import type { ChainSlug, WebhookHeaderGetter, WebhookEvent, WebhookResponse } from '../types/base';
+import type { WireRefundCallback, WireWebhookPayload } from './wire';
 const DEFAULT_MAX_SKEW_MS = 5 * 60 * 1000;
 const TS_HEADER = 'x-olares-payment-webhook-timestamp';
 const SIG_HEADER = 'x-olares-payment-webhook-signature';
@@ -45,13 +45,21 @@ export function constructEvent(
     throw new PaymentError(SIGNATURE_MISMATCH, 0, 'webhook signature verification failed');
   }
 
-  let p: WireWebhookPayload;
+  let parsed: WireWebhookPayload | WireRefundCallback;
   try {
-    p = JSON.parse(rawBody) as WireWebhookPayload;
+    parsed = JSON.parse(rawBody) as WireWebhookPayload | WireRefundCallback;
   } catch {
     throw new PaymentError(INVALID_ARGUMENT, 0, 'webhook payload is not valid json');
   }
 
+  // Refund events ride a different protocol message (RefundCallback): no metadata,
+  // plus refund_id and the amount/token facts. Decoding them as a PaymentCallback
+  // would silently drop all of it.
+  if (parsed.event_type === 'refund.succeeded' || parsed.event_type === 'refund.failed') {
+    return refundEvent(parsed as WireRefundCallback);
+  }
+
+  const p = parsed as WireWebhookPayload;
   const base = {
     paymentId: p.intent_id ?? '',
     merchantAccountId: p.merchant_account_id ?? '',
@@ -77,6 +85,37 @@ export function constructEvent(
     default:
       return { type: 'endpoint.test', ...(p as Record<string, unknown>) };
   }
+}
+
+function refundEvent(r: WireRefundCallback): WebhookEvent {
+  const base = {
+    refundId: r.refund_id ?? '',
+    paymentId: r.intent_id ?? '',
+    merchantAccountId: r.merchant_account_id ?? '',
+    buyer: wireToBuyer(r.buyer),
+    amount: r.amount ?? '',
+    tokenSymbol: r.token_symbol ?? null,
+    chain: (r.chain ?? null) as ChainSlug | null,
+    networkId: r.network_id ?? null,
+    txHash: r.tx_hash ?? null,
+    reason: r.reason ?? null,
+  };
+  if (r.event_type === 'refund.succeeded') {
+    return { type: 'refund.succeeded', ...base, succeededAt: toUnixMs(r.succeeded_at) };
+  }
+  return {
+    type: 'refund.failed',
+    ...base,
+    failReason: r.fail_reason ?? null,
+    failedAt: toUnixMs(r.failed_at),
+  };
+}
+
+/** RFC3339 → unix ms; absent timestamp = 0 (same convention as paidAt). */
+function toUnixMs(ts: string | null | undefined): number {
+  if (!ts) return 0;
+  const ms = new Date(ts).getTime();
+  return Number.isFinite(ms) ? ms : 0;
 }
 
 /** Buffer is a Uint8Array; anything else means the body was parsed (express.json) and the bytes are gone. */

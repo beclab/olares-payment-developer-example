@@ -5,54 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Harbor Goods · Seller</title>
     <style>
-      :root { color: #1c1917; background: #f5f0e8; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif; }
-      * { box-sizing: border-box; }
-      body { margin: 0; }
-      .page { max-width: 1080px; margin: 0 auto; padding: 48px 20px 80px; }
-      nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 28px; font-size: 0.9rem; }
-      nav a { color: inherit; }
-      h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 12px; }
-      h2 { font-size: 1.2rem; margin: 36px 0 12px; }
-      .kicker { letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.75rem; color: #7c6f64; margin: 0 0 8px; }
-      .lede { color: #44403c; max-width: 46rem; }
-      .card { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; max-width: 420px; }
-      label { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-size: 0.9rem; }
-      input { padding: 10px 12px; border: 1px solid #d6d3d1; border-radius: 8px; font: inherit; background: #fff; }
-      button { background: #1c1917; color: #fafaf9; border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer; }
-      button.ghost { background: transparent; color: #1c1917; border: 1px solid #d6d3d1; }
-      button.ship {
-        margin: 0;
-        padding: 5px 12px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        background: transparent;
-        color: #1c1917;
-        border: 1px solid #1c1917;
+      /* Ledger design tokens — mirrored from the Olares Payment dashboard (packages/dashboard-front/src/styles/tokens.css). */
+      :root {
+        --bg: #f8fafd;
+        --card: #ffffff;
+        --ink: #061b31;
+        --ink2: #42536b;
+        --ink3: #7d8da6;
+        --line: #e5edf5;
+        --line2: #eef3f9;
+        --acc: #635bff;
+        --acc-hover: #5851db;
+        --acc-ink: #5249e0;
+        --acc-soft: rgba(99, 91, 255, 0.09);
+        --acc-line: #d6d9fc;
+        --green: #0e9f5b;
+        --green-soft: rgba(14, 159, 91, 0.1);
+        --amber: #b07200;
+        --amber-soft: rgba(176, 114, 0, 0.1);
+        --red: #d4353f;
+        --red-soft: rgba(212, 53, 63, 0.08);
+        --r-card: 10px;
+        --r-ctl: 7px;
+        --sh-card: 0 1px 2px rgba(6, 27, 49, 0.05);
+        --sh-pop: 0 8px 24px rgba(6, 27, 49, 0.1);
       }
-      #orders { overflow-x: auto; }
-      #orders td:last-child { text-align: right; white-space: nowrap; vertical-align: middle; }
-      .err { color: #9f1239; }
-      .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0; }
-      .kpi { background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 16px; padding: 16px; }
-      .kpi strong { display: block; font-size: 1.6rem; }
-      .muted { color: #7c6f64; font-size: 0.85rem; }
-      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fffdf8; border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden; }
-      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e7e5e4; vertical-align: top; }
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; word-break: break-all; }
-      .hidden { display: none; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+      .page { max-width: 1120px; margin: 0 auto; padding: 36px 20px 80px; }
+      h1 { font-size: 21px; font-weight: 650; letter-spacing: -0.015em; margin: 0 0 4px; }
+      h2 { font-size: 15px; font-weight: 650; margin: 30px 0 10px; }
+      .kicker { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin: 0 0 6px; }
+      .lede { color: var(--ink2); max-width: 46rem; margin: 0 0 20px; }
+      nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 26px; font-size: 13px; color: var(--ink2); }
+      nav a { color: var(--acc-ink); text-decoration: none; }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--sh-card); padding: 20px; }
+      .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 18px 0 6px; }
+      .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--sh-card); padding: 14px 16px; }
+      .kpi span { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 4px; }
+      .kpi strong { font-size: 20px; font-weight: 650; }
+      .tblwrap { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--sh-card); overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; }
+      th { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink3); text-align: left; padding: 10px 12px 9px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      td { padding: 11px 12px; border-bottom: 1px solid var(--line2); font-size: 13.5px; vertical-align: middle; }
+      tr:last-child td { border-bottom: none; }
+      tr.rowlink { cursor: pointer; }
+      tr.rowlink:hover td { background: var(--line2); }
+      .muted { color: var(--ink3); font-size: 12.5px; }
+      .num { font-variant-numeric: tabular-nums; }
+      .mono { font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace; font-size: 12px; word-break: break-all; }
+      .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+      .badge.small { font-size: 10.5px; padding: 1px 8px; opacity: 0.9; }
+      .chev { color: var(--ink3); font-size: 16px; }
+      .b-gray { background: var(--line2); color: var(--ink2); }
+      .b-green { background: var(--green-soft); color: var(--green); }
+      .b-amber { background: var(--amber-soft); color: var(--amber); }
+      .b-red { background: var(--red-soft); color: var(--red); }
+      .b-indigo { background: var(--acc-soft); color: var(--acc-ink); }
+      button { background: var(--acc); color: #fff; border: 0; border-radius: var(--r-ctl); padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+      button:hover { background: var(--acc-hover); }
+      button:disabled { opacity: 0.55; cursor: wait; }
+      button.ghost { background: transparent; color: var(--ink2); border: 1px solid var(--line); font-weight: 500; }
+      button.ghost:hover { background: var(--line2); }
+      button.sub { padding: 4px 10px; font-size: 12px; font-weight: 500; }
+      label { display: flex; flex-direction: column; gap: 5px; margin: 12px 0; font-size: 13px; color: var(--ink2); }
+      input, textarea { padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--r-ctl); font: inherit; color: var(--ink); background: var(--card); }
+      input:focus, textarea:focus { outline: 2px solid var(--acc-line); border-color: var(--acc); }
+      .err { color: var(--red); font-size: 13px; }
+      .hidden { display: none !important; }
+      .overlay { position: fixed; inset: 0; background: rgba(6, 27, 49, 0.4); display: grid; place-items: center; padding: 20px; z-index: 40; }
+      .modal { background: var(--card); border-radius: var(--r-card); box-shadow: var(--sh-pop); padding: 22px; max-width: 460px; width: 100%; }
+      .modal h3 { margin: 0 0 6px; font-size: 16px; font-weight: 650; }
+      .copybox { display: flex; gap: 8px; margin: 12px 0; }
+      .copybox input { flex: 1; font-family: 'SF Mono', ui-monospace, monospace; font-size: 11.5px; }
+      /* drawer */
+      .drawer-scrim { position: fixed; inset: 0; background: rgba(6, 27, 49, 0.25); z-index: 30; }
+      .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 94vw); background: var(--card); border-left: 1px solid var(--line); box-shadow: var(--sh-pop); z-index: 31; overflow-y: auto; padding: 24px 24px 84px; }
+      .dsticky { position: fixed; bottom: 0; right: 0; width: min(480px, 94vw); padding: 12px 24px; background: var(--card); border-top: 1px solid var(--line); box-shadow: 0 -4px 12px rgba(6, 27, 49, 0.04); }
+      .drow { display: flex; justify-content: space-between; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--line2); font-size: 13.5px; }
+      .drow .k { color: var(--ink3); }
+      .drow .v { text-align: right; word-break: break-all; }
+      .dsec { margin-top: 22px; }
+      .dsec h4 { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+      /* Action buttons: a floor width, then stretch with the label — never squeeze
+         or truncate ("Accept & refund" must read whole inside the drawer). */
+      .actions button, .dsticky button, .modal .row button {
+        flex: 0 0 auto;
+        min-width: 110px;
+        max-width: none;
+        white-space: nowrap;
+      }
+      /* tabs — the operational/reconciliation split (FChip vocabulary) */
+      .tabs { display: flex; gap: 8px; margin: 4px 0 14px; border-bottom: 1px solid var(--line); }
+      .tab { background: transparent; color: var(--ink2); border: 0; border-radius: var(--r-ctl) var(--r-ctl) 0 0; padding: 7px 16px; font-weight: 600; border-bottom: 2px solid transparent; }
+      .tab:hover { background: var(--line2); }
+      .tab.active { color: var(--acc-ink); border-bottom-color: var(--acc); }
+      .fchips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+      .fchip { background: var(--card); color: var(--ink2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 12.5px; font-weight: 500; }
+      .fchip:hover { background: var(--line2); }
+      .fchip.active { background: var(--acc-soft); border-color: var(--acc-line); color: var(--acc-ink); }
+      /* insights — read-only layer: calmer tables, two small stats tables side by side */
+      .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+      @media (max-width: 860px) { .insight-grid { grid-template-columns: 1fr; } }
+      .tblwrap.sub td { padding: 8px 12px; font-size: 12.5px; }
+      .tblwrap.sub th { padding: 8px 12px 7px; font-size: 10px; }
     </style>
   </head>
   <body>
     <main class="page">
       <nav>
-        <span class="muted">Seller admin</span>
+        <span>Seller admin</span>
         <span>
           <a href="/">← Buyer shop</a>
-          <button type="button" class="ghost hidden" id="signout">Sign out</button>
+          <button type="button" class="ghost sub hidden" id="signout">Sign out</button>
         </span>
       </nav>
 
-      <section id="gate" class="card">
+      <section id="gate" class="card hidden" style="max-width: 400px">
         <p class="kicker">Seller</p>
         <h1>Sign in</h1>
         <p class="lede">Hard-coded demo desk: username <span class="mono">admin</span>, password <span class="mono">admin</span>.</p>
@@ -69,44 +139,152 @@
         <h1>Orders at Harbor Goods</h1>
         <p class="lede">
           Payment collected is not the same as goods shipped. When a checkout succeeds,
-          the order becomes <em>Paid</em> — ship it from this desk. The gateway ledger
-          below is what Olares Payment recorded for the same keys.
+          the order becomes <em>Paid</em> — ship it, or open a refund, from this desk.
+          The shop's own numbers live under <em>Stats</em>; the gateway's books under <em>Reconciliation</em>.
         </p>
         <div id="kpis" class="kpis"></div>
-        <h2>Shop orders</h2>
-        <div id="orders"></div>
-        <h2>Gateway payments</h2>
-        <p id="gateway-err" class="muted"></p>
-        <div id="gateway"></div>
-        <h2>Goods</h2>
-        <div id="goods"></div>
-        <h2>Settlement rails</h2>
-        <div id="rails"></div>
-        <h2>Buyers</h2>
-        <div id="buyers"></div>
+
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab active" id="tab-orders" role="tab">Orders</button>
+          <button type="button" class="tab" id="tab-stats" role="tab">Stats</button>
+          <button type="button" class="tab" id="tab-recon" role="tab">Reconciliation</button>
+        </div>
+
+        <!-- Orders — the operational layer: filters, row actions, the drawer. -->
+        <div id="view-orders">
+          <div class="fchips" id="order-filters">
+            <button type="button" class="fchip active" data-f="all">All</button>
+            <button type="button" class="fchip" data-f="pending">Awaiting pay</button>
+            <button type="button" class="fchip" data-f="paid">Paid</button>
+            <button type="button" class="fchip" data-f="shipped">Shipped</button>
+            <button type="button" class="fchip" data-f="refund">Refund</button>
+          </div>
+          <div id="orders" class="tblwrap"></div>
+        </div>
+
+        <!-- Stats — the shop's own numbers, read-only. -->
+        <div id="view-stats" class="hidden">
+          <div class="insight-grid">
+            <div>
+              <h2>Goods</h2>
+              <div id="goods" class="tblwrap sub"></div>
+            </div>
+            <div>
+              <h2>Settlement rails</h2>
+              <div id="rails" class="tblwrap sub"></div>
+            </div>
+          </div>
+          <h2>Buyers</h2>
+          <div id="buyers" class="tblwrap sub"></div>
+        </div>
+
+        <!-- Reconciliation — the gateway's books vs the shop's orders. -->
+        <div id="view-recon" class="hidden">
+          <h2>Gateway payments</h2>
+          <p id="gateway-err" class="muted"></p>
+          <div id="gateway" class="tblwrap sub"></div>
+        </div>
       </section>
     </main>
+
+    <!-- order drawer -->
+    <div id="drawer-scrim" class="drawer-scrim hidden"></div>
+    <aside id="drawer" class="drawer hidden" aria-label="Order detail"></aside>
+
+    <!-- refund create modal -->
+    <div id="refund-modal" class="overlay hidden">
+      <div class="modal">
+        <h3>Open a refund</h3>
+        <p id="refund-ctx" class="muted" style="margin: 4px 0 4px"></p>
+        <form id="refund-form">
+          <label>Amount (USD — leave empty for the full remaining balance)
+            <input name="amountUsd" inputmode="decimal" step="0.01" min="0.01" placeholder="full remaining" />
+          </label>
+          <label>Internal note (never shown to the buyer)
+            <input name="reason" placeholder="e.g. damaged in transit" />
+          </label>
+          <p id="refund-err" class="err hidden"></p>
+          <div class="actions" style="justify-content: flex-end">
+            <button type="button" class="ghost" id="refund-cancel">Back</button>
+            <button type="submit" id="refund-submit">Open refund</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- dismiss request modal — the reply is shown to the buyer -->
+    <div id="dismiss-modal" class="overlay hidden">
+      <div class="modal">
+        <h3>Dismiss refund request</h3>
+        <p class="muted" style="margin: 4px 0 0">The buyer will see this reply.</p>
+        <form id="dismiss-form">
+          <label>Your reply (required)
+            <textarea name="note" rows="3" required minlength="4" maxlength="200" placeholder="e.g. the parcel tracking shows delivered on Sep 12"></textarea>
+          </label>
+          <p id="dismiss-err" class="err hidden"></p>
+          <div class="actions" style="justify-content: flex-end">
+            <button type="button" class="ghost" id="dismiss-cancel">Back</button>
+            <button type="submit">Dismiss request</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
       const usd = (cents) => `$${(cents / 100).toFixed(2)}`;
       const $ = (id) => document.getElementById(id);
       const show = (el, on) => el.classList.toggle('hidden', !on);
+      const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
       const STATUS = {
-        pending_payment: 'Awaiting payment',
-        paid: 'Paid',
-        shipped: 'Shipped',
-        failed: 'Failed',
-        canceled: 'Canceled',
+        pending_payment: ['Awaiting payment', 'b-amber'],
+        paid: ['Paid', 'b-green'],
+        shipped: ['Shipped', 'b-green'],
+        failed: ['Failed', 'b-red'],
+        canceled: ['Canceled', 'b-gray'],
       };
+      const REFUND_ORDER_BADGE = {
+        none: null,
+        open: ['Refund pending', 'b-amber'],
+        partial: ['Partially refunded', 'b-amber'],
+        full: ['Refunded', 'b-indigo'],
+      };
+      const REQUEST_BADGE = {
+        open: ['Refund requested', 'b-amber'],
+        granted: ['Request accepted', 'b-indigo'],
+        dismissed: ['Request declined', 'b-red'],
+        withdrawn: ['Request withdrawn', 'b-gray'],
+      };
+      const REFUND_ROW_BADGE = {
+        REFUND_STATUS_PREPARED: ['Prepared — awaiting signature', 'b-amber'],
+        REFUND_STATUS_SUBMITTED: ['Submitted — awaiting on-chain', 'b-amber'],
+        REFUND_STATUS_SUCCEEDED: ['Succeeded', 'b-green'],
+        REFUND_STATUS_FAILED: ['Failed — retry available', 'b-red'],
+        REFUND_STATUS_CANCELED: ['Canceled', 'b-gray'],
+      };
+      const badge = (pair) => (pair && pair[0]) ? `<span class="badge ${pair[1]}">${pair[0]}</span>` : '—';
       const GATE = {
-        PAYMENT_STATUS_SUCCEEDED: 'succeeded',
-        PAYMENT_STATUS_CANCELED: 'canceled',
-        PAYMENT_STATUS_PROCESSING: 'processing',
-        PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD: 'open',
+        PAYMENT_STATUS_SUCCEEDED: ['succeeded', 'b-green'],
+        PAYMENT_STATUS_CANCELED: ['canceled', 'b-gray'],
+        PAYMENT_STATUS_PROCESSING: ['processing', 'b-amber'],
+        PAYMENT_STATUS_REQUIRES_PAYMENT_METHOD: ['open', 'b-amber'],
       };
-      const table = (headers, rows) => {
-        if (!rows.length) return '<p class="muted">Nothing yet. Place a buyer order first.</p>';
+
+      // Minor-unit string → human token amount when the route tells us the decimals.
+      let tokenDecimals = null;
+      const fmtMinor = (s) => {
+        if (s == null) return '—';
+        if (tokenDecimals == null) return s;
+        const neg = false; const d = Number(tokenDecimals);
+        let v = BigInt(s).toString().padStart(d + 1, '0');
+        const out = d > 0 ? `${v.slice(0, -d)}.${v.slice(-d)}` : v;
+        return out.replace(/\.?0+$/, '') || '0';
+      };
+
+      const table = (headers, rows, { rowlink = false } = {}) => {
+        if (!rows.length) return '<p class="muted" style="padding: 12px 4px">Nothing yet.</p>';
         return `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead>
-          <tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+          <tbody>${rows.map((r, i) => `<tr${rowlink ? ` class="rowlink" data-row="${i}"` : ''}>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
       };
 
       function paint(ok) {
@@ -114,6 +292,79 @@
         show($('desk'), ok);
         show($('signout'), ok);
       }
+
+      let deskOrders = [];
+      let renderedOrders = []; // the filtered list actually on screen (row indexes point here)
+      let drawerOrder = null;
+      let orderFilter = 'all';
+
+      // ----- Orders tab: filter chips + operational table -----
+
+      const FILTER_PREDICATE = {
+        all: () => true,
+        pending: (o) => o.status === 'pending_payment',
+        paid: (o) => o.status === 'paid',
+        shipped: (o) => o.status === 'shipped',
+        refund: (o) => o.refundRequest?.status === 'open' || ['open', 'partial', 'full'].includes(o.refund?.status),
+      };
+
+      function renderOrders() {
+        renderedOrders = deskOrders.filter(FILTER_PREDICATE[orderFilter] || FILTER_PREDICATE.all);
+        // Payment status is the primary badge; the refund dimension (request or
+        // gateway refund) rides underneath as a smaller secondary badge. The
+        // trailing chevron is the only row affordance — actions live in the drawer.
+        $('orders').innerHTML = table(
+          ['Order', 'Buyer', 'Item', 'Status', 'Payment', ''],
+          renderedOrders.map((o) => {
+            // Refund outcome outranks the request decision: once money moved
+            // (pending/partial/full) that is the status the seller works with.
+            const secondary = REFUND_ORDER_BADGE[o.refund?.status] || REQUEST_BADGE[o.refundRequest?.status];
+            const statusCell = badge(STATUS[o.status] || [o.status, 'b-gray'])
+              + (secondary ? `<br>${badge(secondary).replace('badge ', 'badge small ')}` : '');
+            return [
+              `<span class="mono">${esc(o.id)}</span>`,
+              `${esc(o.buyerNickname)}<br><span class="muted mono">${esc(o.buyerId)}</span>`,
+              `${esc(o.productTitle)}<br><span class="muted num">${usd(o.amountCents)}</span>`,
+              statusCell,
+              `<span class="mono">${esc(o.paymentId || '—')}</span>`,
+              '<span class="chev">›</span>',
+            ];
+          }),
+          { rowlink: true },
+        );
+        document.querySelectorAll('#order-filters .fchip').forEach((c) => {
+          c.classList.toggle('active', c.dataset.f === orderFilter);
+        });
+      }
+
+      // ----- tabs: operations / stats / reconciliation -----
+      const TAB_VIEWS = {
+        orders: ['view-orders'],
+        stats: ['view-stats'],
+        recon: ['view-recon'],
+      };
+      function switchTab(view) {
+        orderTab = view;
+        for (const [name, ids] of Object.entries(TAB_VIEWS)) {
+          const on = name === view;
+          for (const id of ids) show($(id), on);
+          $('tab-' + name).classList.toggle('active', on);
+        }
+        const url = new URL(location.href);
+        if (view === 'orders') url.searchParams.delete('view');
+        else url.searchParams.set('view', view);
+        history.replaceState({}, '', url.pathname + (url.search || '') + url.hash);
+      }
+      let orderTab = 'orders';
+      $('tab-orders').onclick = () => switchTab('orders');
+      $('tab-stats').onclick = () => switchTab('stats');
+      $('tab-recon').onclick = () => switchTab('recon');
+      $('order-filters').onclick = (ev) => {
+        const f = ev.target.dataset?.f;
+        if (!f) return;
+        orderFilter = f;
+        renderOrders();
+      };
 
       async function loadDesk() {
         const [statsResp, ordersResp, gateResp] = await Promise.all([
@@ -128,80 +379,309 @@
         const stats = await statsResp.json();
         const { orders } = await ordersResp.json();
         const gate = await gateResp.json();
+        // Orders tab — filtered view of the operational layer. Row indexes refer to
+        // this rendered (filtered) list, not the full deskOrders.
+        renderedOrders = deskOrders = orders;
+        renderOrders();
         const t = stats.totals;
+        // Orders chip carries the work-to-do count: awaiting payment + open refund requests.
+        const todo = t.pending + t.refundRequested;
+        $('tab-orders').textContent = todo > 0 ? `Orders · ${todo}` : 'Orders';
         $('kpis').innerHTML = [
           ['Orders', t.orders],
           ['Awaiting pay', t.pending],
           ['Paid', t.paid],
           ['Shipped', t.shipped],
+          ['Refund requests', t.refundRequested],
+          ['Refunded orders', t.refundedOrders + (t.partiallyRefundedOrders ? ` (+${t.partiallyRefundedOrders} part)` : '')],
           ['Revenue', usd(t.revenueCents)],
           ['Buyers', t.buyers],
-        ].map(([k, v]) => `<div class="kpi"><span class="muted">${k}</span><strong>${v}</strong></div>`).join('');
-        $('orders').innerHTML = table(
-          ['Order', 'Buyer', 'Item', 'Ship to', 'Shop status', 'Payment', ''],
-          orders.map((o) => [
-            `<span class="mono">${o.id}</span>`,
-            `${o.buyerNickname}<br><span class="muted mono">${o.buyerId}</span>`,
-            `${o.productTitle}<br><span class="muted">${usd(o.amountCents)}</span>`,
-            `${o.recipient} · ${o.phone}<br><span class="muted">${o.address}</span>`,
-            STATUS[o.status] || o.status,
-            `<span class="mono">${o.paymentId || '—'}</span><br><span class="muted">${o.chain || ''} ${o.txHash || ''}</span>`,
-            o.status === 'paid'
-              ? `<button type="button" class="ship" data-ship="${o.id}">Mark shipped</button>`
-              : '',
-          ]),
-        );
+        ].map(([k, v]) => `<div class="kpi"><span>${k}</span><strong class="num">${v}</strong></div>`).join('');
         $('gateway-err').textContent = gate.error
           ? `Gateway list failed: ${gate.error}`
           : 'Same merchant key. Shop order id lives in payment metadata.';
         const buyerLabel = (b) => {
           if (!b) return '—';
-          if (b.kind === 'olares') return `${b.olaresId}<br><span class="muted mono">${b.did || ''}</span>`;
+          if (b.kind === 'olares') return `${esc(b.olaresId)}<br><span class="muted mono">${esc(b.did || '')}</span>`;
           const name = b.display?.name;
-          return `${name || b.ref}<br><span class="muted mono">${b.ref}</span>`;
+          return `${esc(name || b.ref)}<br><span class="muted mono">${esc(b.ref)}</span>`;
         };
         $('gateway').innerHTML = table(
           ['Payment', 'Shop order', 'Buyer', 'Status', 'Amount', 'Paid at'],
           (gate.items || []).map((p) => [
-            `<span class="mono">${p.paymentId}</span>`,
-            `<span class="mono">${p.metadata?.order_id || '—'}</span>`,
+            `<span class="mono">${esc(p.paymentId)}</span>`,
+            `<span class="mono">${esc(p.metadata?.order_id || '—')}</span>`,
             buyerLabel(p.buyer),
-            GATE[p.status] || p.status || '—',
-            usd(p.amountCents || 0),
-            p.paidAt || '—',
+            badge(GATE[p.status] || [p.status || '—', 'b-gray']),
+            `<span class="num">${usd(p.amountCents || 0)}</span>`,
+            esc(p.paidAt || '—'),
           ]),
         );
         $('goods').innerHTML = table(
           ['Item', 'Orders', 'Paid', 'Shipped', 'Revenue'],
-          stats.byProduct.map((p) => [p.title, p.orders, p.paid, p.shipped, usd(p.revenueCents)]),
+          stats.byProduct.map((p) => [esc(p.title), p.orders, p.paid, p.shipped, `<span class="num">${usd(p.revenueCents)}</span>`]),
         );
         $('rails').innerHTML = table(
           ['Chain', 'Currency', 'Paid orders', 'Revenue'],
-          stats.byChain.map((c) => [c.chain, c.payCurrency || '—', c.orders, usd(c.revenueCents)]),
+          stats.byChain.map((c) => [esc(c.chain), esc(c.payCurrency || '—'), c.orders, `<span class="num">${usd(c.revenueCents)}</span>`]),
         );
         $('buyers').innerHTML = table(
           ['Buyer', 'Orders', 'Paid', 'Shipped', 'Spent', 'Last address'],
           stats.byBuyer.map((b) => [
-            `${b.nickname}<br><span class="muted mono">${b.buyerId}</span>`,
-            b.orders, b.paid, b.shipped, usd(b.revenueCents), b.lastAddress,
+            `${esc(b.nickname)}<br><span class="muted mono">${esc(b.buyerId)}</span>`,
+            b.orders, b.paid, b.shipped, `<span class="num">${usd(b.revenueCents)}</span>`, esc(b.lastAddress),
           ]),
         );
         paint(true);
       }
 
-      $('orders').onclick = async (ev) => {
-        const id = ev.target.dataset?.ship;
-        if (!id) return;
-        ev.target.disabled = true;
-        const resp = await fetch('/api/admin/orders/' + encodeURIComponent(id) + '/ship', { method: 'POST' });
+      // ---------------- order drawer ----------------
+
+      function openDrawer(order) {
+        drawerOrder = order;
+        tokenDecimals = order.refund?.route?.tokenDecimals ?? null;
+        renderDrawer(order, null, []);
+        show($('drawer-scrim'), true);
+        show($('drawer'), true);
+        refreshDrawerRefunds(order.id);
+      }
+
+      function closeDrawer() {
+        show($('drawer-scrim'), false);
+        show($('drawer'), false);
+        drawerOrder = null;
+      }
+
+      async function refreshDrawerRefunds(orderId) {
+        const resp = await fetch('/api/admin/orders/' + encodeURIComponent(orderId) + '/refunds');
+        if (!resp.ok) return;
         const data = await resp.json();
+        if (drawerOrder?.id !== orderId) return;
+        tokenDecimals = data.refundView?.route?.tokenDecimals ?? tokenDecimals;
+        renderDrawer(drawerOrder, data.refundView, data.refunds);
+      }
+
+      function renderDrawer(order, refundView, refundRows) {
+        const sym = refundView?.route?.tokenSymbol || '';
+        const rv = refundView;
+        const canRefund = (order.status === 'paid' || order.status === 'shipped' || order.refund?.status === 'partial')
+          && order.refund?.status !== 'open' && rv?.refundable !== false;
+        const reqOpen = order.refundRequest?.status === 'open';
+        const drow = (k, v) => `<div class="drow"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+
+        // One sticky action bar at the drawer bottom — the only place order-level
+        // actions live. With an open buyer request, Accept & refund is primary;
+        // a seller-initiated refund (no request) stays secondary (ghost).
+        const actions = [];
+        if (reqOpen && canRefund) actions.push(`<button type="button" id="req-refund">Accept & refund</button>`);
+        if (order.status === 'paid') actions.push(`<button type="button" ${!reqOpen ? '' : 'class="ghost"'} data-ship="${esc(order.id)}">Mark shipped</button>`);
+        if (canRefund && !reqOpen) actions.push(`<button type="button" class="ghost" id="drawer-refund-open">Refund</button>`);
+        if (reqOpen) actions.push(`<button type="button" class="ghost" id="req-dismiss">Dismiss request</button>`);
+
+        $('drawer').innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px">
+            <div>
+              <p class="kicker">Order</p>
+              <h3 class="mono" style="margin:0;font-size:15px">${esc(order.id)}</h3>
+            </div>
+            <button type="button" class="ghost sub" id="drawer-close">Close</button>
+          </div>
+          <div style="margin-top:14px">
+            ${badge(STATUS[order.status] || [order.status, 'b-gray'])}
+            ${order.refund?.status && order.refund.status !== 'none' ? badge(REFUND_ORDER_BADGE[order.refund.status]) : ''}
+            ${order.refundRequest && order.refundRequest.status !== 'granted' ? badge(REQUEST_BADGE[order.refundRequest.status] || [order.refundRequest.status, 'b-gray']) : ''}
+          </div>
+          <div class="dsec">
+            <h4>Order facts</h4>
+            ${drow('Buyer', `${esc(order.buyerNickname)} <span class="muted mono">${esc(order.buyerId)}</span>`)}
+            ${drow('Item', `${esc(order.productTitle)} · <span class="num">${usd(order.amountCents)}</span>`)}
+            ${drow('Ship to', `${esc(order.recipient)} · ${esc(order.phone)}<br><span class="muted">${esc(order.address)}</span>`)}
+            ${drow('Payment', `<span class="mono">${esc(order.paymentId || '—')}</span>`)}
+            ${order.chain ? drow('On-chain', `<span class="mono">${esc(order.chain)} ${esc(order.txHash || '')}</span>`) : ''}
+            ${order.shipNote ? drow('Ship note', esc(order.shipNote)) : ''}
+          </div>
+          ${order.refundRequest ? `
+          <div class="dsec">
+            <h4>Buyer refund request</h4>
+            ${badge(REQUEST_BADGE[order.refundRequest.status] || [order.refundRequest.status, 'b-gray'])}
+            <p style="margin:10px 0 4px">“${esc(order.refundRequest.reason)}”</p>
+            <p class="muted">— ${esc(order.buyerNickname)}, ${new Date(order.refundRequest.requestedAt).toLocaleString()}</p>
+            ${order.refundRequest.note ? `<p style="margin:6px 0 0"><span class="muted">Your reply:</span> “${esc(order.refundRequest.note)}”</p>` : ''}
+          </div>` : ''}
+          <div class="dsec" style="margin-bottom: 76px">
+            <h4>Refund ledger</h4>
+            ${rv ? [
+              drow('Received', `<span class="num">${fmtMinor(rv.receivedAmount)} ${esc(sym)}</span>`),
+              drow('Refunded', `<span class="num">${fmtMinor(rv.refundedAmount)} ${esc(sym)}</span>`),
+              drow('Remaining refundable', `<span class="num">${fmtMinor(rv.remainingRefundable)} ${esc(sym)}</span>`),
+              rv.route ? drow('Route', `<span class="mono">${esc(rv.route.chain)} → payer ${esc(rv.route.toPayer)}</span>`) : '',
+              rv.nonRefundableReason ? drow('Blocked', `<span class="err">${esc(rv.nonRefundableReason)}</span>`) : '',
+            ].join('') : '<p class="muted">Refund balance appears after the order is paid.</p>'}
+            ${refundRows.length ? `<div class="tblwrap" style="margin-top:10px">${table(
+              ['Refund', 'Amount', 'Status', ''],
+              refundRows.map((r) => {
+                // Business actions per state: prepared/failed can be (re)signed —
+                // continue/retry reissues the secret behind the scenes and jumps
+                // straight to the execution page. A submitted refund is money in
+                // flight: no cancel, just wait for on-chain confirmation.
+                const signed = r.status === 'REFUND_STATUS_PREPARED' || r.status === 'REFUND_STATUS_FAILED';
+                const retryLabel = r.status === 'REFUND_STATUS_FAILED' ? 'Retry refund' : 'Continue refund';
+                return [
+                  `<span class="mono">${esc(r.refundId)}</span>${r.reason ? `<br><span class="muted">${esc(r.reason)}</span>` : ''}${r.txHash ? `<br><span class="muted mono">${esc(r.txHash)}</span>` : ''}${r.failReason ? `<br><span class="err">${esc(r.failReason)}</span>` : ''}`,
+                  `<span class="num">${fmtMinor(r.amount)}</span>`,
+                  badge(REFUND_ROW_BADGE[r.status] || [r.status, 'b-gray']),
+                  signed
+                    ? `<button type="button" class="ghost sub" data-continue-refund="${esc(r.refundId)}">${retryLabel}</button>
+                       <button type="button" class="ghost sub" data-cancel-refund="${esc(r.refundId)}">Cancel</button>`
+                    : '',
+                ];
+              }),
+            )}</div>` : ''}
+          </div>
+          <div class="dsticky">
+            <div class="actions" style="margin:0">${actions.join('')}</div>
+          </div>`;
+        $('drawer-close').onclick = closeDrawer;
+        const shipBtn = $('drawer').querySelector('[data-ship]');
+        if (shipBtn) shipBtn.onclick = () => shipOrder(order.id);
+        const refundBtn = $('drawer').querySelector('#drawer-refund-open');
+        if (refundBtn) refundBtn.onclick = () => openRefundModal(order.id, rv, sym);
+        const reqRefundBtn = $('drawer').querySelector('#req-refund');
+        if (reqRefundBtn) reqRefundBtn.onclick = () => openRefundModal(order.id, rv, sym, order.refundRequest?.reason || '');
+        const dismissBtn = $('drawer').querySelector('#req-dismiss');
+        if (dismissBtn) dismissBtn.onclick = () => openDismissModal(order.id);
+        $('drawer').querySelectorAll('[data-cancel-refund]').forEach((b) => {
+          b.onclick = () => cancelRefund(b.dataset.cancelRefund);
+        });
+        $('drawer').querySelectorAll('[data-continue-refund]').forEach((b) => {
+          b.onclick = () => continueRefund(b.dataset.continueRefund);
+        });
+      }
+
+      async function shipOrder(id) {
+        const resp = await fetch('/api/admin/orders/' + encodeURIComponent(id) + '/ship', { method: 'POST' });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) return alert(data.error || 'could not ship');
+        await loadDesk();
+        drawerOrder = data.order;
+        renderDrawer(drawerOrder, null, []);
+        refreshDrawerRefunds(id);
+      }
+
+      // ---------------- refund actions ----------------
+
+      let refundTargetOrderId = null;
+      let refundOrder = null;
+
+      function openRefundModal(orderId, rv, sym, prefillReason = '') {
+        refundTargetOrderId = orderId;
+        tokenDecimals = rv?.route?.tokenDecimals ?? tokenDecimals;
+        refundOrder = drawerOrder; // for the USD ⇄ token context line
+        if (rv && drawerOrder) {
+          // USD left = order USD × (remaining / received) — same frozen rate as the server.
+          const usdLeft = (drawerOrder.amountCents / 100) * (Number(rv.remainingRefundable) / Number(rv.receivedAmount));
+          $('refund-ctx').textContent = `Remaining refundable: $${usdLeft.toFixed(2)} (${fmtMinor(rv.remainingRefundable)} ${sym})`;
+        } else $('refund-ctx').textContent = '';
+        $('refund-form').reset();
+        $('refund-form').reason.value = prefillReason; // buyer's request, if accepting one
+        show($('refund-err'), false);
+        show($('refund-modal'), true);
+      }
+
+      let dismissTargetOrderId = null;
+      function openDismissModal(orderId) {
+        dismissTargetOrderId = orderId;
+        $('dismiss-form').reset();
+        show($('dismiss-err'), false);
+        show($('dismiss-modal'), true);
+      }
+      $('dismiss-cancel').onclick = () => show($('dismiss-modal'), false);
+
+      $('dismiss-form').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const note = new FormData(ev.target).get('note');
+        const resp = await fetch('/api/admin/orders/' + encodeURIComponent(dismissTargetOrderId) + '/refund-request/dismiss', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ note }),
+        });
+        const data = await resp.json().catch(() => ({}));
         if (!resp.ok) {
-          ev.target.disabled = false;
-          alert(data.error || 'could not ship');
+          $('dismiss-err').textContent = data.error || 'could not dismiss request';
+          show($('dismiss-err'), true);
           return;
         }
-        loadDesk();
+        show($('dismiss-modal'), false);
+        await loadDesk();
+        drawerOrder = data.order;
+        renderDrawer(drawerOrder, null, []);
+        refreshDrawerRefunds(dismissTargetOrderId);
       };
+
+      $('refund-cancel').onclick = () => show($('refund-modal'), false);
+
+      $('refund-form').onsubmit = async (ev) => {
+        ev.preventDefault();
+        const fd = new FormData(ev.target);
+        const body = { reason: fd.get('reason') || undefined };
+        const amt = String(fd.get('amountUsd') || '').trim();
+        if (amt) body.amountUsd = Number(amt);
+        $('refund-submit').disabled = true;
+        show($('refund-err'), false);
+        const resp = await fetch('/api/admin/orders/' + encodeURIComponent(refundTargetOrderId) + '/refund', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await resp.json().catch(() => ({}));
+        $('refund-submit').disabled = false;
+        if (!resp.ok) {
+          $('refund-err').textContent = data.error || 'could not open refund';
+          show($('refund-err'), true);
+          return;
+        }
+        show($('refund-modal'), false);
+        await loadDesk();
+        drawerOrder = data.order;
+        renderDrawer(drawerOrder, null, []);
+        refreshDrawerRefunds(refundTargetOrderId);
+        // Business flow: straight to the gateway execution page — the operator
+        // signs there and the return_url lands back on this drawer.
+        location.assign(data.executionUrl);
+      };
+
+      async function cancelRefund(refundId) {
+        const resp = await fetch('/api/admin/refunds/' + encodeURIComponent(refundId) + '/cancel', { method: 'POST' });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) return alert(data.error || 'could not cancel refund');
+        await loadDesk();
+        drawerOrder = data.order;
+        renderDrawer(drawerOrder, null, []);
+        refreshDrawerRefunds(data.order.id);
+      }
+
+      /** Continue / retry a not-yet-signed refund: rotate the execution secret
+       *  (reissue) and go straight to the fresh execution page. The merchant never
+       *  sees a "link" — just a next step. */
+      async function continueRefund(refundId) {
+        const resp = await fetch('/api/admin/refunds/' + encodeURIComponent(refundId) + '/reissue', { method: 'POST' });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) return alert(data.error || 'could not continue refund');
+        location.assign(data.executionUrl);
+      }
+
+      // ---------------- wiring ----------------
+
+      $('orders').onclick = (ev) => {
+        const tr = ev.target.closest('tr.rowlink');
+        if (!tr) return;
+        openDrawer(renderedOrders[Number(tr.dataset.row)]);
+      };
+
+      $('drawer-scrim').onclick = closeDrawer;
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') { closeDrawer(); show($('refund-modal'), false); }
+      });
 
       $('signin').onsubmit = async (ev) => {
         ev.preventDefault();
@@ -230,6 +710,19 @@
         const me = await (await fetch('/api/admin/me')).json();
         if (me.ok) loadDesk();
         else paint(false);
+        const params = new URLSearchParams(location.search);
+        // Deep links: /admin?view=stats|recon for the read-only layers,
+        // /admin?order=ord_xxx (refund execution return_url) opens the drawer.
+        if (me.ok && TAB_VIEWS[params.get('view')]) switchTab(params.get('view'));
+        const want = params.get('order');
+        if (me.ok && want) {
+          const resp = await fetch('/api/admin/orders');
+          if (resp.ok) {
+            const { orders } = await resp.json();
+            const hit = orders.find((o) => o.id === want);
+            if (hit) { deskOrders = orders; renderOrders(); switchTab('orders'); openDrawer(hit); }
+          }
+        }
       })();
     </script>
   </body>

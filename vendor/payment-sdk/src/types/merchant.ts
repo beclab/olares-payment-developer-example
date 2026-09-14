@@ -1,11 +1,20 @@
 /**
- * Merchant-only types — used solely by MerchantClient (channels / receive wallet transactions).
+ * Merchant-only types — MerchantClient's channels, receive wallet transactions and refunds.
  *
  * camelCase + paymentId (no intent concept); the wire shapes live in core/wire.ts.
  * The platform key is rejected by the gateway on these endpoints, so these types
  * do not belong to the shared layer (./base).
  */
-import type { BuyerRef, ChainSlug, ChainType, Direction, ReceiveWalletTxStatus, Timestamp } from './base';
+import type {
+  BuyerRef,
+  ChainSlug,
+  ChainType,
+  Direction,
+  ReceiveWalletTxStatus,
+  Refund,
+  RefundRoute,
+  Timestamp,
+} from './base';
 
 // ---------- Resources (read) ----------
 
@@ -91,6 +100,33 @@ export interface ReceiveWalletTransactionItem {
   paymentStatus: string | null;
   /** Linked payment's metadata (order/product identity); null when unmatched or meta absent. */
   paymentMetadata: Record<string, unknown> | null;
+}
+
+// ---------- Refunds (write surface; the read types are shared, see ./base) ----------
+
+/** createRefund request; amount omitted = the whole remaining refundable balance. */
+export interface CreateRefundRequest {
+  paymentId: string;
+  /** Token minor units. */
+  amount?: string;
+  /** Merchant-internal note (audit only; never disclosed to the buyer). */
+  reason?: string;
+  /** Execution-page redirect on a terminal state; absolute http(s) URL, any host. */
+  returnUrl?: string;
+}
+
+/**
+ * createRefund / reissueRefundLink deliverable.
+ *
+ * executionUrl carries the plaintext execution secret in its fragment and it appears
+ * exactly once: hand it to the operator, never log or persist it. Once expired, call
+ * reissueRefundLink for a fresh one (which invalidates the previous link).
+ */
+export interface RefundHandoff {
+  refund: Refund;
+  route: RefundRoute | null;
+  executionUrl: string;
+  executionExpiresAt: Timestamp | null;
 }
 
 // ---------- Requests (write) & responses ----------

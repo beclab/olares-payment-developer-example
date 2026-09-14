@@ -28,6 +28,11 @@ import type {
   PingResponseJson,
   ReceiveWalletJson,
   ReceiveWalletTransactionItemJson,
+  RefundCallbackJson,
+  RefundHandoffJson,
+  RefundJson,
+  RefundRouteJson,
+  RefundSummaryJson,
   VerifyTxResponseJson,
 } from '@olares/payment-proto';
 
@@ -51,6 +56,11 @@ export type WireListSupportedChainsResponse = GatewayListSupportedChainsResponse
 export type WireListPaymentMethodConfigsResponse = { configs?: PaymentMethodConfigJson[] };
 export type WireUpsertOnchainPmcResponse = PaymentMethodConfigJson;
 export type WireUpsertOnchainPmcRequest = GatewayUpsertOnchainPmcReqJson;
+export type WireRefund = RefundJson;
+export type WireRefundRoute = RefundRouteJson;
+export type WireRefundSummary = RefundSummaryJson;
+export type WireRefundHandoff = RefundHandoffJson;
+export type WireRefundCallback = RefundCallbackJson;
 
 /** EVM transaction receipt (eth_getTransactionReceipt result); raw chain fact, not proto-modeled.
  *  Used by both the gateway passthrough (/api/verifyTx) and direct RPC. */

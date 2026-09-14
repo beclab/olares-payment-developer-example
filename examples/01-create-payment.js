@@ -14,6 +14,7 @@ import { CONFIG } from '../config.js';
 const client = new MerchantClient({
   apiKey: process.env.PAYMENT_API_KEY || CONFIG.apiKey,
   apiSecret: process.env.PAYMENT_API_SECRET || CONFIG.apiSecret,
+  baseUrl: process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl,
 });
 
 const { paymentId, checkoutUrl } = await client.createPayment(

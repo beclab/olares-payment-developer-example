@@ -9,9 +9,11 @@
 import type {
   CreateOrderFromCatalogReqJson,
   CreatePaymentReqJson,
+  CreateRefundReqJson,
   GetPaymentReqJson,
   ListPaymentsReqJson,
   ListReceiveWalletTransactionsReqJson,
+  RefundIdReqJson,
   VerifyTxReqJson,
   VerifyTxResponseJson,
 } from '@olares/payment-proto';
@@ -27,21 +29,28 @@ import type {
   LatestAttempt,
   ListPaymentsRequest,
   ListPaymentsResponse,
+  NonRefundableReason,
   Payment,
   PaymentCredential,
+  PaymentRefundSummary,
   PaymentResult,
   PaymentStatus,
   PingResult,
+  Refund,
+  RefundRoute,
+  RefundStatus,
   TxVerification,
 } from '../types/base';
 import type {
   ChannelInfo,
+  CreateRefundRequest,
   ReceiveWallet,
   ListChannelsResponse,
   ListReceiveWalletTransactionsRequest,
   ListReceiveWalletTransactionsResponse,
   ReceiveWalletTransactionItem,
   ListSupportedChainsResponse,
+  RefundHandoff,
   SupportedChain,
   SupportedToken,
   ListPaymentMethodConfigsResponse,
@@ -66,6 +75,10 @@ import type {
   WirePingResult,
   WireReceiveWallet,
   WireReceiveWalletTransactionItem,
+  WireRefund,
+  WireRefundHandoff,
+  WireRefundRoute,
+  WireRefundSummary,
   WireWebhookCredential,
 } from './wire';
 
@@ -142,6 +155,7 @@ export function wireToPayment(w: WirePayment): Payment {
     metadata: w.metadata ?? {},
     clientSecret: w.client_secret ?? null,
     latestAttempt: w.latest_attempt ? toLatestAttempt(w.latest_attempt) : null,
+    refundSummary: w.refund_summary ? wireToRefundSummary(w.refund_summary) : null,
     expiresAt: w.expires_at ?? null,
     canceledAt: w.canceled_at ?? null,
     paidAt: w.paid_at ?? null,
@@ -239,6 +253,77 @@ export function verifyTxRequestToWire(txHash: string, chain?: string, network?: 
 /** verifyTx response: receipt absent = tx not on-chain yet → null. */
 export function verifyTxReceiptFromWire(w: VerifyTxResponseJson | null | undefined): EvmReceipt | null {
   return (w?.receipt ?? null) as EvmReceipt | null;
+}
+
+// ---------- refunds ----------
+
+/** Wire Refund → public. Hint flags are emitted only when set, so absent = false. */
+export function wireToRefund(w: WireRefund): Refund {
+  return {
+    refundId: w.id ?? '',
+    paymentId: w.intent_id ?? '',
+    status: (w.status ?? 'REFUND_STATUS_UNSPECIFIED') as RefundStatus,
+    amount: w.amount ?? '',
+    txHash: w.tx_hash ?? null,
+    failReason: w.fail_reason ?? null,
+    reason: w.reason ?? null,
+    preparedStale: w.prepared_stale === true,
+    stuck: w.stuck === true,
+    createdAt: w.created_at ?? null,
+    submittedAt: w.submitted_at ?? null,
+    succeededAt: w.succeeded_at ?? null,
+    failedAt: w.failed_at ?? null,
+    canceledAt: w.canceled_at ?? null,
+  };
+}
+
+export function wireToRefundRoute(w: WireRefundRoute): RefundRoute {
+  return {
+    chain: (w.chain ?? '') as ChainSlug,
+    networkId: w.network_id ?? null,
+    tokenSymbol: w.token_symbol ?? '',
+    tokenDecimals: w.token_decimals ?? null,
+    contractAddress: w.contract_address ?? null,
+    fromWallet: w.from_wallet ?? '',
+    toPayer: w.to_payer ?? '',
+    payerRouteVerified: w.payer_route_verified ?? false,
+  };
+}
+
+export function wireToRefundSummary(w: WireRefundSummary): PaymentRefundSummary {
+  return {
+    receivedAmount: w.received_amount ?? '',
+    refundedAmount: w.refunded_amount ?? '',
+    remainingRefundable: w.remaining_refundable ?? '',
+    refundable: w.refundable ?? false,
+    nonRefundableReason: (w.non_refundable_reason ?? null) as NonRefundableReason | null,
+    route: w.route ? wireToRefundRoute(w.route) : null,
+    refunds: (w.refunds ?? []).map(wireToRefund),
+  };
+}
+
+export function wireToRefundHandoff(w: WireRefundHandoff): RefundHandoff {
+  return {
+    refund: w.refund ? wireToRefund(w.refund) : wireToRefund({}),
+    route: w.route ? wireToRefundRoute(w.route) : null,
+    executionUrl: w.refund_execution_url ?? '',
+    executionExpiresAt: w.execution_expires_at ?? null,
+  };
+}
+
+/** createRefund request: public camelCase → gateway snake_case body. */
+export function createRefundRequestToWire(p: CreateRefundRequest): CreateRefundReqJson {
+  return {
+    payment_id: p.paymentId,
+    amount: p.amount,
+    reason: p.reason,
+    return_url: p.returnUrl,
+  };
+}
+
+/** getRefund / cancelRefund / reissueRefundLink share this one-field body. */
+export function refundIdToWire(refundId: string): RefundIdReqJson {
+  return { refund_id: refundId };
 }
 
 // ---------- channels / receive wallet (merchant) ----------
