@@ -925,5 +925,4 @@ app.get('/api/admin/gateway-payments', requireAdmin, async (_req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`           shop    ${shopPublicUrl}`);
   console.log(`          admin    ${shopPublicUrl}/admin`);
-  console.log(`payment gateway    ${gatewayBaseUrl} (GATEWAY_BASE_URL / CONFIG.gatewayBaseUrl)`);
 });
