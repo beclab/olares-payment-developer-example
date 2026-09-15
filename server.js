@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
-import { MerchantClient, PaymentError, webhooks } from '@olares/payment-sdk';
+import { DEFAULT_BASE_URL, MerchantClient, PaymentError, webhooks } from '@olares/payment-sdk';
 import { CONFIG } from './config.js';
 
 const apiKey = process.env.PAYMENT_API_KEY || CONFIG.apiKey;
@@ -25,7 +25,7 @@ const port = Number(process.env.PORT || CONFIG.port);
 const shopPublicUrl = process.env.SHOP_PUBLIC_URL || CONFIG.shopPublicUrl;
 // SDK default is https://www.olares.com/payment; GATEWAY_BASE_URL / CONFIG.gatewayBaseUrl
 // override it (also used for the hosted receipt link — keep them on the same gateway).
-const gatewayBaseUrl = process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl;
+const gatewayBaseUrl = process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl || DEFAULT_BASE_URL; // 未配置时回落 SDK 默认（生产）
 
 const here = dirname(fileURLToPath(import.meta.url));
 const page = (name) => readFileSync(join(here, name), 'utf8');
@@ -925,4 +925,5 @@ app.get('/api/admin/gateway-payments', requireAdmin, async (_req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`           shop    ${shopPublicUrl}`);
   console.log(`          admin    ${shopPublicUrl}/admin`);
+  console.log(`payment gateway    ${gatewayBaseUrl}`);
 });
