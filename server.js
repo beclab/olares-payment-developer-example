@@ -557,7 +557,20 @@ function applyRefundSummary(order, summary) {
     route: summary.route,
   };
   for (const r of summary.refunds ?? []) {
-    if (!refunds.has(r.refundId)) recordRefundRow(order, r);
+    const row = refunds.get(r.refundId);
+    if (!row) {
+      recordRefundRow(order, r);
+      continue;
+    }
+    // 网关账本只含 succeeded 条目：把本地停在 prepared 的行推进到终态。
+    // 否则订单徽章会一直显示 refund pending（webhook 不可达时轮询是唯一同步通道）。
+    if (row.status !== r.status) {
+      row.status = r.status;
+      if (r.txHash) row.txHash = r.txHash;
+      row.succeededAt = msOf(r.succeededAt);
+      row.failReason = null;
+      row.updatedAt = Date.now();
+    }
   }
 }
 
@@ -686,7 +699,7 @@ app.get('/api/orders', requireBuyer, async (req, res) => {
   const mine = [...orders.values()]
     .filter((o) => o.buyerId === req.buyer.id)
     .sort((a, b) => b.createdAt - a.createdAt);
-  await Promise.all(mine.filter((o) => o.status === OPEN).map((o) => syncOrder(o)));
+  await Promise.all(mine.filter((o) => o.status === OPEN || (collected(o) && o.refundIds.length > 0)).map((o) => syncOrder(o)));
   res.json({ orders: mine.map(publicOrder) });
 });
 
@@ -783,7 +796,7 @@ app.post('/api/admin/session/logout', (req, res) => {
 
 app.get('/api/admin/orders', requireAdmin, async (_req, res) => {
   const list = [...orders.values()].sort((a, b) => b.createdAt - a.createdAt);
-  await Promise.all(list.filter((o) => o.status === OPEN).map((o) => syncOrder(o)));
+  await Promise.all(list.filter((o) => o.status === OPEN || (collected(o) && o.refundIds.length > 0)).map((o) => syncOrder(o)));
   res.json({ orders: list.map(publicOrder) });
 });
 
