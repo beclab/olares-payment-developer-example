@@ -15,6 +15,13 @@ export function formatToken(minimal, symbol) {
   }
 }
 
+/** SDK timestamps: RFC3339 string on Payment/Refund, unix ms on webhook events. */
+export function msOf(ts) {
+  if (ts == null) return Date.now();
+  const n = typeof ts === 'number' ? ts : Date.parse(ts);
+  return Number.isFinite(n) ? n : Date.now();
+}
+
 /** BuyerRef snapshot: omitted = anonymous; olares / external otherwise. */
 export function formatBuyer(buyer) {
   if (buyer == null) return 'anonymous';

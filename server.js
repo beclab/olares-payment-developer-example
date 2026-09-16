@@ -1,14 +1,13 @@
 /**
  * Harbor Goods — a shop demo for Olares Payment.
  *
- * Read the Gateway section first. Those calls are the integration:
- *   createPayment → hosted checkout URL
- *   getPayment    → has this payment settled? (return-url / continue-pay; carries refundSummary when paid)
- *   constructEvent → verify an inbound webhook (payment.* and refund.* events)
- *   listPayments  → merchant-side reconciliation
- *   createRefund  → open a refund, get the one-time execution URL (see Refund ledger)
+ * Read the Gateway section first. Those wrappers are the integration:
+ *   createPayment / getPayment / listPayments
+ *   createRefund / getRefund / cancelRefund / reissueRefundLink
+ *   constructEvent — verify inbound payment.* and refund.* webhooks
  *
- * Everything below that is ordinary shop code (sessions, orders, HTTP).
+ * Sync (after the shop state) is how those results land on orders.
+ * Everything else is ordinary shop code (sessions, orders, HTTP).
  */
 import { randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -17,22 +16,24 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { DEFAULT_BASE_URL, MerchantClient, PaymentError, webhooks } from '@olares/payment-sdk';
 import { CONFIG } from './config.js';
+import { msOf } from './format.js';
 
 const apiKey = process.env.PAYMENT_API_KEY || CONFIG.apiKey;
 const apiSecret = process.env.PAYMENT_API_SECRET || CONFIG.apiSecret;
 const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET || CONFIG.webhookSecret;
 const port = Number(process.env.PORT || CONFIG.port);
 const shopPublicUrl = process.env.SHOP_PUBLIC_URL || CONFIG.shopPublicUrl;
-// SDK default is https://www.olares.com/payment; GATEWAY_BASE_URL / CONFIG.gatewayBaseUrl
-// override it (also used for the hosted receipt link — keep them on the same gateway).
-const gatewayBaseUrl = process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl || DEFAULT_BASE_URL; // 未配置时回落 SDK 默认（生产）
+// SDK default is production; GATEWAY_BASE_URL / CONFIG.gatewayBaseUrl override for local/self-host.
+const gatewayBaseUrl = process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl || DEFAULT_BASE_URL;
+
+const OPEN = 'pending_payment'; // unpaid hosted checkout still in flight
 
 const here = dirname(fileURLToPath(import.meta.url));
 const page = (name) => readFileSync(join(here, name), 'utf8');
 const app = express();
 
 // ---------------------------------------------------------------------------
-// Gateway
+// Gateway — thin SDK wrappers (the integration surface)
 // ---------------------------------------------------------------------------
 
 const merchant = new MerchantClient({
@@ -73,10 +74,8 @@ async function getPayment(paymentId) {
   return merchant.getPayment(paymentId);
 }
 
-/** createRefund — open a refund on a succeeded payment. The handoff carries the
- *  executionUrl exactly once (its secret lives in the URL fragment): shown to the
- *  seller, never persisted, never logged. Amount omitted = the whole remaining
- *  balance. Shop-side bookkeeping lives in applyRefundHandoff (Refund ledger). */
+/** createRefund — open a refund; handoff.executionUrl is one-time (secret in the
+ *  fragment). Amount omitted = remaining balance. Shop bookkeeping: applyRefundHandoff. */
 async function createRefund(order, { amountMin, reason }) {
   return merchant.createRefund(
     {
@@ -89,6 +88,18 @@ async function createRefund(order, { amountMin, reason }) {
   );
 }
 
+async function getRefund(refundId) {
+  return merchant.getRefund(refundId);
+}
+
+async function cancelRefund(refundId) {
+  return merchant.cancelRefund(refundId);
+}
+
+async function reissueRefundLink(refundId) {
+  return merchant.reissueRefundLink(refundId);
+}
+
 /** listPayments — recent rows on this merchant account. */
 async function listPayments(limit = 50) {
   return merchant.listPayments({ limit });
@@ -97,96 +108,6 @@ async function listPayments(limit = 50) {
 /** constructEvent — verify the HMAC; throws if the body is not from the gateway. */
 function constructEvent(req) {
   return webhooks.constructEvent(req, webhookSecret);
-}
-
-/** Return-url / continue-pay fallback: ask the gateway, then update the order.
- *  Paid orders keep coming back here too — that is how the refund ledger syncs. */
-async function syncOrder(order) {
-  if (!order?.paymentId) return order;
-  try {
-    if (order.status !== OPEN) {
-      if (collected(order)) {
-        const result = await getPayment(order.paymentId);
-        applyRefundSummary(order, result.payment.refundSummary ?? null);
-      }
-      return order;
-    }
-    const result = await getPayment(order.paymentId);
-    if (result.paid) {
-      markPaid(order, result.credential, result.payment.paymentId, msOf(result.payment.paidAt));
-      // clientSecret arrives here (not in webhooks) — the only place we can build
-      // the hosted buyer receipt link from. See receiptUrlOf().
-      if (result.payment.clientSecret) order.clientSecret = result.payment.clientSecret;
-    } else if (result.payment.status === 'PAYMENT_STATUS_CANCELED') {
-      markClosed(order, 'canceled', 'payment canceled or expired');
-    }
-    applyRefundSummary(order, result.payment.refundSummary ?? null);
-  } catch (err) {
-    console.warn(`getPayment failed order=${order.id} ${gatewayError(err)}`);
-  }
-  return order;
-}
-
-/** Live path: apply a verified webhook to the matching order. */
-function applyWebhook(event) {
-  const order =
-    orders.get(event.metadata?.order_id) ??
-    [...orders.values()].find((o) => o.paymentId === event.paymentId) ??
-    null;
-  if (!order) {
-    console.warn(`webhook ${event.type} unknown payment=${event.paymentId}`);
-    return;
-  }
-  if (event.type === 'payment.succeeded') {
-    markPaid(order, event.credential || {}, event.paymentId, event.paidAt);
-    console.log(`paid order=${order.id} payment=${event.paymentId}`);
-    return;
-  }
-  if (event.type === 'payment.failed') {
-    markClosed(order, 'failed', event.failReason);
-    console.log(`failed order=${order.id} ${event.failReason || ''}`);
-    return;
-  }
-  if (event.type === 'payment.canceled') {
-    markClosed(order, 'canceled', event.cancellationReason);
-    console.log(`canceled order=${order.id}`);
-  }
-}
-
-/** Refund events ride a different protocol message (RefundCallback): they carry
- *  refundId + amount/token facts but NO metadata, so the order is matched by
- *  refundId first, paymentId second (covers refunds opened from the dashboard). */
-function applyRefundWebhook(event) {
-  let refund = refunds.get(event.refundId);
-  if (!refund) {
-    const order =
-      [...orders.values()].find((o) => o.paymentId === event.paymentId) ?? null;
-    if (!order) {
-      console.warn(`webhook ${event.type} unknown refund=${event.refundId}`);
-      return;
-    }
-    refund = recordRefundRow(order, {
-      refundId: event.refundId,
-      paymentId: event.paymentId,
-      amount: event.amount || '0',
-      status: 'REFUND_STATUS_SUBMITTED',
-    });
-  }
-  const order = orders.get(refund.orderId);
-  if (event.type === 'refund.succeeded') {
-    markRefundSucceeded(refund, event.txHash, msOf(event.succeededAt));
-    console.log(`refund ok order=${order.id} refund=${refund.refundId}`);
-  } else {
-    markRefundFailed(refund, event.failReason, msOf(event.failedAt));
-    console.log(`refund failed order=${order.id} refund=${refund.refundId} ${event.failReason || ''}`);
-  }
-  recomputeRefundView(order);
-}
-
-function msOf(ts) {
-  if (ts == null) return Date.now();
-  const n = typeof ts === 'number' ? ts : Date.parse(ts);
-  return Number.isFinite(n) ? n : Date.now();
 }
 
 // ---------------------------------------------------------------------------
@@ -286,7 +207,6 @@ function clearAdminCookie(req, res) {
 // desk). Request states: open → granted | dismissed | withdrawn.
 // ---------------------------------------------------------------------------
 
-const OPEN = 'pending_payment';
 const orders = new Map();
 
 const collected = (o) => o.status === 'paid' || o.status === 'shipped';
@@ -495,7 +415,7 @@ const publicRefund = (r) => ({
   succeededAt: r.succeededAt,
 });
 
-/** Seller view adds the internal note and the read-only stale/stuck hints. */
+/** Seller view adds the internal note and failReason. */
 const internalRefund = (r) => ({ ...publicRefund(r), reason: r.reason, failReason: r.failReason, updatedAt: r.updatedAt });
 
 /** Derived order-level rollup — never stored as a second source of truth.
@@ -532,10 +452,8 @@ function publicRefundView(o) {
   };
 }
 
-/** Hosted buyer receipt page (gateway step 9). The SDK does not expose receiptUrl
- *  yet, so we self-assemble it — tracked as an SDK improvement item (see
- *  docs/refund-open-questions.md). The receipt page lives on the CHECKOUT FRONT,
- *  not on the API gateway, so the base is the origin of the stored checkoutUrl. */
+/** Hosted buyer receipt page. Query is paymentId + clientSecret; host comes from
+ *  checkoutUrl (checkout front), not the API baseUrl. */
 function receiptUrlOf(o) {
   if (!o.paymentId || !o.clientSecret || !o.checkoutUrl) return null;
   try {
@@ -562,8 +480,8 @@ function applyRefundSummary(order, summary) {
       recordRefundRow(order, r);
       continue;
     }
-    // 网关账本只含 succeeded 条目：把本地停在 prepared 的行推进到终态。
-    // 否则订单徽章会一直显示 refund pending（webhook 不可达时轮询是唯一同步通道）。
+    // The gateway ledger only lists succeeded rows. Advance a local prepared
+    // row to terminal when polling is the only sync path (webhook unreachable).
     if (row.status !== r.status) {
       row.status = r.status;
       if (r.txHash) row.txHash = r.txHash;
@@ -652,11 +570,100 @@ function applyRefundHandoff(order, handoff, reason) {
 }
 
 // ---------------------------------------------------------------------------
+// Sync — apply gateway results onto shop orders
+// ---------------------------------------------------------------------------
+
+function orderByPaymentId(paymentId) {
+  return [...orders.values()].find((o) => o.paymentId === paymentId) ?? null;
+}
+
+function needsSync(o) {
+  return o.status === OPEN || (collected(o) && o.refundIds.length > 0);
+}
+
+/** Return-url / continue-pay fallback: ask the gateway, then update the order.
+ *  Paid orders keep coming back here too — that is how the refund ledger syncs. */
+async function syncOrder(order) {
+  if (!order?.paymentId) return order;
+  try {
+    if (order.status !== OPEN) {
+      if (collected(order)) {
+        const result = await getPayment(order.paymentId);
+        applyRefundSummary(order, result.payment.refundSummary ?? null);
+      }
+      return order;
+    }
+    const result = await getPayment(order.paymentId);
+    if (result.paid) {
+      markPaid(order, result.credential, result.payment.paymentId, msOf(result.payment.paidAt));
+      // clientSecret arrives here (not in webhooks) — needed to build the receipt link.
+      if (result.payment.clientSecret) order.clientSecret = result.payment.clientSecret;
+    } else if (result.payment.status === 'PAYMENT_STATUS_CANCELED') {
+      markClosed(order, 'canceled', 'payment canceled or expired');
+    }
+    applyRefundSummary(order, result.payment.refundSummary ?? null);
+  } catch (err) {
+    console.warn(`getPayment failed order=${order.id} ${gatewayError(err)}`);
+  }
+  return order;
+}
+
+/** Live path: apply a verified payment.* webhook to the matching order. */
+function applyWebhook(event) {
+  const order = orders.get(event.metadata?.order_id) ?? orderByPaymentId(event.paymentId);
+  if (!order) {
+    console.warn(`webhook ${event.type} unknown payment=${event.paymentId}`);
+    return;
+  }
+  if (event.type === 'payment.succeeded') {
+    markPaid(order, event.credential || {}, event.paymentId, event.paidAt);
+    console.log(`paid order=${order.id} payment=${event.paymentId}`);
+    return;
+  }
+  if (event.type === 'payment.failed') {
+    markClosed(order, 'failed', event.failReason);
+    console.log(`failed order=${order.id} ${event.failReason || ''}`);
+    return;
+  }
+  if (event.type === 'payment.canceled') {
+    markClosed(order, 'canceled', event.cancellationReason);
+    console.log(`canceled order=${order.id}`);
+  }
+}
+
+/** RefundCallback has no metadata: match refundId first, then paymentId
+ *  (covers refunds opened from the dashboard). */
+function applyRefundWebhook(event) {
+  let refund = refunds.get(event.refundId);
+  if (!refund) {
+    const order = orderByPaymentId(event.paymentId);
+    if (!order) {
+      console.warn(`webhook ${event.type} unknown refund=${event.refundId}`);
+      return;
+    }
+    refund = recordRefundRow(order, {
+      refundId: event.refundId,
+      paymentId: event.paymentId,
+      amount: event.amount || '0',
+      status: 'REFUND_STATUS_SUBMITTED',
+    });
+  }
+  const order = orders.get(refund.orderId);
+  if (event.type === 'refund.succeeded') {
+    markRefundSucceeded(refund, event.txHash, msOf(event.succeededAt));
+    console.log(`refund ok order=${order.id} refund=${refund.refundId}`);
+  } else {
+    markRefundFailed(refund, event.failReason, msOf(event.failedAt));
+    console.log(`refund failed order=${order.id} refund=${refund.refundId} ${event.failReason || ''}`);
+  }
+  recomputeRefundView(order);
+}
+
+// ---------------------------------------------------------------------------
 // HTTP
 // ---------------------------------------------------------------------------
 
-
-// Webhook must read the raw body — register it before express.json().
+// Webhook (raw body, before json)
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   let event;
   try {
@@ -671,10 +678,13 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
 });
 
 app.use(express.json());
+
+// Pages & catalog
 app.get('/', (_req, res) => res.type('html').send(page('index.html')));
 app.get('/admin', (_req, res) => res.type('html').send(page('admin.html')));
 app.get('/api/products', (_req, res) => res.json({ products: PRODUCTS }));
 
+// Buyer
 app.get('/api/me', (req, res) => {
   const buyer = buyerOf(req);
   res.json({ buyer: publicBuyer(buyer), lastShipTo: buyer?.lastShipTo || null });
@@ -699,7 +709,7 @@ app.get('/api/orders', requireBuyer, async (req, res) => {
   const mine = [...orders.values()]
     .filter((o) => o.buyerId === req.buyer.id)
     .sort((a, b) => b.createdAt - a.createdAt);
-  await Promise.all(mine.filter((o) => o.status === OPEN || (collected(o) && o.refundIds.length > 0)).map((o) => syncOrder(o)));
+  await Promise.all(mine.filter(needsSync).map(syncOrder));
   res.json({ orders: mine.map(publicOrder) });
 });
 
@@ -779,6 +789,7 @@ app.post('/api/orders/:id/refund-request/withdraw', requireBuyer, (req, res) => 
   res.json({ order: publicOrder(order) });
 });
 
+// Admin
 app.get('/api/admin/me', (req, res) => res.json({ ok: adminAuthed(req) }));
 
 app.post('/api/admin/session', (req, res) => {
@@ -796,7 +807,7 @@ app.post('/api/admin/session/logout', (req, res) => {
 
 app.get('/api/admin/orders', requireAdmin, async (_req, res) => {
   const list = [...orders.values()].sort((a, b) => b.createdAt - a.createdAt);
-  await Promise.all(list.filter((o) => o.status === OPEN || (collected(o) && o.refundIds.length > 0)).map((o) => syncOrder(o)));
+  await Promise.all(list.filter(needsSync).map(syncOrder));
   res.json({ orders: list.map(publicOrder) });
 });
 
@@ -852,7 +863,7 @@ app.get('/api/admin/orders/:id/refunds', requireAdmin, async (req, res) => {
     const row = refunds.get(id);
     if (!row || (row.status === 'REFUND_STATUS_SUCCEEDED' || row.status === 'REFUND_STATUS_CANCELED')) continue;
     try {
-      const fresh = await merchant.getRefund(id);
+      const fresh = await getRefund(id);
       Object.assign(row, {
         status: fresh.status,
         txHash: fresh.txHash ?? row.txHash,
@@ -875,7 +886,7 @@ app.post('/api/admin/refunds/:rid/cancel', requireAdmin, async (req, res) => {
   if (!row) return res.status(404).json({ error: 'refund not found' });
   const order = orders.get(row.orderId);
   try {
-    const fresh = await merchant.cancelRefund(row.refundId);
+    const fresh = await cancelRefund(row.refundId);
     row.status = fresh.status;
     row.failReason = null;
     row.updatedAt = Date.now();
@@ -893,7 +904,7 @@ app.post('/api/admin/refunds/:rid/reissue', requireAdmin, async (req, res) => {
   if (!row) return res.status(404).json({ error: 'refund not found' });
   const order = orders.get(row.orderId);
   try {
-    const handoff = await merchant.reissueRefundLink(row.refundId);
+    const handoff = await reissueRefundLink(row.refundId);
     row.status = handoff.refund.status;
     row.updatedAt = Date.now();
     console.log(`refund link reissued order=${order.id} refund=${row.refundId}`);
@@ -928,8 +939,8 @@ app.get('/api/admin/stats', requireAdmin, (_req, res) => res.json(stats()));
 
 app.get('/api/admin/gateway-payments', requireAdmin, async (_req, res) => {
   try {
-    const page = await listPayments(50);
-    res.json({ items: page.items, error: null });
+    const listed = await listPayments(50);
+    res.json({ items: listed.items, error: null });
   } catch (err) {
     res.json({ items: [], error: gatewayError(err) });
   }
