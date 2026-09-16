@@ -55,10 +55,11 @@ console.log('\ncreateRefund');
 console.log('  refundId     ', handoff.refund.refundId);
 console.log('  status       ', handoff.refund.status);
 console.log('  amount       ', formatToken(handoff.refund.amount, sym), sym);
-console.log('  expires at   ', handoff.executionExpiresAt?.toISOString() ?? '—');
 // One-time link: print it once, never store it. Open it in a browser to sign
 // with the receive wallet (an EOA — contract wallets are blocked there).
 console.log('  executionUrl ', handoff.executionUrl);
+// RFC3339 string (SDK Timestamp), not a Date.
+console.log('  expires at   ', handoff.executionExpiresAt ?? '—');
 
 // Watch the state machine (prepared → submitted → succeeded | failed | canceled).
 const REFRESH_MS = 4000;

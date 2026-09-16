@@ -10,7 +10,8 @@
     "ex:create": "tsx examples/01-create-payment.js",
     "ex:get": "tsx examples/02-get-payment.js",
     "ex:list": "tsx examples/03-list-payments.js",
-    "ex:webhook": "tsx examples/04-webhook.js"
+    "ex:webhook": "tsx examples/04-webhook.js",
+    "ex:refund": "tsx examples/05-create-refund.js"
   },
   "dependencies": {
     "@olares/payment-sdk": "file:./vendor/payment-sdk",
