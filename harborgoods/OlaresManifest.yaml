@@ -1,0 +1,77 @@
+apiVersion: v3
+entrances:
+- authLevel: public
+  host: harborgoods
+  icon: https://app.cdn.olares.com/appstore/default/defaulticon.webp
+  name: harborgoods
+  openMethod: default
+  port: 32000
+  title: Harbor Goods
+metadata:
+  appid: harborgoods
+  categories:
+  - Utilities
+  description: Stablecoin shop demo on Olares Payment — hosted checkout, webhooks, refunds
+  icon: https://app.cdn.olares.com/appstore/default/defaulticon.webp
+  name: harborgoods
+  title: Harbor Goods
+  version: 0.0.2
+olaresManifest.type: app
+olaresManifest.version: 0.12.0
+options:
+  appScope: {}
+  apiTimeout: 60
+  dependencies:
+  - mandatory: false
+    name: olares
+    selfRely: false
+    type: system
+    version: '>=1.12.6-0'
+  oidc: {}
+  resetCookie: {}
+  shared: false
+  upload: {}
+  websocket: {}
+overlayGateway:
+  enable: false
+permission: {}
+spec:
+  accelerator:
+  - limitedCpu: 300m
+    limitedDisk: 5Gi
+    limitedMemory: 612Mi
+    mode: cpu
+    requiredCpu: 200m
+    requiredDisk: 50Mi
+    requiredMemory: 228Mi
+  hardware:
+    cpu: {}
+    gpu: {}
+  runAsInternal: false
+  runAsUser: true
+  supportArch:
+  - amd64
+  supportClient: {}
+  versionName: 0.0.1
+tailscale: {}
+workloadReplicas:
+  harborgoods: 1
+envs:
+- envName: PAYMENT_API_KEY
+  required: true
+  type: password
+  editable: true
+  label: API Key
+  description: Olares Payment Dashboard → Checkouts → Advanced settings → API key
+- envName: PAYMENT_API_SECRET
+  required: true
+  type: password
+  editable: true
+  label: API Secret
+  description: Olares Payment API secret (sk_...)
+- envName: PAYMENT_WEBHOOK_SECRET
+  required: true
+  type: password
+  editable: true
+  label: Webhook Secret
+  description: Olares Payment webhook signing secret (whsec_...)

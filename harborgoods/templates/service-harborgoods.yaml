@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: /Users/tang/.nvm/versions/node/v24.19.0/lib/node_modules/@olares/cli/vendor/olares-cli
+      chart from-compose --name harborgoods -f docker-compose.yml
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: harborgoods
+  name: harborgoods
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  ports:
+  - name: "32000"
+    port: 32000
+    targetPort: 32000
+  selector:
+    io.kompose.service: harborgoods
+status:
+  loadBalancer: {}

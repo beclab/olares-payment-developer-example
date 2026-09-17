@@ -15,9 +15,7 @@
   },
   "dependencies": {
     "@olares/payment-sdk": "file:./vendor/payment-sdk",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
+    "express": "^4.21.2",
     "tsx": "^4.19.2"
   }
 }

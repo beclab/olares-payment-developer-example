@@ -1,0 +1,3 @@
+workloads:
+  harborgoods:
+    replicaCount: 1

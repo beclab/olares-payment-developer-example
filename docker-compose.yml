@@ -1,0 +1,11 @@
+services:
+  harborgoods:
+    image: docker.io/tw7613781/harborgoods:0.0.1
+    ports:
+      - "32000:32000"
+    environment:
+      - PORT=32000
+      - PAYMENT_API_KEY=${PAYMENT_API_KEY}
+      - PAYMENT_API_SECRET=${PAYMENT_API_SECRET}
+      - PAYMENT_WEBHOOK_SECRET=${PAYMENT_WEBHOOK_SECRET}
+    restart: unless-stopped

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: harborgoods
+  name: harborgoods
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  replicas: {{ .Values.workloads.harborgoods.replicaCount }}
+  selector:
+    matchLabels:
+      io.kompose.service: harborgoods
+  template:
+    metadata:
+      labels:
+        io.kompose.service: harborgoods
+    spec:
+      containers:
+      - env:
+        - name: PAYMENT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app
+              key: PAYMENT_API_KEY
+        - name: PAYMENT_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app
+              key: PAYMENT_API_SECRET
+        - name: PAYMENT_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-app
+              key: PAYMENT_WEBHOOK_SECRET
+        - name: PORT
+          value: "32000"
+        image: docker.io/tw7613781/harborgoods:0.0.1
+        name: harborgoods
+        ports:
+        - containerPort: 32000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      restartPolicy: Always

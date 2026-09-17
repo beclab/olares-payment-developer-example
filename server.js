@@ -18,13 +18,23 @@ import { DEFAULT_BASE_URL, MerchantClient, PaymentError, webhooks } from '@olare
 import { CONFIG } from './config.js';
 import { msOf } from './format.js';
 
-const apiKey = process.env.PAYMENT_API_KEY || CONFIG.apiKey;
-const apiSecret = process.env.PAYMENT_API_SECRET || CONFIG.apiSecret;
-const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET || CONFIG.webhookSecret;
-const port = Number(process.env.PORT || CONFIG.port);
-const shopPublicUrl = process.env.SHOP_PUBLIC_URL || CONFIG.shopPublicUrl;
-// SDK default is production; GATEWAY_BASE_URL / CONFIG.gatewayBaseUrl override for local/self-host.
-const gatewayBaseUrl = process.env.GATEWAY_BASE_URL || CONFIG.gatewayBaseUrl || DEFAULT_BASE_URL;
+// config.js wins when set; otherwise fall back to environment variables
+// (PAYMENT_API_KEY / PAYMENT_API_SECRET / PAYMENT_WEBHOOK_SECRET / PORT).
+const apiKey = CONFIG.apiKey || process.env.PAYMENT_API_KEY || '';
+const apiSecret = CONFIG.apiSecret || process.env.PAYMENT_API_SECRET || '';
+const webhookSecret = CONFIG.webhookSecret || process.env.PAYMENT_WEBHOOK_SECRET || '';
+const port = Number(CONFIG.port || process.env.PORT || 32000);
+// Same precedence for the public URL: config.js > SHOP_PUBLIC_URL > auto-derive
+// from request headers (works locally and behind the Olares entrance).
+const shopPublicUrl = CONFIG.shopPublicUrl || process.env.SHOP_PUBLIC_URL || '';
+const publicUrl = (req) => {
+  if (shopPublicUrl) return shopPublicUrl.replace(/\/$/, '');
+  const proto = String(req.headers['x-forwarded-proto'] || 'http').split(',')[0].trim();
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+  return `${proto}://${host}`;
+};
+// SDK default is production; CONFIG.gatewayBaseUrl / GATEWAY_BASE_URL override for local/self-host.
+const gatewayBaseUrl = CONFIG.gatewayBaseUrl || process.env.GATEWAY_BASE_URL || DEFAULT_BASE_URL;
 
 const OPEN = 'pending_payment'; // unpaid hosted checkout still in flight
 
@@ -47,7 +57,7 @@ const gatewayError = (err) =>
 
 /** createPayment — open a hosted checkout for this order.
  *  buyer is the unified Party: { kind: 'external', ref, display } for shop nicknames. */
-async function createPayment(order) {
+async function createPayment(order, req) {
   order.paySeq = (order.paySeq || 0) + 1;
   const created = await merchant.createPayment(
     {
@@ -57,7 +67,7 @@ async function createPayment(order) {
         ref: order.buyerId,
         display: { name: order.buyerNickname },
       },
-      returnUrl: `${shopPublicUrl}/?order=${encodeURIComponent(order.id)}`,
+      returnUrl: `${publicUrl(req)}/?order=${encodeURIComponent(order.id)}`,
       metadata: { order_id: order.id },
     },
     { idempotencyKey: `shop:${order.id}:${order.paySeq}` },
@@ -76,13 +86,13 @@ async function getPayment(paymentId) {
 
 /** createRefund — open a refund; handoff.executionUrl is one-time (secret in the
  *  fragment). Amount omitted = remaining balance. Shop bookkeeping: applyRefundHandoff. */
-async function createRefund(order, { amountMin, reason }) {
+async function createRefund(order, { amountMin, reason }, req) {
   return merchant.createRefund(
     {
       paymentId: order.paymentId,
       ...(amountMin != null ? { amount: amountMin } : {}),
       ...(reason ? { reason } : {}),
-      returnUrl: `${shopPublicUrl}/admin?order=${order.id}`,
+      returnUrl: `${publicUrl(req)}/admin?order=${order.id}`,
     },
     { idempotencyKey: `shop-refund:${order.id}:${order.refundIds.length + 1}` },
   );
@@ -731,7 +741,7 @@ app.post('/api/orders/:id/pay', requireBuyer, async (req, res) => {
     return res.json({ checkoutUrl: order.checkoutUrl, order: publicOrder(order) });
   }
   try {
-    const created = await createPayment(order);
+    const created = await createPayment(order, req);
     res.json({ checkoutUrl: created.checkoutUrl, order: publicOrder(order) });
   } catch (err) {
     console.error(`createPayment failed order=${order.id} ${gatewayError(err)}`);
@@ -752,7 +762,7 @@ app.post('/api/checkout', requireBuyer, async (req, res) => {
 
   const order = createOrder(req.buyer, product, { recipient, phone, address, note });
   try {
-    const created = await createPayment(order);
+    const created = await createPayment(order, req);
     res.json({ order: publicOrder(order), checkoutUrl: created.checkoutUrl });
   } catch (err) {
     order.status = 'failed';
@@ -836,7 +846,7 @@ app.post('/api/admin/orders/:id/refund', requireAdmin, async (req, res) => {
     amountMin = minor;
   }
   try {
-    const handoff = await createRefund(order, { amountMin, reason });
+    const handoff = await createRefund(order, { amountMin, reason }, req);
     const row = applyRefundHandoff(order, handoff, reason);
     // An open buyer request that led here is now the seller's accepted request.
     markRefundRequestDecided(order, 'granted');
