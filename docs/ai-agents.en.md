@@ -1,5 +1,6 @@
 ---
-description: A mission playbook for an AI agent equipped with olares-cli and Agent Skills — integrate Olares Payment into your web app, then deploy it as an installable app on your Olares cluster, with a stable domain, secrets in cluster Secrets, and a closed webhook loop.
+outline: [2, 3]
+description: Use an AI agent to build a store demo with Olares Payment and install it on Olares OS — the agent handles payment integration, app packaging, and webhook setup.
 head:
   - - meta
     - name: keywords
@@ -8,112 +9,105 @@ head:
 
 # Build with AI agents
 
-Your AI agent can do two things for you: **integrate Olares Payment into your web app**, and **deploy it as an installable app on your Olares cluster** — stable domain, secrets in cluster Secrets, webhook loop closed.
+This guide shows how to use an AI agent to build a store demo with Olares Payment integrated and publish it to Olares OS — that is, quickly create an online store that accepts payments and is accessible from anywhere.
 
-This is not "hand the agent a link and watch it self-teach." You give it real tools and real access, then hand it a mission playbook. This page is that playbook.
+## Prerequisites
 
-## Before you start
+- **AI agent**: any AI coding agent, such as Codex, Claude Code, Cursor, or DeepSeek Harness.
+- **olares-cli and Agent Skills**: installed. See [Install olares-cli](../cli-install) and [Install and use Agent Skills](../cli-agent-skills).
+- **Logged in to Olares**: see [Log in to Olares](../cli-log-in). A successful login looks like this:
 
-### Tooling
+  ![term:olares-cli profile login output](images/cli-profile-login.png)
 
-The agent's "brain" is Agent Skills (each skill is an operating manual that explains what each command group does, which parameters matter, and how to recover from common errors); its "hands" are `olares-cli`. Installation and login are one-time chores — follow the official docs:
+- **Olares Payment merchant account and API keys**: you have signed in to the [Olares Payment Dashboard](https://www.olares.com/payment/dashboard/) with LarePass (first sign-in creates your merchant account automatically), and created a key pair under **Checkouts → Advanced settings → API keys**, giving you `pk_live_…` and `sk_live_…`. For details, see the first two steps of the [Quickstart](./quickstart).
 
-- [Install olares-cli](../cli-install) — `npx @olares/cli@latest install` sets up the CLI and Skills in one go
-- [Install and use Agent Skills](../cli-agent-skills)
-- [Log in to Olares](../cli-log-in)
+  ![cap:Merchant dashboard Advanced settings: create an API key](images/dashboard-api-keys.png)
 
-### Two keys (done by a human, exactly once)
+- **Docker**: logged in to a public registry on your machine, needed to push the app image in step 4.
 
-| Key | How | What it unlocks |
-| --- | --- | --- |
-| Merchant keys | [Merchant dashboard](https://www.olares.com/payment/dashboard/) → Checkouts → Advanced settings → API keys — get `pk_live_…` / `sk_live_…` / `whsec_…` | Payments |
-| Cluster | `olares-cli profile login --olares-id <your Olares ID>` | Your cluster |
+## Steps
 
-![Merchant dashboard: API keys and webhook registration on the same page](images/dashboard-api-keys-webhooks.png)
+### 1. Create a repository and save your keys
 
-![olares-cli profile login: one command, logged in](images/cli-profile-login.png)
+Create a new git repository, write the keys into `.env` (leave the webhook signing secret empty for now), and add `.env` to `.gitignore`:
 
-With both keys in hand, everything else can be delegated to the agent.
-
-### Two sources of payment knowledge
-
-<!-- Before publishing: switch both llms-full.txt links back to the production URL https://www.olares.com/docs/developer/payment/llms-full.txt (currently 404 in prod; pointing at the review site for now) -->
-- **Textbook**: [llms-full.txt](https://doc-review.mdogs.me/developer/payment/llms-full.txt) — all payment docs bundled into one Markdown file. One read, and the agent knows the entire API.
-- **Reference implementation**: [olares-payment-developer-example](https://github.com/beclab/olares-payment-developer-example) — the same knowledge as runnable code.
-
-One is the textbook, the other is the answer key: the agent reads the textbook to learn the API, and follows the reference implementation to avoid mistakes.
-
-## Mission 1: Integrate Olares Payment
-
-A payment integration boils down to two things:
-
-1. **Give the buyer a checkout** — `createPayment` returns a `checkoutUrl`; currency, network, and wallet connection are all handled by the hosted checkout.
-2. **Confirm settlement before fulfilling** — webhooks push `payment.succeeded` in real time, or simpler: poll `getPayment` every few seconds. Both roads lead to the same place: only `paid: true` is the fulfillment signal. Webhooks suit real-time reactions; polling suits the smallest demo.
-
-### Let the agent do the integration
-
-Just hand it the textbook. [llms-full.txt](https://doc-review.mdogs.me/developer/payment/llms-full.txt) bundles all the payment docs — one read and the agent has the whole API: HMAC authentication, creating payments, webhook verification, error codes and retries. Then describe what you want in plain language:
-
-> Add an order endpoint to my Node service: call `createPayment` and return the `checkoutUrl` to the frontend. Also stand up a `/webhook` that receives `payment.succeeded` and marks the order paid. Read credentials from environment variables.
-
-It reads the docs, writes the code, runs it. You watch.
-
-### We already built one
-
-No need to start from zero, actually — we ran the exact process above ourselves, and the result is a complete demo store: [olares-payment-developer-example](https://github.com/beclab/olares-payment-developer-example). The full loop is in there: ordering, checkout, webhook, refunds. The `examples/` directory has one standalone script per operation, and all credentials come from environment variables. Clone it, fill in your keys, `npm install && npm start`.
-
-In Mission 2, we'll use this exact repo for the deployment demo.
-
-## Mission 2: Package the web app as an Olares app
-
-Turning a web app into an Olares app means producing two artifacts: **an image** (the app itself, pushed to a public registry so nodes can pull it anonymously) and **a chart** (which tells Olares how to install it: entrance, secrets, resources).
-
-You don't need to teach the operational details — skills like `olares-chart`, `olares-market`, and `olares-settings` already cover them: how to scaffold a chart from docker-compose, how to lint / package / upload / install, how to read app status. The agent reads the skills and knows what to do.
-
-One more thing that's too routine to count as a "key": the image goes to a public registry, so the agent needs your local docker to be `docker login`-ed when it pushes. That's all.
-
-What does it look like when it's done? Here's our instance: <https://dc86a2fa.olarespayment.olares.com/> — a real store running on Olares. Open it and place an order right now.
-
-## The master prompt
-
-With tooling and both keys ready, hand this to your agent:
-
-```text
-You are deploying my Olares Payment integration as an installable app on my
-Olares cluster.
-
-Already set up (do not redo): olares-cli + Agent Skills installed and logged
-in; docker logged in to a public registry. My merchant keys are in my shell
-env: PAYMENT_API_KEY / PAYMENT_API_SECRET / PAYMENT_WEBHOOK_SECRET.
-
-Knowledge sources:
-- Payment API docs (full bundle):
-  https://doc-review.mdogs.me/developer/payment/llms-full.txt
-- Reference implementation:
-  https://github.com/beclab/olares-payment-developer-example
-- Load skills: olares-shared, olares-chart, olares-market, olares-settings,
-  olares-cluster.
-
-Mission:
-1. Start from the reference repo (or my existing app). Ensure:
-   - secrets come from env only; nothing in code, image, or git
-   - returnUrl derives from x-forwarded-proto / x-forwarded-host at runtime
-   - tsx is in dependencies; start with `npx tsx server.js`
-2. Write a Dockerfile (node:22-slim; COPY vendor before npm ci; USER node).
-3. Scaffold the chart with `olares-cli chart from-compose`, then enforce:
-   entrance authLevel public; the three secrets in manifest envs[] with
-   editable: true, wired to a K8s Secret; runAsUser true; apiTimeout 60;
-   supportArch from `olares-cli cluster node list` — never guess.
-4. Build for the target arch with buildx, smoke-test locally, push, and verify
-   anonymous pull with DOCKER_CONFIG=$(mktemp -d).
-5. `olares-cli chart lint` → `chart package` → `market upload` →
-   `market install <app> -s upload --env ... --watch`.
-6. Print the real entrance URL from `olares-cli settings apps list`
-   (the subdomain is the platform-assigned appid, NOT the app name) and
-   stop — I will register the webhook in the merchant dashboard and hand
-   you the new whsec_… to inject via `olares-cli settings apps env set`.
+```bash
+mkdir my-store && cd my-store
+git init
+echo ".env" >> .gitignore
 ```
 
-::: warning Key discipline
-Throughout the whole flow, real keys live in exactly three places: your shell environment, the merchant dashboard, and the cluster Secret. Never write them into image layers, chart files, or git commits. If a key ever entered git history, rotate it in the merchant dashboard.
+```bash
+# .env
+PAYMENT_API_KEY=pk_live_…
+PAYMENT_API_SECRET=sk_live_…
+PAYMENT_WEBHOOK_SECRET=   # filled in after registering the webhook in step 5
+```
+
+::: warning Key safety
+Throughout the whole flow, keys live in exactly three places: your local `.env`, the merchant dashboard, and the app's environment variables on Olares. Never write them into code or commit them to git. If a key ever entered git history, rotate it in the merchant dashboard.
 :::
+
+### 2. Open the repository with your agent
+
+Use this repository as the agent's working directory: start your agent CLI (such as `codex` or `claude`) inside the repo, or open the folder in Cursor.
+
+### 3. Create the store
+
+Send the following prompt to the agent:
+
+```text
+Build a minimal online store demo (Node.js): one product page, one order endpoint,
+and one order result page.
+Accept payments with Olares Payment:
+- On order, call createPayment to create a payment, return the checkoutUrl to the
+  frontend, and redirect to the hosted checkout
+- Expose a /webhook endpoint that receives payment.succeeded and marks the order
+  as paid after signature verification
+- Read credentials from .env (PAYMENT_API_KEY / PAYMENT_API_SECRET /
+  PAYMENT_WEBHOOK_SECRET); never hardcode them. Leave the webhook signing secret
+  empty for now — it gets filled in after deployment
+
+Payment API docs: https://doc-review.mdogs.me/developer/payment/llms-full.txt
+```
+
+<!-- Before publishing: switch the llms-full.txt link in the prompt above back to the production URL https://www.olares.com/docs/developer/payment/llms-full.txt (currently 404 in prod; pointing at the review site for now) -->
+
+The agent reads the API docs, does the integration, and gets it running on its own. Once order creation and the checkout redirect work locally, move on to the next step.
+
+### 4. Package as an Olares app and install
+
+Send the following prompt to the agent:
+
+```text
+Package this store as an Olares app and install it on my Olares OS:
+- Build the image and push it to a public registry
+- Scaffold the chart: public entrance, payment credentials as configurable
+  environment variables
+- Upload and install, then tell me the store's URL
+```
+
+The operational details of packaging and installation (chart scaffolding, lint, upload, install, status checks) are covered by skills like `olares-chart` and `olares-market`. The agent reads them as needed — no step-by-step coaching from you.
+
+### 5. Configure the webhook
+
+After installation, the agent gives you the store's URL (a stable domain assigned by Olares). Register a webhook with that domain in the merchant dashboard so the store can receive payment success notifications:
+
+1. Go to **Checkouts → Advanced settings → Webhooks**, set the webhook URL to `https://<store-domain>/webhook`, and save. This generates the signing secret `whsec_…`.
+
+   ![cap:Register the webhook URL in the merchant dashboard](images/dashboard-webhooks.png)
+
+2. Fill the signing secret into your local `.env` file yourself (`PAYMENT_WEBHOOK_SECRET=whsec_…`), then let the agent read it and sync it to the app:
+
+   ```text
+   The webhook signing secret is now in .env. Configure it into the store app's
+   environment variables and restart the app so it takes effect.
+   ```
+
+For webhook signature verification, retries, and debugging, see [Webhooks](./webhooks).
+
+### 6. Verify the store
+
+Open the store URL and place a test order: redirect to the checkout, pay, return to the store, and see the order marked as paid — the full loop works. The URL is a stable domain assigned by Olares, so the store is accessible from anywhere.
+
+To see what the finished product looks like, check out our example: [olares-payment-developer-example](https://github.com/beclab/olares-payment-developer-example) is a complete demo built with this exact flow, covering ordering, checkout, webhook, and refunds. Its live instance at <https://dc86a2fa.olarespayment.olares.com/> runs on Olares OS — open it and place an order.
