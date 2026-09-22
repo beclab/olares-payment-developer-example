@@ -4,9 +4,9 @@ FROM node:22-slim
 ENV NODE_ENV=production
 WORKDIR /app
 
-# Local file: dependency must be present before npm ci
+# @olares/payment-sdk comes from the npm registry (see package.json), so npm ci
+# needs only the manifest + lockfile.
 COPY package.json package-lock.json ./
-COPY vendor ./vendor
 
 RUN npm ci --omit=dev && npm cache clean --force
 

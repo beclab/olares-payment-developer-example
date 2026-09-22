@@ -14,7 +14,7 @@
     "ex:refund": "tsx examples/05-create-refund.js"
   },
   "dependencies": {
-    "@olares/payment-sdk": "file:./vendor/payment-sdk",
+    "@olares/payment-sdk": "^0.1.1",
     "express": "^4.21.2",
     "tsx": "^4.19.2"
   }
