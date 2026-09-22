@@ -34,7 +34,7 @@ spec:
               key: PAYMENT_WEBHOOK_SECRET
         - name: PORT
           value: "32000"
-        image: docker.io/tw7613781/harborgoods:0.0.1
+        image: docker.io/tw7613781/harborgoods:0.0.3
         name: harborgoods
         ports:
         - containerPort: 32000
